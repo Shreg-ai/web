@@ -24,7 +24,7 @@ export default async function MyPostsPage() {
   if (postRows.length === 0) {
     return (
       <div className="mx-auto w-full max-w-2xl flex-1 overflow-y-auto bg-gradient-to-b from-violet-50 to-white p-6 text-center">
-        <h1 className="mb-6 text-left text-xl font-medium text-violet-950">Posts</h1>
+        <h1 className="mb-6 text-left text-xl font-medium text-violet-950">My Posts</h1>
         <p className="mt-16 text-sm text-neutral-500">
           You haven&apos;t posted anything yet. Share a graph from its page to get started.
         </p>
@@ -48,7 +48,7 @@ export default async function MyPostsPage() {
 
   return (
     <div className="mx-auto w-full max-w-2xl flex-1 overflow-y-auto bg-gradient-to-b from-violet-50 to-white p-6">
-      <h1 className="mb-6 text-xl font-medium text-violet-950">Posts</h1>
+      <h1 className="mb-6 text-xl font-medium text-violet-950">My Posts</h1>
       <ul className="flex flex-col gap-4">
         {postRows.map((post) => {
           const graph = graphById.get(post.graph_id);

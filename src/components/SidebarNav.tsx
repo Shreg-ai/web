@@ -236,13 +236,13 @@ export function SidebarNav({
         {isLoggedIn && (
           <Link
             href="/posts"
-            title="Posts"
+            title="My Posts"
             className={`flex items-center gap-2 rounded-md px-2 py-2 font-medium ${
               onPosts ? "bg-violet-100 text-violet-800" : "text-neutral-600 hover:bg-violet-50 hover:text-violet-700"
             } ${collapsed ? "justify-center" : ""}`}
           >
             <PostsIcon />
-            {!collapsed && "Posts"}
+            {!collapsed && "My Posts"}
           </Link>
         )}
 
