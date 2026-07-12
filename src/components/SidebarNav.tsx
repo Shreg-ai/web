@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { logout } from "@/app/auth/actions";
 import { POST_CATEGORIES } from "@/lib/categories";
@@ -104,7 +105,8 @@ export function SidebarNav({
     >
       <div className={`flex items-center border-b border-violet-100 px-3 py-3 ${collapsed ? "justify-center" : "justify-between"}`}>
         {!collapsed && (
-          <Link href="/" className="text-sm font-semibold text-violet-950">
+          <Link href="/" className="flex items-center gap-1.5 text-sm font-semibold text-violet-950">
+            <Image src="/logo.png" alt="" width={22} height={15} priority />
             Shreg
           </Link>
         )}
