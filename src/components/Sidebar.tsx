@@ -21,7 +21,7 @@ export async function Sidebar() {
   }
 
   return (
-    <Suspense fallback={<div className="h-full w-56 shrink-0 border-r border-violet-100 bg-white" />}>
+    <Suspense fallback={<div className="hidden h-full w-56 shrink-0 border-r border-violet-100 bg-white md:block" />}>
       <SidebarNav
         isLoggedIn={Boolean(user)}
         username={profile?.username ?? null}

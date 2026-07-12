@@ -85,8 +85,8 @@ export function PlaygroundView({ importableGraphs }: { importableGraphs: Importa
   const modeLabels = { type: t("modeType"), source: t("modeSource"), cluster: t("modeCluster") } as const;
 
   return (
-    <div className="flex flex-1 overflow-hidden">
-      <div className="flex w-80 shrink-0 flex-col gap-5 overflow-y-auto border-r border-violet-100 bg-white p-4">
+    <div className="flex flex-1 flex-col overflow-hidden md:flex-row">
+      <div className="flex max-h-80 w-full shrink-0 flex-col gap-5 overflow-y-auto border-b border-violet-100 bg-white p-4 md:max-h-none md:w-80 md:border-r md:border-b-0">
         <div>
           <h1 className="text-base font-medium text-violet-950">{t("heading")}</h1>
           <p className="mt-1 text-xs text-neutral-500">{t("description")}</p>
@@ -222,7 +222,7 @@ export function PlaygroundView({ importableGraphs }: { importableGraphs: Importa
         )}
       </div>
 
-      <div className="flex-1 bg-violet-50/30">
+      <div className="min-h-[300px] flex-1 bg-violet-50/30 md:min-h-0">
         {sources.length === 0 ? (
           <div className="flex h-full items-center justify-center p-6 text-center text-sm text-neutral-400">
             {t("emptyField")}

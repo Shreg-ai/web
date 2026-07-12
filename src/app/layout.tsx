@@ -36,7 +36,7 @@ export default async function RootLayout({
       <body className="flex h-full">
         <NextIntlClientProvider messages={messages}>
           <Sidebar />
-          <div className="flex flex-1 flex-col overflow-hidden">{children}</div>
+          <div className="flex flex-1 flex-col overflow-hidden pt-12 md:pt-0">{children}</div>
         </NextIntlClientProvider>
       </body>
     </html>

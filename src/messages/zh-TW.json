@@ -42,7 +42,9 @@
     "logIn": "登入",
     "signUp": "註冊",
     "expandSidebar": "展開側邊欄",
-    "collapseSidebar": "收合側邊欄"
+    "collapseSidebar": "收合側邊欄",
+    "openMenu": "開啟選單",
+    "closeMenu": "關閉選單"
   },
   "auth": {
     "login": {

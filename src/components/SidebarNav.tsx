@@ -24,6 +24,22 @@ function ChevronIcon({ collapsed }: { collapsed: boolean }) {
   );
 }
 
+function MenuIcon() {
+  return (
+    <svg viewBox="0 0 20 20" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth={2}>
+      <path d="M3 5h14M3 10h14M3 15h14" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function CloseIcon() {
+  return (
+    <svg viewBox="0 0 20 20" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth={2}>
+      <path d="M5 5l10 10M15 5 5 15" strokeLinecap="round" />
+    </svg>
+  );
+}
+
 function FeedsIcon() {
   return (
     <svg viewBox="0 0 20 20" className="h-4 w-4 shrink-0" fill="none" stroke="currentColor" strokeWidth={1.8}>
@@ -122,9 +138,19 @@ export function SidebarNav({
   const [collapsed, setCollapsed] = useState(false);
   const [isExploring, startExploreTransition] = useTransition();
 
+  // Collapsing to an icon rail is a desktop-only affordance (see the md:
+  // prefixes below on every class it touches) -- on mobile the sidebar is an
+  // overlay drawer that's either fully open or fully closed, so it always
+  // shows full labels there regardless of this flag.
+  const [mobileOpen, setMobileOpen] = useState(false);
+
   useEffect(() => {
     if (window.localStorage.getItem("sidebar-collapsed") === "true") setCollapsed(true);
   }, []);
+
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [pathname]);
 
   function toggleCollapsed() {
     setCollapsed((prev) => {
@@ -178,42 +204,74 @@ export function SidebarNav({
   const onFriends = pathname === "/friends";
   const onConnect = pathname === "/connect";
 
+  // Only hidden at the md breakpoint and below when collapsed -- on mobile
+  // the drawer always shows full labels, per the note above.
+  const labelClass = collapsed ? "md:hidden" : "";
+  const justifyClass = collapsed ? "md:justify-center" : "";
+
   return (
-    <aside
-      className={`flex h-full shrink-0 flex-col border-r border-violet-100 bg-white transition-[width] duration-150 ${
-        collapsed ? "w-14" : "w-56"
-      }`}
-    >
-      <div className={`flex items-center border-b border-violet-100 px-3 py-4 ${collapsed ? "justify-center" : "justify-between"}`}>
-        {!collapsed && (
-          <Link href="/" className="flex items-center gap-2 text-xl font-bold text-violet-950">
+    <>
+      <div className="fixed inset-x-0 top-0 z-20 flex h-12 items-center gap-2 border-b border-violet-100 bg-white px-3 md:hidden">
+        <button
+          onClick={() => setMobileOpen(true)}
+          aria-label={t("openMenu")}
+          className="rounded-md p-1.5 text-neutral-500 hover:bg-violet-50 hover:text-violet-700"
+        >
+          <MenuIcon />
+        </button>
+        <Link href="/" className="flex items-center gap-2 text-lg font-bold text-violet-950">
+          <Image src="/logo.png" alt="" width={28} height={20} priority />
+          Shreg
+        </Link>
+      </div>
+
+      {mobileOpen && (
+        <div
+          onClick={() => setMobileOpen(false)}
+          aria-hidden="true"
+          className="fixed inset-0 z-30 bg-black/30 md:hidden"
+        />
+      )}
+
+      <aside
+        className={`fixed inset-y-0 left-0 z-40 flex h-full w-64 shrink-0 flex-col border-r border-violet-100 bg-white transition-transform duration-200 ${
+          mobileOpen ? "translate-x-0" : "-translate-x-full"
+        } md:static md:z-auto md:translate-x-0 md:transition-[width] md:duration-150 ${collapsed ? "md:w-14" : "md:w-56"}`}
+      >
+        <div className={`flex items-center border-b border-violet-100 px-3 py-4 justify-between ${justifyClass}`}>
+          <Link href="/" className={`flex items-center gap-2 text-xl font-bold text-violet-950 ${labelClass}`}>
             <Image src="/logo.png" alt="" width={34} height={24} priority />
             Shreg
           </Link>
-        )}
-        <button
-          onClick={toggleCollapsed}
-          aria-label={collapsed ? t("expandSidebar") : t("collapseSidebar")}
-          className="rounded-md p-1 text-neutral-400 hover:bg-violet-50 hover:text-violet-700"
-        >
-          <ChevronIcon collapsed={collapsed} />
-        </button>
-      </div>
+          <button
+            onClick={() => setMobileOpen(false)}
+            aria-label={t("closeMenu")}
+            className="rounded-md p-1 text-neutral-400 hover:bg-violet-50 hover:text-violet-700 md:hidden"
+          >
+            <CloseIcon />
+          </button>
+          <button
+            onClick={toggleCollapsed}
+            aria-label={collapsed ? t("expandSidebar") : t("collapseSidebar")}
+            className="hidden rounded-md p-1 text-neutral-400 hover:bg-violet-50 hover:text-violet-700 md:block"
+          >
+            <ChevronIcon collapsed={collapsed} />
+          </button>
+        </div>
 
-      <nav className="flex flex-1 flex-col gap-1 overflow-y-auto px-2 py-3 text-sm">
-        <Link
-          href="/feed"
-          title={t("explore")}
-          className={`flex items-center gap-2 rounded-md px-2 py-2 font-medium ${
-            onFeeds ? "bg-violet-100 text-violet-800" : "text-neutral-600 hover:bg-violet-50 hover:text-violet-700"
-          } ${collapsed ? "justify-center" : ""}`}
-        >
-          <FeedsIcon />
-          {!collapsed && t("explore")}
-        </Link>
+        <nav className="flex flex-1 flex-col gap-1 overflow-y-auto px-2 py-3 text-sm">
+          <Link
+            href="/feed"
+            title={t("explore")}
+            className={`flex items-center gap-2 rounded-md px-2 py-2 font-medium ${
+              onFeeds ? "bg-violet-100 text-violet-800" : "text-neutral-600 hover:bg-violet-50 hover:text-violet-700"
+            } ${justifyClass}`}
+          >
+            <FeedsIcon />
+            <span className={labelClass}>{t("explore")}</span>
+          </Link>
 
-        {!collapsed && (
-          <div className="ml-2 flex flex-col gap-0.5 border-l border-violet-100 pl-3">
+          <div className={`ml-2 flex flex-col gap-0.5 border-l border-violet-100 pl-3 ${labelClass}`}>
             <label
               className={`flex cursor-pointer items-center gap-2 rounded-md px-2 py-1 text-xs ${
                 pendingCategories.size === 0 ? "bg-violet-100 font-medium text-violet-800" : "text-neutral-500 hover:bg-violet-50 hover:text-violet-700"
@@ -262,82 +320,80 @@ export function SidebarNav({
               {t("exploreButton")}
             </button>
           </div>
-        )}
 
-        <Link
-          href="/connect"
-          title={t("connect")}
-          className={`mt-2 flex items-center gap-2 rounded-md px-2 py-2 font-medium ${
-            onConnect ? "bg-violet-100 text-violet-800" : "text-neutral-600 hover:bg-violet-50 hover:text-violet-700"
-          } ${collapsed ? "justify-center" : ""}`}
-        >
-          <ConnectIcon />
-          {!collapsed && t("connect")}
-        </Link>
-
-        {isLoggedIn && (
           <Link
-            href="/follows"
-            title={t("myFollows")}
+            href="/connect"
+            title={t("connect")}
             className={`mt-2 flex items-center gap-2 rounded-md px-2 py-2 font-medium ${
-              onFollows ? "bg-violet-100 text-violet-800" : "text-neutral-600 hover:bg-violet-50 hover:text-violet-700"
-            } ${collapsed ? "justify-center" : ""}`}
+              onConnect ? "bg-violet-100 text-violet-800" : "text-neutral-600 hover:bg-violet-50 hover:text-violet-700"
+            } ${justifyClass}`}
           >
-            <FollowsIcon />
-            {!collapsed && t("myFollows")}
+            <ConnectIcon />
+            <span className={labelClass}>{t("connect")}</span>
           </Link>
-        )}
 
-        {isLoggedIn && (
-          <Link
-            href="/dashboard"
-            title={t("myGraphs")}
-            className={`flex items-center gap-2 rounded-md px-2 py-2 font-medium ${
-              onDashboard ? "bg-violet-100 text-violet-800" : "text-neutral-600 hover:bg-violet-50 hover:text-violet-700"
-            } ${collapsed ? "justify-center" : ""}`}
-          >
-            <GraphsIcon />
-            {!collapsed && t("myGraphs")}
-          </Link>
-        )}
+          {isLoggedIn && (
+            <Link
+              href="/follows"
+              title={t("myFollows")}
+              className={`mt-2 flex items-center gap-2 rounded-md px-2 py-2 font-medium ${
+                onFollows ? "bg-violet-100 text-violet-800" : "text-neutral-600 hover:bg-violet-50 hover:text-violet-700"
+              } ${justifyClass}`}
+            >
+              <FollowsIcon />
+              <span className={labelClass}>{t("myFollows")}</span>
+            </Link>
+          )}
 
-        {isLoggedIn && (
-          <Link
-            href="/playground"
-            title={t("playground")}
-            className={`flex items-center gap-2 rounded-md px-2 py-2 font-medium ${
-              onPlayground ? "bg-violet-100 text-violet-800" : "text-neutral-600 hover:bg-violet-50 hover:text-violet-700"
-            } ${collapsed ? "justify-center" : ""}`}
-          >
-            <PlaygroundIcon />
-            {!collapsed && t("playground")}
-          </Link>
-        )}
+          {isLoggedIn && (
+            <Link
+              href="/dashboard"
+              title={t("myGraphs")}
+              className={`flex items-center gap-2 rounded-md px-2 py-2 font-medium ${
+                onDashboard ? "bg-violet-100 text-violet-800" : "text-neutral-600 hover:bg-violet-50 hover:text-violet-700"
+              } ${justifyClass}`}
+            >
+              <GraphsIcon />
+              <span className={labelClass}>{t("myGraphs")}</span>
+            </Link>
+          )}
 
-        {isLoggedIn && (
-          <Link
-            href="/posts"
-            title={t("myPosts")}
-            className={`flex items-center gap-2 rounded-md px-2 py-2 font-medium ${
-              onPosts ? "bg-violet-100 text-violet-800" : "text-neutral-600 hover:bg-violet-50 hover:text-violet-700"
-            } ${collapsed ? "justify-center" : ""}`}
-          >
-            <PostsIcon />
-            {!collapsed && t("myPosts")}
-          </Link>
-        )}
+          {isLoggedIn && (
+            <Link
+              href="/playground"
+              title={t("playground")}
+              className={`flex items-center gap-2 rounded-md px-2 py-2 font-medium ${
+                onPlayground ? "bg-violet-100 text-violet-800" : "text-neutral-600 hover:bg-violet-50 hover:text-violet-700"
+              } ${justifyClass}`}
+            >
+              <PlaygroundIcon />
+              <span className={labelClass}>{t("playground")}</span>
+            </Link>
+          )}
 
-        {isLoggedIn && (
-          <Link
-            href="/friends"
-            title={t("friends")}
-            className={`relative flex items-center gap-2 rounded-md px-2 py-2 font-medium ${
-              onFriends ? "bg-violet-100 text-violet-800" : "text-neutral-600 hover:bg-violet-50 hover:text-violet-700"
-            } ${collapsed ? "justify-center" : ""}`}
-          >
-            <FriendsIcon />
-            {!collapsed && (
-              <span className="flex flex-1 items-center justify-between">
+          {isLoggedIn && (
+            <Link
+              href="/posts"
+              title={t("myPosts")}
+              className={`flex items-center gap-2 rounded-md px-2 py-2 font-medium ${
+                onPosts ? "bg-violet-100 text-violet-800" : "text-neutral-600 hover:bg-violet-50 hover:text-violet-700"
+              } ${justifyClass}`}
+            >
+              <PostsIcon />
+              <span className={labelClass}>{t("myPosts")}</span>
+            </Link>
+          )}
+
+          {isLoggedIn && (
+            <Link
+              href="/friends"
+              title={t("friends")}
+              className={`relative flex items-center gap-2 rounded-md px-2 py-2 font-medium ${
+                onFriends ? "bg-violet-100 text-violet-800" : "text-neutral-600 hover:bg-violet-50 hover:text-violet-700"
+              } ${justifyClass}`}
+            >
+              <FriendsIcon />
+              <span className={`flex flex-1 items-center justify-between ${labelClass}`}>
                 {t("friends")}
                 {pendingFriendRequests > 0 && (
                   <span className="rounded-full bg-red-500 px-1.5 py-0.5 text-[10px] font-semibold text-white">
@@ -345,54 +401,61 @@ export function SidebarNav({
                   </span>
                 )}
               </span>
-            )}
-            {collapsed && pendingFriendRequests > 0 && <span className="absolute top-1 right-2 h-2 w-2 rounded-full bg-red-500" />}
-          </Link>
-        )}
+              {collapsed && pendingFriendRequests > 0 && (
+                <span className="absolute top-1 right-2 hidden h-2 w-2 rounded-full bg-red-500 md:block" />
+              )}
+            </Link>
+          )}
 
-        {isLoggedIn && (
-          <Link
-            href="/profile"
-            title={t("profile")}
-            className={`flex items-center gap-2 rounded-md px-2 py-2 font-medium ${
-              onProfile ? "bg-violet-100 text-violet-800" : "text-neutral-600 hover:bg-violet-50 hover:text-violet-700"
-            } ${collapsed ? "justify-center" : ""}`}
-          >
-            <Avatar url={avatarUrl} username={username ?? "?"} size={18} />
-            {!collapsed && t("profile")}
-          </Link>
-        )}
-      </nav>
-
-      <div className="border-t border-violet-100 p-2 text-sm">
-        {isLoggedIn ? (
-          <form action={logout}>
-            <button
-              type="submit"
-              title={t("logOut")}
-              className={`flex w-full items-center gap-2 rounded-md px-2 py-2 text-neutral-500 hover:bg-violet-50 hover:text-violet-700 ${
-                collapsed ? "justify-center" : ""
-              }`}
+          {isLoggedIn && (
+            <Link
+              href="/profile"
+              title={t("profile")}
+              className={`flex items-center gap-2 rounded-md px-2 py-2 font-medium ${
+                onProfile ? "bg-violet-100 text-violet-800" : "text-neutral-600 hover:bg-violet-50 hover:text-violet-700"
+              } ${justifyClass}`}
             >
-              <LogoutIcon />
-              {!collapsed && t("logOut")}
-            </button>
-          </form>
-        ) : collapsed ? (
-          <Link href="/login" title={t("logIn")} className="flex justify-center rounded-md px-2 py-2 text-neutral-500 hover:bg-violet-50 hover:text-violet-700">
-            <LogoutIcon />
-          </Link>
-        ) : (
-          <div className="flex flex-col gap-2 px-1">
-            <Link href="/login" className="text-neutral-600 hover:text-violet-700">
-              {t("logIn")}
+              <Avatar url={avatarUrl} username={username ?? "?"} size={18} />
+              <span className={labelClass}>{t("profile")}</span>
             </Link>
-            <Link href="/signup" className="rounded-md bg-violet-600 px-3 py-1.5 text-center text-white hover:bg-violet-700">
-              {t("signUp")}
-            </Link>
-          </div>
-        )}
-      </div>
-    </aside>
+          )}
+        </nav>
+
+        <div className="border-t border-violet-100 p-2 text-sm">
+          {isLoggedIn ? (
+            <form action={logout}>
+              <button
+                type="submit"
+                title={t("logOut")}
+                className={`flex w-full items-center gap-2 rounded-md px-2 py-2 text-neutral-500 hover:bg-violet-50 hover:text-violet-700 ${justifyClass}`}
+              >
+                <LogoutIcon />
+                <span className={labelClass}>{t("logOut")}</span>
+              </button>
+            </form>
+          ) : (
+            <>
+              <div className={`flex flex-col gap-2 px-1 ${labelClass}`}>
+                <Link href="/login" className="text-neutral-600 hover:text-violet-700">
+                  {t("logIn")}
+                </Link>
+                <Link href="/signup" className="rounded-md bg-violet-600 px-3 py-1.5 text-center text-white hover:bg-violet-700">
+                  {t("signUp")}
+                </Link>
+              </div>
+              {collapsed && (
+                <Link
+                  href="/login"
+                  title={t("logIn")}
+                  className="hidden justify-center rounded-md px-2 py-2 text-neutral-500 hover:bg-violet-50 hover:text-violet-700 md:flex"
+                >
+                  <LogoutIcon />
+                </Link>
+              )}
+            </>
+          )}
+        </div>
+      </aside>
+    </>
   );
 }

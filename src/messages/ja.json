@@ -42,7 +42,9 @@
     "logIn": "ログイン",
     "signUp": "新規登録",
     "expandSidebar": "サイドバーを展開",
-    "collapseSidebar": "サイドバーを折りたたむ"
+    "collapseSidebar": "サイドバーを折りたたむ",
+    "openMenu": "メニューを開く",
+    "closeMenu": "メニューを閉じる"
   },
   "auth": {
     "login": {
