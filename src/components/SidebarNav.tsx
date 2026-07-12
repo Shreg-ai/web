@@ -103,10 +103,10 @@ export function SidebarNav({
         collapsed ? "w-14" : "w-56"
       }`}
     >
-      <div className={`flex items-center border-b border-violet-100 px-3 py-3 ${collapsed ? "justify-center" : "justify-between"}`}>
+      <div className={`flex items-center border-b border-violet-100 px-3 py-4 ${collapsed ? "justify-center" : "justify-between"}`}>
         {!collapsed && (
-          <Link href="/" className="flex items-center gap-1.5 text-sm font-semibold text-violet-950">
-            <Image src="/logo.png" alt="" width={22} height={15} priority />
+          <Link href="/" className="flex items-center gap-2 text-xl font-bold text-violet-950">
+            <Image src="/logo.png" alt="" width={34} height={24} priority />
             Shreg
           </Link>
         )}
