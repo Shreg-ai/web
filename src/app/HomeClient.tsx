@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { VaultUploader } from "@/components/VaultUploader";
 import { GraphCanvas } from "@/components/GraphCanvas";
 import { NodeDetailPanel } from "@/components/NodeDetailPanel";
@@ -29,6 +30,9 @@ export function HomeClient({ isLoggedIn }: { isLoggedIn: boolean }) {
             }}
           />
         </div>
+        <Link href="/feed" className="mt-6 text-sm text-neutral-500 hover:text-violet-700">
+          Or browse the feed without an account →
+        </Link>
       </div>
     );
   }

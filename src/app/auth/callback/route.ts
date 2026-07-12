@@ -1,0 +1,23 @@
+import { NextResponse } from "next/server";
+import { createClient } from "@/lib/supabase/server";
+
+/**
+ * Destination of email links (password reset, email confirmation) that use
+ * the PKCE flow: exchanges the one-time `code` for a real session, then
+ * redirects to wherever the link was meant to send the user.
+ */
+export async function GET(request: Request) {
+  const { searchParams, origin } = new URL(request.url);
+  const code = searchParams.get("code");
+  const next = searchParams.get("next") ?? "/dashboard";
+
+  if (code) {
+    const supabase = await createClient();
+    const { error } = await supabase.auth.exchangeCodeForSession(code);
+    if (!error) {
+      return NextResponse.redirect(`${origin}${next}`);
+    }
+  }
+
+  return NextResponse.redirect(`${origin}/login?error=${encodeURIComponent("That link is invalid or has expired.")}`);
+}
