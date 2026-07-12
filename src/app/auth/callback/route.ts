@@ -9,7 +9,11 @@ import { createClient } from "@/lib/supabase/server";
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get("code");
-  const next = searchParams.get("next") ?? "/dashboard";
+  // No explicit `next` means this is a signup-confirmation link (password
+  // reset always sets one) -- /profile is where a first-time confirmed user
+  // finishes choosing a username, via the same self-recovery form used for
+  // any account that's authenticated but has no profile row yet.
+  const next = searchParams.get("next") ?? "/profile";
 
   if (code) {
     const supabase = await createClient();

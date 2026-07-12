@@ -46,13 +46,11 @@ export async function signup(formData: FormData): Promise<void> {
   }
 
   if (!data.user || !data.session) {
-    // No active session means "Confirm email" is still enabled in Supabase Auth
-    // settings, so there's nothing to authorize the profile insert with yet.
-    redirect(
-      `/login?error=${encodeURIComponent(
-        'Account created, but no session was returned. If you haven\'t disabled "Confirm email" in Supabase Auth settings, either do that or confirm your email via the link sent to you, then log in.'
-      )}`
-    );
+    // No active session means email confirmation is required before this
+    // account can do anything -- there's no session yet to authorize the
+    // profile insert with, so it happens later (see /profile's self-recovery
+    // form) once they confirm and log in for the first time.
+    redirect(`/login?error=${encodeURIComponent("Account created. Check your email to confirm it, then log in.")}`);
   }
 
   const { error: profileError } = await supabase.from("profiles").insert({ id: data.user.id, username });
