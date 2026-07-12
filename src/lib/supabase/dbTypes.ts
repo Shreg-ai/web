@@ -18,6 +18,8 @@ export interface GraphRow {
   edge_count: number;
   graph_data: StoredGraphPayload;
   scenarios: Scenario[];
+  /** Whether the actual node/edge structure (not just the AI analysis) can be imported by other users into the Knowledge Playground. */
+  share_full_structure: boolean;
   created_at: string;
   updated_at: string;
 }

@@ -12,6 +12,7 @@ import { BackButton } from "@/components/BackButton";
 import { Spinner } from "@/components/Spinner";
 import { VersionHistoryPanel } from "@/components/VersionHistoryPanel";
 import { GraphPostsList } from "@/components/GraphPostsList";
+import { ShareStructureToggle } from "@/components/ShareStructureToggle";
 import type { GraphEvaluationRow, GraphRow, GraphVersionRow, PostRow, ProfileRow } from "@/lib/supabase/dbTypes";
 
 const HANDLE_H = "h-1 shrink-0 bg-violet-100 transition-colors hover:bg-violet-300 active:bg-violet-400 data-[resize-handle-active]:bg-violet-400";
@@ -109,6 +110,7 @@ export function PublicGraphView({
             </div>
           )}
           <VersionHistoryPanel graphId={graph.id} initialVersions={versions} isOwner />
+          <ShareStructureToggle graphId={graph.id} initialShared={graph.share_full_structure ?? false} />
         </Panel>
         <Separator className={HANDLE_V} />
         <Panel defaultSize={40} minSize={15}>

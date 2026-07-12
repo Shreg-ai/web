@@ -68,6 +68,17 @@ function PostsIcon() {
   );
 }
 
+function PlaygroundIcon() {
+  return (
+    <svg viewBox="0 0 20 20" className="h-4 w-4 shrink-0" fill="none" stroke="currentColor" strokeWidth={1.8}>
+      <circle cx="5" cy="5" r="2" />
+      <circle cx="15" cy="6" r="2" />
+      <circle cx="9" cy="15" r="2" />
+      <path d="M6.5 6 13.5 5.7M6 6.7 8 13.3M13.5 7.5 10 13" strokeLinecap="round" strokeDasharray="2 2" />
+    </svg>
+  );
+}
+
 function FriendsIcon() {
   return (
     <svg viewBox="0 0 20 20" className="h-4 w-4 shrink-0" fill="none" stroke="currentColor" strokeWidth={1.8}>
@@ -143,6 +154,7 @@ export function SidebarNav({
   const onFeeds = pathname === "/feed";
   const onFollows = pathname === "/follows";
   const onDashboard = pathname === "/dashboard";
+  const onPlayground = pathname === "/playground";
   const onPosts = pathname === "/posts";
   const onProfile = pathname === "/profile";
   const onFriends = pathname === "/friends";
@@ -254,6 +266,19 @@ export function SidebarNav({
           >
             <GraphsIcon />
             {!collapsed && "My graphs"}
+          </Link>
+        )}
+
+        {isLoggedIn && (
+          <Link
+            href="/playground"
+            title="Knowledge Playground"
+            className={`flex items-center gap-2 rounded-md px-2 py-2 font-medium ${
+              onPlayground ? "bg-violet-100 text-violet-800" : "text-neutral-600 hover:bg-violet-50 hover:text-violet-700"
+            } ${collapsed ? "justify-center" : ""}`}
+          >
+            <PlaygroundIcon />
+            {!collapsed && "Playground"}
           </Link>
         )}
 
