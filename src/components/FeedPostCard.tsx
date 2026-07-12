@@ -32,6 +32,8 @@ export function FeedPostCard({
         </Link>
         <span>·</span>
         <span>{timeAgo(post.created_at)}</span>
+        <span>·</span>
+        <span className="rounded-full bg-violet-100 px-2 py-0.5 font-medium text-violet-700">{post.category}</span>
       </div>
 
       <p className="mb-3 text-sm whitespace-pre-wrap text-neutral-800">{post.content}</p>

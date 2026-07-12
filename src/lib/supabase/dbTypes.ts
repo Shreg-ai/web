@@ -1,4 +1,5 @@
 import type { NodeMetrics, ParsedVault, Scenario } from "@/lib/graph/types";
+import type { PostCategory } from "@/lib/categories";
 
 export interface StoredGraphPayload {
   vault: ParsedVault;
@@ -51,5 +52,6 @@ export interface PostRow {
   user_id: string;
   graph_id: string;
   content: string;
+  category: PostCategory;
   created_at: string;
 }

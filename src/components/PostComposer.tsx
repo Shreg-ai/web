@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { createPost } from "@/app/g/[id]/actions";
+import { POST_CATEGORIES, type PostCategory } from "@/lib/categories";
 
 interface PostComposerProps {
   graphId: string;
@@ -10,6 +11,7 @@ interface PostComposerProps {
 
 export function PostComposer({ graphId, graphIsPublic }: PostComposerProps) {
   const [content, setContent] = useState("");
+  const [category, setCategory] = useState<PostCategory>(POST_CATEGORIES[0]);
   const [posting, setPosting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [posted, setPosted] = useState(false);
@@ -17,7 +19,7 @@ export function PostComposer({ graphId, graphIsPublic }: PostComposerProps) {
   async function handlePost() {
     setPosting(true);
     setError(null);
-    const result = await createPost(graphId, content);
+    const result = await createPost(graphId, content, category);
     setPosting(false);
     if (result.error) {
       setError(result.error);
@@ -42,6 +44,17 @@ export function PostComposer({ graphId, graphIsPublic }: PostComposerProps) {
         className="w-full rounded-md border border-violet-200 px-3 py-2 text-sm focus:border-violet-400 focus:ring-1 focus:ring-violet-400 focus:outline-none"
       />
       <div className="mt-2 flex items-center gap-3">
+        <select
+          value={category}
+          onChange={(e) => setCategory(e.target.value as PostCategory)}
+          className="rounded-md border border-violet-200 px-2 py-2 text-sm focus:border-violet-400 focus:ring-1 focus:ring-violet-400 focus:outline-none"
+        >
+          {POST_CATEGORIES.map((cat) => (
+            <option key={cat} value={cat}>
+              {cat}
+            </option>
+          ))}
+        </select>
         <button
           onClick={handlePost}
           disabled={posting || !content.trim()}

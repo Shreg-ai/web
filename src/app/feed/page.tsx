@@ -2,11 +2,23 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import type { GraphEvaluationRow, GraphRow, PostRow, ProfileRow } from "@/lib/supabase/dbTypes";
 import { FeedPostCard } from "@/components/FeedPostCard";
+import { isPostCategory } from "@/lib/categories";
 
-export default async function FeedPage() {
+export default async function FeedPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ categories?: string }>;
+}) {
+  const { categories: categoriesParam } = await searchParams;
+  const selectedCategories = (categoriesParam ?? "").split(",").filter(isPostCategory);
+
   const supabase = await createClient();
 
-  const { data: posts } = await supabase.from("posts").select("*").order("created_at", { ascending: false }).limit(50);
+  let query = supabase.from("posts").select("*").order("created_at", { ascending: false }).limit(50);
+  if (selectedCategories.length > 0) {
+    query = query.in("category", selectedCategories);
+  }
+  const { data: posts } = await query;
 
   const postRows = (posts ?? []) as PostRow[];
 
@@ -14,7 +26,9 @@ export default async function FeedPage() {
     return (
       <div className="mx-auto w-full max-w-xl flex-1 overflow-y-auto bg-gradient-to-b from-violet-50 to-white p-6 text-center">
         <p className="mt-16 text-sm text-neutral-500">
-          No posts yet. Be the first — save a graph, generate a description, and share it to the feed.
+          {selectedCategories.length > 0
+            ? "No posts in these categories yet."
+            : "No posts yet. Be the first — save a graph, generate a description, and share it to the feed."}
         </p>
       </div>
     );
@@ -40,7 +54,7 @@ export default async function FeedPage() {
 
   return (
     <div className="mx-auto w-full max-w-2xl flex-1 overflow-y-auto bg-gradient-to-b from-violet-50 to-white p-6">
-      <h1 className="mb-6 text-xl font-medium text-violet-950">Feed</h1>
+      <h1 className="mb-6 text-xl font-medium text-violet-950">Feeds</h1>
       <ul className="flex flex-col gap-4">
         {postRows.map((post) => {
           const graph = graphById.get(post.graph_id);

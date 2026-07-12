@@ -9,6 +9,7 @@ import { runBaselineAgent, runGraphAgent } from "@/lib/eval/agents";
 import { judgeComparison } from "@/lib/eval/judge";
 import type { GraphEvaluationRow, GraphRow, PostRow } from "@/lib/supabase/dbTypes";
 import type { Scenario } from "@/lib/graph/types";
+import { isPostCategory, type PostCategory } from "@/lib/categories";
 
 export async function generateProfile(
   graphId: string
@@ -161,7 +162,11 @@ export async function clearEvaluations(graphId: string): Promise<{ error?: strin
  * graph's), so posting also makes the graph public -- promoting something
  * you can't see defeats the point.
  */
-export async function createPost(graphId: string, content: string): Promise<{ error?: string; post?: PostRow }> {
+export async function createPost(
+  graphId: string,
+  content: string,
+  category: PostCategory
+): Promise<{ error?: string; post?: PostRow }> {
   const supabase = await createClient();
   const {
     data: { user },
@@ -170,6 +175,7 @@ export async function createPost(graphId: string, content: string): Promise<{ er
 
   const trimmed = content.trim();
   if (!trimmed) return { error: "Write something first." };
+  if (!isPostCategory(category)) return { error: "Choose a valid category." };
 
   const { error: visibilityError } = await supabase
     .from("graphs")
@@ -180,7 +186,7 @@ export async function createPost(graphId: string, content: string): Promise<{ er
 
   const { data: post, error } = await supabase
     .from("posts")
-    .insert({ user_id: user.id, graph_id: graphId, content: trimmed })
+    .insert({ user_id: user.id, graph_id: graphId, content: trimmed, category })
     .select("*")
     .single();
 
