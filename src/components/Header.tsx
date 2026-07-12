@@ -14,6 +14,9 @@ export async function Header() {
         Shreg
       </Link>
       <nav className="flex items-center gap-4 text-sm">
+        <Link href="/feed" className="text-neutral-600 hover:text-violet-700">
+          Feed
+        </Link>
         {user ? (
           <>
             <Link href="/dashboard" className="text-neutral-600 hover:text-violet-700">

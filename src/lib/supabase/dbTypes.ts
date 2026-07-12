@@ -45,3 +45,11 @@ export interface GraphEvaluationRow {
   judge_reasoning: string;
   created_at: string;
 }
+
+export interface PostRow {
+  id: string;
+  user_id: string;
+  graph_id: string;
+  content: string;
+  created_at: string;
+}

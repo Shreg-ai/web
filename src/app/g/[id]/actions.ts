@@ -7,7 +7,7 @@ import { generateGraphProfile } from "@/lib/llm/profile";
 import { buildGraphSummary } from "@/lib/graph/summary";
 import { runBaselineAgent, runGraphAgent } from "@/lib/eval/agents";
 import { judgeComparison } from "@/lib/eval/judge";
-import type { GraphEvaluationRow, GraphRow } from "@/lib/supabase/dbTypes";
+import type { GraphEvaluationRow, GraphRow, PostRow } from "@/lib/supabase/dbTypes";
 import type { Scenario } from "@/lib/graph/types";
 
 export async function generateProfile(
@@ -152,5 +152,50 @@ export async function clearEvaluations(graphId: string): Promise<{ error?: strin
   if (error) return { error: error.message };
 
   revalidatePath(`/g/${graphId}`);
+  return {};
+}
+
+/**
+ * Publishes a feed post promoting this graph. A post about a private graph
+ * would never be visible to anyone else (RLS ties post visibility to the
+ * graph's), so posting also makes the graph public -- promoting something
+ * you can't see defeats the point.
+ */
+export async function createPost(graphId: string, content: string): Promise<{ error?: string; post?: PostRow }> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { error: "You must be logged in." };
+
+  const trimmed = content.trim();
+  if (!trimmed) return { error: "Write something first." };
+
+  const { error: visibilityError } = await supabase
+    .from("graphs")
+    .update({ visibility: "public" })
+    .eq("id", graphId)
+    .eq("user_id", user.id);
+  if (visibilityError) return { error: visibilityError.message };
+
+  const { data: post, error } = await supabase
+    .from("posts")
+    .insert({ user_id: user.id, graph_id: graphId, content: trimmed })
+    .select("*")
+    .single();
+
+  if (error) return { error: error.message };
+
+  revalidatePath("/feed");
+  revalidatePath(`/g/${graphId}`);
+  return { post: post as PostRow };
+}
+
+export async function deletePost(postId: string): Promise<{ error?: string }> {
+  const supabase = await createClient();
+  const { error } = await supabase.from("posts").delete().eq("id", postId);
+  if (error) return { error: error.message };
+
+  revalidatePath("/feed");
   return {};
 }
