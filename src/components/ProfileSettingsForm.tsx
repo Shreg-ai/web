@@ -27,41 +27,56 @@ export function ProfileSettingsForm({ profile }: { profile: ProfileRow }) {
     if (!file) return;
     setAvatarBusy(true);
     setAvatarError(null);
-    const result = await uploadAvatar(file);
-    setAvatarBusy(false);
-    if (result.error) {
-      setAvatarError(result.error);
-      return;
+    try {
+      const result = await uploadAvatar(file);
+      if (result.error) {
+        setAvatarError(result.error);
+        return;
+      }
+      if (result.avatarUrl) setAvatarUrl(result.avatarUrl);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    } catch {
+      setAvatarError("Upload failed -- please try again.");
+    } finally {
+      setAvatarBusy(false);
     }
-    if (result.avatarUrl) setAvatarUrl(result.avatarUrl);
-    if (fileInputRef.current) fileInputRef.current.value = "";
   }
 
   async function handleSaveBio() {
     setBioBusy(true);
     setBioError(null);
-    const result = await updateBio(bio);
-    setBioBusy(false);
-    if (result.error) {
-      setBioError(result.error);
-      return;
+    try {
+      const result = await updateBio(bio);
+      if (result.error) {
+        setBioError(result.error);
+        return;
+      }
+      setBioSaved(true);
+      setTimeout(() => setBioSaved(false), 2000);
+    } catch {
+      setBioError("Save failed -- please try again.");
+    } finally {
+      setBioBusy(false);
     }
-    setBioSaved(true);
-    setTimeout(() => setBioSaved(false), 2000);
   }
 
   async function handleChangePassword() {
     setPasswordBusy(true);
     setPasswordError(null);
-    const result = await changePassword(password);
-    setPasswordBusy(false);
-    if (result.error) {
-      setPasswordError(result.error);
-      return;
+    try {
+      const result = await changePassword(password);
+      if (result.error) {
+        setPasswordError(result.error);
+        return;
+      }
+      setPassword("");
+      setPasswordSaved(true);
+      setTimeout(() => setPasswordSaved(false), 2500);
+    } catch {
+      setPasswordError("Update failed -- please try again.");
+    } finally {
+      setPasswordBusy(false);
     }
-    setPassword("");
-    setPasswordSaved(true);
-    setTimeout(() => setPasswordSaved(false), 2500);
   }
 
   return (
