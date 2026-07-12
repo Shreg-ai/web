@@ -17,7 +17,7 @@ export async function login(formData: FormData): Promise<void> {
   const supabase = await createClient();
   const email = String(formData.get("email") ?? "");
   const password = String(formData.get("password") ?? "");
-  const redirectTo = String(formData.get("redirectTo") ?? "") || "/dashboard";
+  const redirectTo = String(formData.get("redirectTo") ?? "") || "/";
 
   const { error } = await supabase.auth.signInWithPassword({ email, password });
   if (error) {
@@ -67,7 +67,7 @@ export async function signup(formData: FormData): Promise<void> {
   }
 
   revalidatePath("/", "layout");
-  redirect("/dashboard");
+  redirect("/");
 }
 
 export async function logout(): Promise<void> {
@@ -113,5 +113,5 @@ export async function updatePassword(formData: FormData): Promise<void> {
   }
 
   revalidatePath("/", "layout");
-  redirect("/dashboard");
+  redirect("/");
 }
