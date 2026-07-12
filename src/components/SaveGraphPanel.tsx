@@ -56,6 +56,7 @@ export function SaveGraphPanel({ vault, metrics, isLoggedIn }: SaveGraphPanelPro
 
   return (
     <div className="flex flex-col gap-2 border-t border-violet-100 p-4">
+      <p className="text-xs text-neutral-500">Saving stores this graph (including note contents) in our database.</p>
       <input
         value={title}
         onChange={(e) => setTitle(e.target.value)}

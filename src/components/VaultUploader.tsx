@@ -49,8 +49,8 @@ export function VaultUploader({ onParsed }: VaultUploaderProps) {
     <div className="flex flex-col items-center justify-center gap-4 rounded-2xl border border-dashed border-violet-200 bg-white p-16 text-center shadow-sm">
       <h2 className="text-lg font-medium text-violet-950">Visualize your knowledge graph</h2>
       <p className="max-w-md text-sm text-neutral-500">
-        Select an Obsidian vault folder. Parsing happens entirely in your browser — your notes are never uploaded
-        anywhere.
+        Select an Obsidian vault folder. Parsing happens entirely in your browser, so you can preview the graph
+        without anything leaving your computer — nothing is saved until you choose to save it below.
       </p>
       <button
         onClick={() => inputRef.current?.click()}
