@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { ProfileSettingsForm } from "@/components/ProfileSettingsForm";
+import { CompleteProfileForm } from "@/components/CompleteProfileForm";
 import type { ProfileRow } from "@/lib/supabase/dbTypes";
 
 export default async function ProfileSettingsPage() {
@@ -12,7 +13,11 @@ export default async function ProfileSettingsPage() {
   if (!user) redirect("/login?redirectTo=/profile");
 
   const { data: profile } = await supabase.from("profiles").select("*").eq("id", user.id).single();
-  if (!profile) redirect("/login?redirectTo=/profile");
+
+  // Authenticated but no profile row -- signup partially failed at some point
+  // (e.g. a username collision after the auth account was already created).
+  // Let them pick a username and finish, instead of bouncing to login forever.
+  if (!profile) return <CompleteProfileForm />;
 
   const row = profile as ProfileRow;
 

@@ -3,6 +3,35 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 
+/**
+ * Creates the missing profile row for an authenticated user who somehow
+ * doesn't have one -- e.g. signup succeeded in creating the auth user but
+ * the profile insert failed partway through (username collision, network
+ * blip, etc.), leaving them stuck: logged in, but with no profile to load.
+ */
+export async function completeProfile(username: string): Promise<{ error?: string }> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { error: "You must be logged in." };
+
+  const cleaned = username.trim().toLowerCase();
+  if (!/^[a-z0-9_-]{3,30}$/.test(cleaned)) {
+    return { error: "Username must be 3-30 characters: letters, numbers, - or _." };
+  }
+
+  const { error } = await supabase.from("profiles").insert({ id: user.id, username: cleaned });
+  if (error) {
+    const message = error.code === "23505" ? "That username is taken — please choose another." : error.message;
+    return { error: message };
+  }
+
+  revalidatePath("/profile");
+  revalidatePath("/", "layout");
+  return {};
+}
+
 export async function updateBio(bio: string): Promise<{ error?: string }> {
   const supabase = await createClient();
   const {
