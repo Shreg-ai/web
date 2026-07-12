@@ -52,6 +52,20 @@ export const MCP_CLIENTS: McpClient[] = [
     ],
   },
   {
+    id: "perplexity",
+    name: "Perplexity",
+    kind: "Chat app",
+    steps: (mcpUrl) => [
+      { text: "Open Perplexity -> Settings -> Connectors, and click \"+ Custom connector\"." },
+      { text: "Choose Remote, and give it a name (e.g. \"Shreg\")." },
+      { text: "Paste this as the MCP Server URL, set Authentication to None and Transport to Streamable HTTP:", code: mcpUrl },
+      {
+        text: "Check the acknowledgement box and click Add, then click the connector card to enable it -- it's now available in your Perplexity conversations and, automatically, inside Perplexity Computer too.",
+      },
+      { text: "Custom connectors require a Pro, Max, or Enterprise plan." },
+    ],
+  },
+  {
     id: "cursor",
     name: "Cursor",
     kind: "IDE",
