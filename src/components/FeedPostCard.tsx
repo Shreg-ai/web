@@ -24,6 +24,8 @@ export function FeedPostCard({
   avatarUrl,
   evaluations,
   isOwner,
+  showGraphCard = true,
+  truncate = false,
 }: {
   post: PostRow;
   graph: GraphRow;
@@ -31,6 +33,10 @@ export function FeedPostCard({
   avatarUrl?: string | null;
   evaluations: GraphEvaluationRow[];
   isOwner?: boolean;
+  /** Set false when the post is already shown in the context of its graph (e.g. on the graph page itself), so the graph mini-card would be redundant. */
+  showGraphCard?: boolean;
+  /** Clamp content to a few lines -- for compact listings like "posts about this graph". */
+  truncate?: boolean;
 }) {
   const graphWins = evaluations.filter((e) => e.winner === "graph").length;
 
@@ -132,25 +138,27 @@ export function FeedPostCard({
           </div>
         </div>
       ) : (
-        <p className="mb-3 text-sm whitespace-pre-wrap text-neutral-800">{post.content}</p>
+        <p className={`mb-3 text-sm whitespace-pre-wrap text-neutral-800 ${truncate ? "line-clamp-3" : ""}`}>{post.content}</p>
       )}
 
       {error && <p className="mb-3 text-sm text-red-600">{error}</p>}
 
-      <Link href={`/g/${graph.id}`} className="block rounded-md bg-violet-50/60 p-3 hover:bg-violet-50">
-        <p className="text-sm font-medium text-violet-950">{graph.title}</p>
-        {graph.description && <p className="mt-1 line-clamp-2 text-xs text-neutral-600">{graph.description}</p>}
-        <div className="mt-2 flex items-center gap-3 text-xs text-neutral-500">
-          <span>
-            {graph.node_count} nodes · {graph.edge_count} edges
-          </span>
-          {evaluations.length > 0 && (
-            <span className="font-medium text-violet-700">
-              {graphWins}/{evaluations.length} eval wins
+      {showGraphCard && (
+        <Link href={`/g/${graph.id}`} className="block rounded-md bg-violet-50/60 p-3 hover:bg-violet-50">
+          <p className="text-sm font-medium text-violet-950">{graph.title}</p>
+          {graph.description && <p className="mt-1 line-clamp-2 text-xs text-neutral-600">{graph.description}</p>}
+          <div className="mt-2 flex items-center gap-3 text-xs text-neutral-500">
+            <span>
+              {graph.node_count} nodes · {graph.edge_count} edges
             </span>
-          )}
-        </div>
-      </Link>
+            {evaluations.length > 0 && (
+              <span className="font-medium text-violet-700">
+                {graphWins}/{evaluations.length} eval wins
+              </span>
+            )}
+          </div>
+        </Link>
+      )}
     </article>
   );
 }

@@ -4,7 +4,8 @@ import { createClient } from "@/lib/supabase/server";
 import { Avatar } from "@/components/Avatar";
 import { FollowButton } from "@/components/FollowButton";
 import { FriendButton, type FriendStatus } from "@/components/FriendButton";
-import type { FriendRequestRow, GraphRow, ProfileRow } from "@/lib/supabase/dbTypes";
+import { FeedPostCard } from "@/components/FeedPostCard";
+import type { FriendRequestRow, GraphEvaluationRow, GraphRow, PostRow, ProfileRow } from "@/lib/supabase/dbTypes";
 
 export default async function ProfilePage({ params }: { params: Promise<{ username: string }> }) {
   const { username } = await params;
@@ -31,6 +32,26 @@ export default async function ProfilePage({ params }: { params: Promise<{ userna
   ]);
 
   const publicGraphs = (graphs ?? []) as GraphRow[];
+
+  const { data: posts } = await supabase
+    .from("posts")
+    .select("*")
+    .eq("user_id", row.id)
+    .order("created_at", { ascending: false });
+  const postRows = (posts ?? []) as PostRow[];
+
+  const postGraphIds = [...new Set(postRows.map((p) => p.graph_id))];
+  const [{ data: postGraphs }, { data: postEvaluations }] = await Promise.all([
+    postGraphIds.length ? supabase.from("graphs").select("*").in("id", postGraphIds) : Promise.resolve({ data: [] }),
+    postGraphIds.length ? supabase.from("graph_evaluations").select("*").in("graph_id", postGraphIds) : Promise.resolve({ data: [] }),
+  ]);
+  const postGraphById = new Map((postGraphs as GraphRow[] | null)?.map((g) => [g.id, g]) ?? []);
+  const postEvaluationsByGraphId = new Map<string, GraphEvaluationRow[]>();
+  for (const evaluation of (postEvaluations as GraphEvaluationRow[] | null) ?? []) {
+    const list = postEvaluationsByGraphId.get(evaluation.graph_id) ?? [];
+    list.push(evaluation);
+    postEvaluationsByGraphId.set(evaluation.graph_id, list);
+  }
 
   let isFollowing = false;
   let friendStatus: FriendStatus = "none";
@@ -95,9 +116,9 @@ export default async function ProfilePage({ params }: { params: Promise<{ userna
 
       <h2 className="mb-3 text-sm font-medium tracking-wide text-neutral-400 uppercase">Public knowledge graphs</h2>
       {publicGraphs.length === 0 ? (
-        <p className="text-sm text-neutral-500">No public graphs yet.</p>
+        <p className="mb-8 text-sm text-neutral-500">No public graphs yet.</p>
       ) : (
-        <ul className="flex flex-col gap-3">
+        <ul className="mb-8 flex flex-col gap-3">
           {publicGraphs.map((g) => (
             <li key={g.id} className="rounded-lg border border-violet-100 bg-white p-4 shadow-sm">
               <Link href={`/g/${g.id}`} className="font-medium text-violet-950 hover:underline">
@@ -108,6 +129,30 @@ export default async function ProfilePage({ params }: { params: Promise<{ userna
               </p>
             </li>
           ))}
+        </ul>
+      )}
+
+      <h2 className="mb-3 text-sm font-medium tracking-wide text-neutral-400 uppercase">Posts</h2>
+      {postRows.length === 0 ? (
+        <p className="text-sm text-neutral-500">No posts yet.</p>
+      ) : (
+        <ul className="flex flex-col gap-4">
+          {postRows.map((post) => {
+            const graph = postGraphById.get(post.graph_id);
+            if (!graph) return null;
+            return (
+              <li key={post.id}>
+                <FeedPostCard
+                  post={post}
+                  graph={graph}
+                  username={row.username}
+                  avatarUrl={row.avatar_url}
+                  evaluations={postEvaluationsByGraphId.get(post.graph_id) ?? []}
+                  isOwner={isOwnProfile}
+                />
+              </li>
+            );
+          })}
         </ul>
       )}
     </div>

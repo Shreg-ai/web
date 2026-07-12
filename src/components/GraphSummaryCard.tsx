@@ -4,12 +4,15 @@ import { useEffect, useState } from "react";
 import { BackButton } from "@/components/BackButton";
 import { EvaluationResultsList } from "@/components/EvaluationResultsList";
 import { VersionHistoryPanel } from "@/components/VersionHistoryPanel";
-import type { GraphEvaluationRow, GraphRow, GraphVersionRow } from "@/lib/supabase/dbTypes";
+import { GraphPostsList } from "@/components/GraphPostsList";
+import type { GraphEvaluationRow, GraphRow, GraphVersionRow, PostRow, ProfileRow } from "@/lib/supabase/dbTypes";
 
 interface GraphSummaryCardProps {
   graph: GraphRow;
   evaluations: GraphEvaluationRow[];
   versions: GraphVersionRow[];
+  posts: PostRow[];
+  authors: ProfileRow[];
 }
 
 /**
@@ -18,7 +21,7 @@ interface GraphSummaryCardProps {
  * connecting an agent to the MCP endpoint below -- browsing the feed is for
  * deciding whether it's worth connecting to, not for exploring node-by-node.
  */
-export function GraphSummaryCard({ graph, evaluations, versions }: GraphSummaryCardProps) {
+export function GraphSummaryCard({ graph, evaluations, versions, posts, authors }: GraphSummaryCardProps) {
   const [mcpUrl, setMcpUrl] = useState(`/api/mcp/${graph.id}`);
   useEffect(() => {
     setMcpUrl(`${window.location.origin}/api/mcp/${graph.id}`);
@@ -70,6 +73,8 @@ export function GraphSummaryCard({ graph, evaluations, versions }: GraphSummaryC
       ) : (
         <p className="text-sm text-neutral-500">The author hasn&apos;t run an evaluation on this graph yet.</p>
       )}
+
+      <GraphPostsList graph={graph} posts={posts} authors={authors} evaluations={evaluations} />
 
       <VersionHistoryPanel graphId={graph.id} initialVersions={versions} isOwner={false} />
     </div>

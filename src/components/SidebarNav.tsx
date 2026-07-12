@@ -49,6 +49,15 @@ function LogoutIcon() {
   );
 }
 
+function PostsIcon() {
+  return (
+    <svg viewBox="0 0 20 20" className="h-4 w-4 shrink-0" fill="none" stroke="currentColor" strokeWidth={1.8}>
+      <rect x="3" y="4" width="14" height="12" rx="2" />
+      <path d="M6 8h8M6 11h5" strokeLinecap="round" />
+    </svg>
+  );
+}
+
 function FriendsIcon() {
   return (
     <svg viewBox="0 0 20 20" className="h-4 w-4 shrink-0" fill="none" stroke="currentColor" strokeWidth={1.8}>
@@ -126,6 +135,7 @@ export function SidebarNav({
 
   const onFeeds = pathname === "/feed";
   const onDashboard = pathname === "/dashboard";
+  const onPosts = pathname === "/posts";
   const onProfile = pathname === "/profile";
   const onFriends = pathname === "/friends";
 
@@ -225,6 +235,19 @@ export function SidebarNav({
           >
             <GraphsIcon />
             {!collapsed && "My graphs"}
+          </Link>
+        )}
+
+        {isLoggedIn && (
+          <Link
+            href="/posts"
+            title="Posts"
+            className={`flex items-center gap-2 rounded-md px-2 py-2 font-medium ${
+              onPosts ? "bg-violet-100 text-violet-800" : "text-neutral-600 hover:bg-violet-50 hover:text-violet-700"
+            } ${collapsed ? "justify-center" : ""}`}
+          >
+            <PostsIcon />
+            {!collapsed && "Posts"}
           </Link>
         )}
 

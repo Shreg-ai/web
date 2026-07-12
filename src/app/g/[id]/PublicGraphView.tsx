@@ -11,7 +11,8 @@ import { GraphSummaryCard } from "@/components/GraphSummaryCard";
 import { BackButton } from "@/components/BackButton";
 import { Spinner } from "@/components/Spinner";
 import { VersionHistoryPanel } from "@/components/VersionHistoryPanel";
-import type { GraphEvaluationRow, GraphRow, GraphVersionRow } from "@/lib/supabase/dbTypes";
+import { GraphPostsList } from "@/components/GraphPostsList";
+import type { GraphEvaluationRow, GraphRow, GraphVersionRow, PostRow, ProfileRow } from "@/lib/supabase/dbTypes";
 
 const HANDLE_H = "h-1 shrink-0 bg-violet-100 transition-colors hover:bg-violet-300 active:bg-violet-400 data-[resize-handle-active]:bg-violet-400";
 const HANDLE_V = "w-1 shrink-0 bg-violet-100 transition-colors hover:bg-violet-300 active:bg-violet-400 data-[resize-handle-active]:bg-violet-400";
@@ -33,11 +34,15 @@ export function PublicGraphView({
   isOwner,
   evaluations,
   versions,
+  posts,
+  authors,
 }: {
   graph: GraphRow;
   isOwner: boolean;
   evaluations: GraphEvaluationRow[];
   versions: GraphVersionRow[];
+  posts: PostRow[];
+  authors: ProfileRow[];
 }) {
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
   const { vault, metrics } = graph.graph_data;
@@ -52,7 +57,7 @@ export function PublicGraphView({
   // scores + the MCP endpoint. The full graph is only reachable by actually
   // connecting an agent to it.
   if (!isOwner) {
-    return <GraphSummaryCard graph={graph} evaluations={evaluations} versions={versions} />;
+    return <GraphSummaryCard graph={graph} evaluations={evaluations} versions={versions} posts={posts} authors={authors} />;
   }
 
   function toggleCanvas() {
@@ -98,6 +103,11 @@ export function PublicGraphView({
             onRunningChange={setEvaluationRunning}
           />
           <PostComposer graphId={graph.id} graphIsPublic={graph.visibility === "public"} />
+          {posts.length > 0 && (
+            <div className="border-t border-violet-100 p-5">
+              <GraphPostsList graph={graph} posts={posts} authors={authors} evaluations={evaluations} currentUserId={graph.user_id} />
+            </div>
+          )}
           <VersionHistoryPanel graphId={graph.id} initialVersions={versions} isOwner />
         </Panel>
         <Separator className={HANDLE_V} />
