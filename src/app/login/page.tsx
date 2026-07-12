@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { login } from "@/app/auth/actions";
 import { PasswordInput } from "@/components/PasswordInput";
+import { SubmitButton } from "@/components/SubmitButton";
 
 export default async function LoginPage({
   searchParams,
@@ -25,9 +26,12 @@ export default async function LoginPage({
           <PasswordInput name="password" placeholder="Password" required />
         </div>
         {error && <p className="mt-3 text-sm text-red-600">{error}</p>}
-        <button type="submit" className="mt-4 w-full rounded-md bg-violet-600 px-4 py-2 text-sm font-medium text-white hover:bg-violet-700">
+        <SubmitButton
+          pendingText="Logging in…"
+          className="mt-4 w-full rounded-md bg-violet-600 px-4 py-2 text-sm font-medium text-white hover:bg-violet-700 disabled:opacity-50"
+        >
           Log in
-        </button>
+        </SubmitButton>
         <p className="mt-3 text-center text-sm">
           <Link href="/forgot-password" className="text-violet-600 hover:underline">
             Forgot password?

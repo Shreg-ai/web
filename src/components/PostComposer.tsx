@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { createPost } from "@/app/g/[id]/actions";
 import { POST_CATEGORIES, type PostCategory } from "@/lib/categories";
+import { Spinner } from "@/components/Spinner";
 
 interface PostComposerProps {
   graphId: string;
@@ -58,8 +59,9 @@ export function PostComposer({ graphId, graphIsPublic }: PostComposerProps) {
         <button
           onClick={handlePost}
           disabled={posting || !content.trim()}
-          className="rounded-md bg-violet-600 px-4 py-2 text-sm font-medium text-white hover:bg-violet-700 disabled:opacity-50"
+          className="flex items-center gap-2 rounded-md bg-violet-600 px-4 py-2 text-sm font-medium text-white hover:bg-violet-700 disabled:opacity-50"
         >
+          {posting && <Spinner className="h-4 w-4" />}
           {posting ? "Posting…" : "Post"}
         </button>
         {posted && <span className="text-sm text-green-700">Posted to the feed.</span>}

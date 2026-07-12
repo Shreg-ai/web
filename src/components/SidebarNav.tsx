@@ -74,14 +74,20 @@ export function SidebarNav({
     });
   }
 
+  const MAX_CATEGORIES = 3;
+
   const activeCategories = new Set(
     pathname === "/feed" ? (searchParams.get("categories") ?? "").split(",").filter(Boolean) : []
   );
 
   function toggleCategory(cat: string) {
     const next = new Set(activeCategories);
-    if (next.has(cat)) next.delete(cat);
-    else next.add(cat);
+    if (next.has(cat)) {
+      next.delete(cat);
+    } else {
+      if (next.size >= MAX_CATEGORIES) return;
+      next.add(cat);
+    }
     const qs = next.size > 0 ? `?categories=${Array.from(next).join(",")}` : "";
     router.push(`/feed${qs}`);
   }
@@ -127,12 +133,19 @@ export function SidebarNav({
           <div className="ml-2 flex flex-col gap-0.5 border-l border-violet-100 pl-3">
             {POST_CATEGORIES.map((cat) => {
               const active = activeCategories.has(cat);
+              const atLimit = !active && activeCategories.size >= MAX_CATEGORIES;
               return (
                 <button
                   key={cat}
                   onClick={() => toggleCategory(cat)}
+                  disabled={atLimit}
+                  title={atLimit ? `Up to ${MAX_CATEGORIES} categories at a time` : undefined}
                   className={`rounded-md px-2 py-1 text-left text-xs ${
-                    active ? "bg-violet-100 font-medium text-violet-800" : "text-neutral-500 hover:bg-violet-50 hover:text-violet-700"
+                    active
+                      ? "bg-violet-100 font-medium text-violet-800"
+                      : atLimit
+                        ? "cursor-not-allowed text-neutral-300"
+                        : "text-neutral-500 hover:bg-violet-50 hover:text-violet-700"
                   }`}
                 >
                   {cat}

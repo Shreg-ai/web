@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { generateProfile, saveProfile } from "@/app/g/[id]/actions";
+import { Spinner } from "@/components/Spinner";
 import type { Scenario } from "@/lib/graph/types";
 
 interface GraphAnalysisPanelProps {
@@ -66,7 +67,12 @@ export function GraphAnalysisPanel({ graphId, initialDescription, initialScenari
         <h2 className="text-sm font-medium text-violet-950">AI analysis</h2>
         {!editing && (
           <div className="flex gap-3 text-sm">
-            <button onClick={handleGenerate} disabled={generating} className="text-violet-600 hover:underline disabled:opacity-50">
+            <button
+              onClick={handleGenerate}
+              disabled={generating}
+              className="flex items-center gap-1.5 text-violet-600 hover:underline disabled:opacity-50"
+            >
+              {generating && <Spinner className="h-3.5 w-3.5" />}
               {generating ? "Generating…" : hasProfile ? "Regenerate with AI" : "Generate with AI"}
             </button>
             <button onClick={() => setEditing(true)} className="text-neutral-600 hover:text-neutral-900">
@@ -156,8 +162,9 @@ export function GraphAnalysisPanel({ graphId, initialDescription, initialScenari
             <button
               onClick={handleSave}
               disabled={saving}
-              className="rounded-md bg-violet-600 px-4 py-2 text-sm font-medium text-white hover:bg-violet-700 disabled:opacity-50"
+              className="flex items-center gap-2 rounded-md bg-violet-600 px-4 py-2 text-sm font-medium text-white hover:bg-violet-700 disabled:opacity-50"
             >
+              {saving && <Spinner className="h-4 w-4" />}
               {saving ? "Saving…" : "Save"}
             </button>
             <button
