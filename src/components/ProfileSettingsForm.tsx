@@ -100,7 +100,7 @@ export function ProfileSettingsForm({ profile }: { profile: ProfileRow }) {
               className="text-sm text-neutral-600 file:mr-3 file:rounded-md file:border-0 file:bg-violet-600 file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-white hover:file:bg-violet-700"
             />
             <p className="mt-1 text-xs text-neutral-500">
-              {avatarBusy ? "Uploading…" : "Any image, any size -- we'll resize it automatically."}
+              {avatarBusy ? "Uploading…" : "PNG or JPG."}
             </p>
             {avatarError && <p className="mt-1 text-sm text-red-600">{avatarError}</p>}
           </div>
