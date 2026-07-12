@@ -2,7 +2,18 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
-import { Background, Controls, MiniMap, ReactFlow, type Connection, type Edge, type Node } from "@xyflow/react";
+import {
+  Background,
+  Controls,
+  MiniMap,
+  ReactFlow,
+  useEdgesState,
+  useNodesState,
+  type Connection,
+  type Edge,
+  type EdgeChange,
+  type Node,
+} from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { computeForceLayout } from "@/lib/graph/layout";
 import { colorForCluster, colorForType, UNTYPED_NODE_COLOR } from "@/lib/graph/colors";
@@ -19,6 +30,7 @@ interface PlaygroundCanvasProps {
   manualLinks: ManualLink[];
   onSelectNode: (nodeId: string | null) => void;
   onConnect: (source: string, target: string) => void;
+  onDisconnect: (source: string, target: string) => void;
 }
 
 const CANVAS_WIDTH = 2400;
@@ -32,6 +44,7 @@ export function PlaygroundCanvas({
   manualLinks,
   onSelectNode,
   onConnect,
+  onDisconnect,
 }: PlaygroundCanvasProps) {
   const t = useTranslations("graphCanvas");
   const [mounted, setMounted] = useState(false);
@@ -67,71 +80,128 @@ export function PlaygroundCanvas({
     [vault]
   );
 
-  const { nodes, edges } = useMemo(() => {
+  // Nodes/edges live in React Flow's own controlled state (not a plain
+  // useMemo) specifically so dragging and deleting a manual link actually
+  // stick: without onNodesChange/onEdgesChange wired up, every unrelated
+  // re-render (switching color mode, running analysis, finding a path)
+  // would recompute everything from scratch and silently discard whatever
+  // the user just dragged or unlinked.
+  const [baseNodes, setNodes, onNodesChange] = useNodesState<Node>([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
+
+  useEffect(() => {
     const positions = computeForceLayout(vault, metrics ?? [], CANVAS_WIDTH, CANVAS_HEIGHT);
 
-    const flowNodes: Node[] = vault.nodes.map((n) => {
-      const m = metricsById.get(n.id);
-      const degree = (m?.inDegree ?? 0) + (m?.outDegree ?? 0);
-      const size = Math.min(80, 32 + degree * 3);
-      const pos = positions.get(n.id) ?? { x: 0, y: 0 };
-      const sourceGraphId = n.frontmatter[SOURCE_GRAPH_FIELD];
-      const nodeType = typeof n.frontmatter.type === "string" ? n.frontmatter.type : undefined;
-      const onPath = pathSet.has(n.id);
+    setNodes((current) => {
+      const currentById = new Map(current.map((n) => [n.id, n]));
 
-      let background: string;
-      if (colorMode === "source" && typeof sourceGraphId === "string") {
-        background = colorForType(sourceGraphId);
-      } else if (colorMode === "type") {
-        background = nodeType ? colorForType(nodeType) : UNTYPED_NODE_COLOR;
-      } else {
-        background = colorForCluster(m?.clusterId ?? 0);
-      }
+      return vault.nodes.map((n) => {
+        const m = metricsById.get(n.id);
+        const degree = (m?.inDegree ?? 0) + (m?.outDegree ?? 0);
+        const size = Math.min(80, 32 + degree * 3);
+        const sourceGraphId = n.frontmatter[SOURCE_GRAPH_FIELD];
+        const nodeType = typeof n.frontmatter.type === "string" ? n.frontmatter.type : undefined;
 
-      return {
-        id: n.id,
-        position: { x: pos.x, y: pos.y },
-        // Telling React Flow the dimensions upfront (not just via style) skips
-        // its ResizeObserver-based "measurement" pass -- without this, nodes
-        // never get marked measured in this environment, leaving them stuck
-        // invisible and undraggable.
-        width: size,
-        height: size,
-        data: { label: n.title },
-        style: {
+        let background: string;
+        if (colorMode === "source" && typeof sourceGraphId === "string") {
+          background = colorForType(sourceGraphId);
+        } else if (colorMode === "type") {
+          background = nodeType ? colorForType(nodeType) : UNTYPED_NODE_COLOR;
+        } else {
+          background = colorForCluster(m?.clusterId ?? 0);
+        }
+
+        // Keep the node's current position if it already exists (possibly
+        // dragged by the user) -- only brand-new (just-imported) nodes get a
+        // fresh layout position.
+        const existing = currentById.get(n.id);
+        const pos = existing?.position ?? positions.get(n.id) ?? { x: 0, y: 0 };
+
+        return {
+          id: n.id,
+          position: pos,
+          // Telling React Flow the dimensions upfront (not just via style) skips
+          // its ResizeObserver-based "measurement" pass -- without this, nodes
+          // never get marked measured in this environment, leaving them stuck
+          // invisible and undraggable.
           width: size,
           height: size,
-          borderRadius: "9999px",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          fontSize: 10,
-          textAlign: "center",
-          padding: 4,
-          background,
-          color: "white",
-          border: onPath ? "3px solid #dc2626" : "1px solid rgba(0,0,0,0.1)",
-        },
-      };
+          data: { label: n.title },
+          style: {
+            width: size,
+            height: size,
+            borderRadius: "9999px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            fontSize: 10,
+            textAlign: "center",
+            padding: 4,
+            background,
+            color: "white",
+          },
+        };
+      });
     });
+    // setNodes is stable (from useNodesState) and intentionally omitted so
+    // this only reruns when the underlying graph data actually changes.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [vault, metrics, metricsById, colorMode]);
 
-    const flowEdges: Edge[] = vault.edges.map((e, i) => {
-      const isManual = manualLinkKeys.has([e.sourceId, e.targetId].sort().join("::"));
-      const onPathEdge = pathSet.has(e.sourceId) && pathSet.has(e.targetId) && (pathNodeIds ?? []).includes(e.sourceId);
-      return {
-        id: `${e.sourceId}--${e.targetId}--${i}`,
-        source: e.sourceId,
-        target: e.targetId,
+  useEffect(() => {
+    setEdges(
+      vault.edges.map((e, i) => {
+        const isManual = manualLinkKeys.has([e.sourceId, e.targetId].sort().join("::"));
+        return {
+          id: `${e.sourceId}--${e.targetId}--${i}`,
+          source: e.sourceId,
+          target: e.targetId,
+          // Only manually-drawn links can be deleted -- the original edges
+          // reflect each note's real wikilinks, so removing those here
+          // wouldn't mean anything (and there's no owning graph to update).
+          deletable: isManual,
+          data: { isManual, sourceId: e.sourceId, targetId: e.targetId },
+          style: {
+            stroke: isManual ? "#7c3aed" : "#d4d4d4",
+            strokeWidth: isManual ? 2 : 1,
+            strokeDasharray: isManual ? "5 3" : undefined,
+          },
+        };
+      })
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [vault, manualLinkKeys]);
+
+  // Path highlighting is overlaid separately so that finding a path never
+  // touches node/edge position or the manual-link deletable flag.
+  const nodes = useMemo(
+    () =>
+      baseNodes.map((n) => ({
+        ...n,
         style: {
-          stroke: onPathEdge ? "#dc2626" : isManual ? "#7c3aed" : "#d4d4d4",
-          strokeWidth: onPathEdge ? 3 : isManual ? 2 : 1,
-          strokeDasharray: isManual ? "5 3" : undefined,
+          ...n.style,
+          border: pathSet.has(n.id) ? "3px solid #dc2626" : "1px solid rgba(0,0,0,0.1)",
         },
-      };
-    });
+      })),
+    [baseNodes, pathSet]
+  );
 
-    return { nodes: flowNodes, edges: flowEdges };
-  }, [vault, metrics, metricsById, colorMode, pathSet, manualLinkKeys, pathNodeIds]);
+  const displayedEdges = useMemo(
+    () =>
+      edges.map((e) => {
+        const onPathEdge = pathSet.has(e.source) && pathSet.has(e.target) && (pathNodeIds ?? []).includes(e.source);
+        const isManual = Boolean((e.data as { isManual?: boolean } | undefined)?.isManual);
+        return {
+          ...e,
+          style: {
+            ...e.style,
+            stroke: onPathEdge ? "#dc2626" : isManual ? "#7c3aed" : "#d4d4d4",
+            strokeWidth: onPathEdge ? 3 : isManual ? 2 : 1,
+          },
+        };
+      }),
+    [edges, pathSet, pathNodeIds]
+  );
 
   if (!mounted) {
     return <div className="h-full w-full" />;
@@ -141,12 +211,23 @@ export function PlaygroundCanvas({
     <div className="relative h-full w-full">
       <ReactFlow
         nodes={nodes}
-        edges={edges}
+        edges={displayedEdges}
+        onNodesChange={onNodesChange}
+        onEdgesChange={(changes: EdgeChange<Edge>[]) => {
+          for (const change of changes) {
+            if (change.type !== "remove") continue;
+            const removed = edges.find((e) => e.id === change.id);
+            const data = removed?.data as { isManual?: boolean; sourceId?: string; targetId?: string } | undefined;
+            if (data?.isManual && data.sourceId && data.targetId) onDisconnect(data.sourceId, data.targetId);
+          }
+          onEdgesChange(changes);
+        }}
         onNodeClick={(_, node) => onSelectNode(node.id)}
         onPaneClick={() => onSelectNode(null)}
         onConnect={(connection: Connection) => {
           if (connection.source && connection.target) onConnect(connection.source, connection.target);
         }}
+        deleteKeyCode={["Backspace", "Delete"]}
         fitView
         minZoom={0.05}
       >

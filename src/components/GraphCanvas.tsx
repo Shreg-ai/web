@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
-import { Background, Controls, MiniMap, ReactFlow, type Edge, type Node } from "@xyflow/react";
+import { Background, Controls, MiniMap, ReactFlow, useEdgesState, useNodesState, type Edge, type Node } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { computeForceLayout } from "@/lib/graph/layout";
 import { colorForCluster, colorForType, UNTYPED_NODE_COLOR } from "@/lib/graph/colors";
@@ -47,62 +47,101 @@ export function GraphCanvas({ vault, metrics, selectedNodeId, onSelectNode }: Gr
     [vault]
   );
 
-  const { nodes, edges } = useMemo(() => {
+  // Nodes/edges live in React Flow's own controlled state (not a plain
+  // useMemo) specifically so dragging actually sticks: onNodesChange is what
+  // writes a drag's new position back in, and without it every unrelated
+  // re-render (e.g. clicking a different node to view its content, which
+  // changes selectedNodeId) would recompute positions from scratch and
+  // silently discard whatever the user just dragged.
+  const [baseNodes, setNodes, onNodesChange] = useNodesState<Node>([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
+
+  useEffect(() => {
     const positions = computeForceLayout(vault, metrics, CANVAS_WIDTH, CANVAS_HEIGHT);
 
-    const flowNodes: Node[] = vault.nodes.map((n) => {
-      const m = metricsById.get(n.id);
-      const degree = (m?.inDegree ?? 0) + (m?.outDegree ?? 0);
-      const size = Math.min(80, 32 + degree * 3);
-      const pos = positions.get(n.id) ?? { x: 0, y: 0 };
-      const isUnresolved = n.frontmatter.unresolved === true;
-      const type = typeof n.frontmatter.type === "string" ? n.frontmatter.type : undefined;
+    setNodes((current) => {
+      const currentById = new Map(current.map((n) => [n.id, n]));
 
-      const background = isUnresolved
-        ? "#e5e5e5"
-        : useTypeColoring
-          ? type
-            ? colorForType(type)
-            : UNTYPED_NODE_COLOR
-          : colorForCluster(m?.clusterId ?? 0);
+      return vault.nodes.map((n) => {
+        const m = metricsById.get(n.id);
+        const degree = (m?.inDegree ?? 0) + (m?.outDegree ?? 0);
+        const size = Math.min(80, 32 + degree * 3);
+        const isUnresolved = n.frontmatter.unresolved === true;
+        const type = typeof n.frontmatter.type === "string" ? n.frontmatter.type : undefined;
 
-      return {
-        id: n.id,
-        position: { x: pos.x, y: pos.y },
-        // Telling React Flow the dimensions upfront (not just via style) skips
-        // its ResizeObserver-based "measurement" pass -- without this, nodes
-        // never get marked measured in this environment, leaving them stuck
-        // invisible and undraggable.
-        width: size,
-        height: size,
-        data: { label: n.title },
-        selected: n.id === selectedNodeId,
-        style: {
+        const background = isUnresolved
+          ? "#e5e5e5"
+          : useTypeColoring
+            ? type
+              ? colorForType(type)
+              : UNTYPED_NODE_COLOR
+            : colorForCluster(m?.clusterId ?? 0);
+
+        // Keep the node's current position if it already exists (possibly
+        // dragged by the user) -- only brand-new nodes get a fresh layout
+        // position.
+        const existing = currentById.get(n.id);
+        const pos = existing?.position ?? positions.get(n.id) ?? { x: 0, y: 0 };
+
+        return {
+          id: n.id,
+          position: pos,
+          // Telling React Flow the dimensions upfront (not just via style) skips
+          // its ResizeObserver-based "measurement" pass -- without this, nodes
+          // never get marked measured in this environment, leaving them stuck
+          // invisible and undraggable.
           width: size,
           height: size,
-          borderRadius: "9999px",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          fontSize: 11,
-          textAlign: "center",
-          padding: 4,
-          background,
-          color: isUnresolved ? "#525252" : "white",
+          data: { label: n.title },
+          style: {
+            width: size,
+            height: size,
+            borderRadius: "9999px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            fontSize: 11,
+            textAlign: "center",
+            padding: 4,
+            background,
+            color: isUnresolved ? "#525252" : "white",
+            border: "1px solid rgba(0,0,0,0.1)",
+          },
+        };
+      });
+    });
+    // setNodes is stable (from useNodesState) and intentionally omitted so
+    // this only reruns when the underlying graph data actually changes.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [vault, metrics, metricsById, useTypeColoring]);
+
+  useEffect(() => {
+    setEdges(
+      vault.edges.map((e, i) => ({
+        id: `${e.sourceId}--${e.targetId}--${i}`,
+        source: e.sourceId,
+        target: e.targetId,
+        style: { stroke: "#d4d4d4" },
+      }))
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [vault]);
+
+  // Selection is overlaid separately from the effect above so that clicking
+  // a node to view its content never touches position -- only the border/
+  // selected flag change.
+  const nodes = useMemo(
+    () =>
+      baseNodes.map((n) => ({
+        ...n,
+        selected: n.id === selectedNodeId,
+        style: {
+          ...n.style,
           border: n.id === selectedNodeId ? "3px solid #4c1d95" : "1px solid rgba(0,0,0,0.1)",
         },
-      };
-    });
-
-    const flowEdges: Edge[] = vault.edges.map((e, i) => ({
-      id: `${e.sourceId}--${e.targetId}--${i}`,
-      source: e.sourceId,
-      target: e.targetId,
-      style: { stroke: "#d4d4d4" },
-    }));
-
-    return { nodes: flowNodes, edges: flowEdges };
-  }, [vault, metrics, metricsById, selectedNodeId, useTypeColoring]);
+      })),
+    [baseNodes, selectedNodeId]
+  );
 
   if (!mounted) {
     return <div className="h-full w-full" />;
@@ -113,6 +152,8 @@ export function GraphCanvas({ vault, metrics, selectedNodeId, onSelectNode }: Gr
       <ReactFlow
         nodes={nodes}
         edges={edges}
+        onNodesChange={onNodesChange}
+        onEdgesChange={onEdgesChange}
         onNodeClick={(_, node) => onSelectNode(node.id)}
         onPaneClick={() => onSelectNode(null)}
         fitView

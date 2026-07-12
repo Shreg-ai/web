@@ -239,7 +239,7 @@
     "nodeType": "Node type",
     "untyped": "untyped",
     "sourceGraph": "Source graph",
-    "dragHint": "Drag from one node's edge to another to link them"
+    "dragHint": "Drag a node to rearrange it, or from its edge to another node to link them -- select a manual link and press Delete to remove it"
   },
   "playground": {
     "heading": "Knowledge Playground",

@@ -61,6 +61,12 @@ export function PlaygroundView({ importableGraphs }: { importableGraphs: Importa
     });
   }
 
+  function handleDisconnect(source: string, target: string) {
+    setManualLinks((prev) =>
+      prev.filter((l) => !((l.sourceId === source && l.targetId === target) || (l.sourceId === target && l.targetId === source)))
+    );
+  }
+
   function handleRunAnalysis() {
     setMetrics(computeStructuralMetrics(combinedVault));
     setColorMode("cluster");
@@ -236,6 +242,7 @@ export function PlaygroundView({ importableGraphs }: { importableGraphs: Importa
             manualLinks={manualLinks}
             onSelectNode={(id) => setSelectedNode(combinedVault.nodes.find((n) => n.id === id) ?? null)}
             onConnect={handleConnect}
+            onDisconnect={handleDisconnect}
           />
         )}
       </div>
