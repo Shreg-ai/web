@@ -239,7 +239,9 @@
     "nodeType": "節點類型",
     "untyped": "無類型",
     "sourceGraph": "來源圖譜",
-    "dragHint": "拖曳節點可重新排列，或從節點的邊緣拖曳到另一個節點以建立連結 —— 選取手動連結後按 Delete 即可移除"
+    "dragHint": "拖曳節點可重新排列，或從節點的邊緣拖曳到另一個節點以建立連結 —— 選取手動連結後按 Delete 即可移除",
+    "autoArrange": "整理並放大",
+    "autoArrangeHint": "讓節點更緊密聚集、保持適當間距，並放大節點"
   },
   "playground": {
     "heading": "知識遊樂場",

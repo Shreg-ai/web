@@ -13,6 +13,17 @@ interface SimNode {
   y?: number;
 }
 
+export interface ForceLayoutOptions {
+  /** Target distance along links -- lower pulls connected nodes closer together. */
+  linkDistance?: number;
+  /** d3-force "charge" (repulsion) strength -- less negative means less push-apart, so nodes cluster tighter. */
+  chargeStrength?: number;
+  /** Minimum center-to-center distance per node, keyed by degree -- the hard floor that keeps "tighter" from turning into "overlapping". */
+  collideRadius?: (degree: number) => number;
+}
+
+const DEFAULT_COLLIDE_RADIUS = (degree: number) => 24 + Math.min(40, degree * 4);
+
 /**
  * Force-directed layout (the classic "knowledge graph" look), computed
  * synchronously to convergence rather than animated tick-by-tick — simpler
@@ -23,9 +34,11 @@ export function computeForceLayout(
   vault: ParsedVault,
   metrics: NodeMetrics[],
   width: number,
-  height: number
+  height: number,
+  options?: ForceLayoutOptions
 ): Map<string, LayoutNode> {
   const degreeById = new Map(metrics.map((m) => [m.nodeId, m.inDegree + m.outDegree]));
+  const collideRadius = options?.collideRadius ?? DEFAULT_COLLIDE_RADIUS;
 
   const simNodes: SimNode[] = vault.nodes.map((n) => ({ id: n.id }));
   const simLinks = vault.edges.map((e) => ({ source: e.sourceId, target: e.targetId }));
@@ -35,13 +48,13 @@ export function computeForceLayout(
       "link",
       forceLink(simLinks)
         .id((d: unknown) => (d as SimNode).id)
-        .distance(120)
+        .distance(options?.linkDistance ?? 120)
     )
-    .force("charge", forceManyBody().strength(-250))
+    .force("charge", forceManyBody().strength(options?.chargeStrength ?? -250))
     .force("center", forceCenter(width / 2, height / 2))
     .force(
       "collide",
-      forceCollide((d: unknown) => 24 + Math.min(40, (degreeById.get((d as SimNode).id) ?? 0) * 4))
+      forceCollide((d: unknown) => collideRadius(degreeById.get((d as SimNode).id) ?? 0))
     )
     .stop();
 

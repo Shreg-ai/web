@@ -239,7 +239,9 @@
     "nodeType": "Node type",
     "untyped": "untyped",
     "sourceGraph": "Source graph",
-    "dragHint": "Drag a node to rearrange it, or from its edge to another node to link them -- select a manual link and press Delete to remove it"
+    "dragHint": "Drag a node to rearrange it, or from its edge to another node to link them -- select a manual link and press Delete to remove it",
+    "autoArrange": "Tidy & enlarge",
+    "autoArrangeHint": "Cluster nodes closer together, with proper spacing, and make them bigger"
   },
   "playground": {
     "heading": "Knowledge Playground",

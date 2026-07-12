@@ -15,10 +15,10 @@ import {
   type Node,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import { computeForceLayout } from "@/lib/graph/layout";
+import { computeForceLayout, type LayoutNode } from "@/lib/graph/layout";
 import { colorForCluster, colorForType, UNTYPED_NODE_COLOR } from "@/lib/graph/colors";
 import { SOURCE_GRAPH_FIELD, SOURCE_GRAPH_TITLE_FIELD, type ManualLink } from "@/lib/graph/playground";
-import type { NodeMetrics, ParsedVault } from "@/lib/graph/types";
+import type { NodeMetrics, ParsedNode, ParsedVault } from "@/lib/graph/types";
 
 export type PlaygroundColorMode = "source" | "type" | "cluster";
 
@@ -35,6 +35,13 @@ interface PlaygroundCanvasProps {
 
 const CANVAS_WIDTH = 2400;
 const CANVAS_HEIGHT = 1800;
+
+// "Auto-arrange" tightens link/charge forces (pulling connected nodes closer
+// together instead of spreading across the whole canvas) while scaling up
+// the collision radius to match the bigger node size, so tighter never means
+// overlapping.
+const NORMAL_SIZE = (degree: number) => Math.min(80, 32 + degree * 3);
+const BIG_SIZE = (degree: number) => Math.min(112, 48 + degree * 4);
 
 export function PlaygroundCanvas({
   vault,
@@ -88,65 +95,78 @@ export function PlaygroundCanvas({
   // the user just dragged or unlinked.
   const [baseNodes, setNodes, onNodesChange] = useNodesState<Node>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
+  const [enlarged, setEnlarged] = useState(false);
+
+  function buildNode(n: ParsedNode, position: { x: number; y: number }): Node {
+    const m = metricsById.get(n.id);
+    const degree = (m?.inDegree ?? 0) + (m?.outDegree ?? 0);
+    const size = enlarged ? BIG_SIZE(degree) : NORMAL_SIZE(degree);
+    const sourceGraphId = n.frontmatter[SOURCE_GRAPH_FIELD];
+    const nodeType = typeof n.frontmatter.type === "string" ? n.frontmatter.type : undefined;
+
+    let background: string;
+    if (colorMode === "source" && typeof sourceGraphId === "string") {
+      background = colorForType(sourceGraphId);
+    } else if (colorMode === "type") {
+      background = nodeType ? colorForType(nodeType) : UNTYPED_NODE_COLOR;
+    } else {
+      background = colorForCluster(m?.clusterId ?? 0);
+    }
+
+    return {
+      id: n.id,
+      position,
+      // Telling React Flow the dimensions upfront (not just via style) skips
+      // its ResizeObserver-based "measurement" pass -- without this, nodes
+      // never get marked measured in this environment, leaving them stuck
+      // invisible and undraggable.
+      width: size,
+      height: size,
+      data: { label: n.title },
+      style: {
+        width: size,
+        height: size,
+        borderRadius: "9999px",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        fontSize: enlarged ? 12 : 10,
+        textAlign: "center",
+        padding: 4,
+        background,
+        color: "white",
+      },
+    };
+  }
 
   useEffect(() => {
     const positions = computeForceLayout(vault, metrics ?? [], CANVAS_WIDTH, CANVAS_HEIGHT);
 
     setNodes((current) => {
       const currentById = new Map(current.map((n) => [n.id, n]));
-
       return vault.nodes.map((n) => {
-        const m = metricsById.get(n.id);
-        const degree = (m?.inDegree ?? 0) + (m?.outDegree ?? 0);
-        const size = Math.min(80, 32 + degree * 3);
-        const sourceGraphId = n.frontmatter[SOURCE_GRAPH_FIELD];
-        const nodeType = typeof n.frontmatter.type === "string" ? n.frontmatter.type : undefined;
-
-        let background: string;
-        if (colorMode === "source" && typeof sourceGraphId === "string") {
-          background = colorForType(sourceGraphId);
-        } else if (colorMode === "type") {
-          background = nodeType ? colorForType(nodeType) : UNTYPED_NODE_COLOR;
-        } else {
-          background = colorForCluster(m?.clusterId ?? 0);
-        }
-
         // Keep the node's current position if it already exists (possibly
         // dragged by the user) -- only brand-new (just-imported) nodes get a
         // fresh layout position.
         const existing = currentById.get(n.id);
         const pos = existing?.position ?? positions.get(n.id) ?? { x: 0, y: 0 };
-
-        return {
-          id: n.id,
-          position: pos,
-          // Telling React Flow the dimensions upfront (not just via style) skips
-          // its ResizeObserver-based "measurement" pass -- without this, nodes
-          // never get marked measured in this environment, leaving them stuck
-          // invisible and undraggable.
-          width: size,
-          height: size,
-          data: { label: n.title },
-          style: {
-            width: size,
-            height: size,
-            borderRadius: "9999px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            fontSize: 10,
-            textAlign: "center",
-            padding: 4,
-            background,
-            color: "white",
-          },
-        };
+        return buildNode(n, pos);
       });
     });
     // setNodes is stable (from useNodesState) and intentionally omitted so
     // this only reruns when the underlying graph data actually changes.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [vault, metrics, metricsById, colorMode]);
+  }, [vault, metrics, metricsById, colorMode, enlarged]);
+
+  function handleAutoArrange() {
+    const positions: Map<string, LayoutNode> = computeForceLayout(vault, metrics ?? [], CANVAS_WIDTH, CANVAS_HEIGHT, {
+      linkDistance: 70,
+      chargeStrength: -130,
+      collideRadius: (degree) => BIG_SIZE(degree) / 2 + 10,
+    });
+    setEnlarged(true);
+    setNodes(vault.nodes.map((n) => buildNode(n, positions.get(n.id) ?? { x: 0, y: 0 })));
+  }
 
   useEffect(() => {
     setEdges(
@@ -235,6 +255,13 @@ export function PlaygroundCanvas({
         <Controls />
         <MiniMap pannable zoomable />
       </ReactFlow>
+      <button
+        onClick={handleAutoArrange}
+        title={t("autoArrangeHint")}
+        className="absolute top-3 left-3 z-10 rounded-md border border-violet-100 bg-white/90 px-2.5 py-1.5 text-xs font-medium text-violet-700 shadow-sm backdrop-blur-sm hover:bg-violet-50"
+      >
+        {t("autoArrange")}
+      </button>
       {colorMode === "source" && sourceGraphIds.length > 1 && (
         <div className="pointer-events-none absolute top-3 right-3 z-10 flex max-w-[12rem] flex-col gap-1 rounded-lg border border-violet-100 bg-white/90 p-2.5 text-xs shadow-sm backdrop-blur-sm">
           <span className="mb-0.5 font-medium text-neutral-500">{t("sourceGraph")}</span>
