@@ -35,9 +35,9 @@ export function GraphList({ graphs }: { graphs: GraphRow[] }) {
   return (
     <ul className="flex flex-col gap-3">
       {items.map((g) => (
-        <li key={g.id} className="flex items-center justify-between rounded-lg border border-neutral-200 p-4">
+        <li key={g.id} className="flex items-center justify-between rounded-lg border border-violet-100 bg-white p-4 shadow-sm">
           <div>
-            <Link href={`/g/${g.id}`} className="font-medium text-neutral-900 hover:underline">
+            <Link href={`/g/${g.id}`} className="font-medium text-violet-950 hover:underline">
               {g.title}
             </Link>
             <p className="text-xs text-neutral-500">
@@ -45,11 +45,11 @@ export function GraphList({ graphs }: { graphs: GraphRow[] }) {
             </p>
           </div>
           <div className="flex items-center gap-3 text-sm">
-            <button onClick={() => handleToggleVisibility(g.id, g.visibility)} className="text-neutral-600 hover:text-neutral-900">
+            <button onClick={() => handleToggleVisibility(g.id, g.visibility)} className="text-neutral-600 hover:text-violet-700">
               {g.visibility === "public" ? "Make private" : "Make public"}
             </button>
             {g.visibility === "public" && (
-              <button onClick={() => handleCopyLink(g.id)} className="text-blue-600 hover:underline">
+              <button onClick={() => handleCopyLink(g.id)} className="text-violet-600 hover:underline">
                 {copiedId === g.id ? "Copied!" : "Copy link"}
               </button>
             )}

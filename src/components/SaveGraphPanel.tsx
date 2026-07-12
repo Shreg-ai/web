@@ -21,8 +21,8 @@ export function SaveGraphPanel({ vault, metrics, isLoggedIn }: SaveGraphPanelPro
 
   if (!isLoggedIn) {
     return (
-      <div className="border-t border-neutral-200 p-4 text-sm text-neutral-500">
-        <Link href="/login" className="text-blue-600 hover:underline">
+      <div className="border-t border-violet-100 p-4 text-sm text-neutral-500">
+        <Link href="/login" className="text-violet-600 hover:underline">
           Log in
         </Link>{" "}
         to save and share this graph.
@@ -32,9 +32,9 @@ export function SaveGraphPanel({ vault, metrics, isLoggedIn }: SaveGraphPanelPro
 
   if (savedId) {
     return (
-      <div className="border-t border-neutral-200 p-4 text-sm">
+      <div className="border-t border-violet-100 p-4 text-sm">
         <p className="mb-1 text-green-700">Saved.</p>
-        <Link href={`/g/${savedId}`} className="text-blue-600 hover:underline">
+        <Link href={`/g/${savedId}`} className="text-violet-600 hover:underline">
           View saved graph →
         </Link>
       </div>
@@ -55,25 +55,26 @@ export function SaveGraphPanel({ vault, metrics, isLoggedIn }: SaveGraphPanelPro
   }
 
   return (
-    <div className="flex flex-col gap-2 border-t border-neutral-200 p-4">
+    <div className="flex flex-col gap-2 border-t border-violet-100 p-4">
       <input
         value={title}
         onChange={(e) => setTitle(e.target.value)}
         placeholder="Give this graph a title"
-        className="rounded-md border border-neutral-300 px-3 py-2 text-sm"
+        className="rounded-md border border-violet-200 px-3 py-2 text-sm focus:border-violet-400 focus:ring-1 focus:ring-violet-400 focus:outline-none"
       />
       <label className="flex items-center gap-2 text-sm text-neutral-600">
         <input
           type="checkbox"
           checked={visibility === "public"}
           onChange={(e) => setVisibility(e.target.checked ? "public" : "private")}
+          className="accent-violet-600"
         />
         Make this graph public (shareable link)
       </label>
       <button
         onClick={handleSave}
         disabled={status === "saving" || !title.trim()}
-        className="rounded-md bg-neutral-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
+        className="rounded-md bg-violet-600 px-4 py-2 text-sm font-medium text-white hover:bg-violet-700 disabled:opacity-50"
       >
         {status === "saving" ? "Saving…" : "Save"}
       </button>

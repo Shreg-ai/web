@@ -29,7 +29,7 @@ export function NodeDetailPanel({ vault, metrics, selectedNodeId, onSelectNode }
   return (
     <div className="flex h-full flex-col gap-4 overflow-y-auto p-5">
       <div className="flex items-start justify-between gap-2">
-        <h3 className="text-base font-medium">{node.title}</h3>
+        <h3 className="text-base font-medium text-violet-950">{node.title}</h3>
         <button onClick={() => onSelectNode(null)} className="text-sm text-neutral-400 hover:text-neutral-700">
           ✕
         </button>
@@ -60,7 +60,7 @@ export function NodeDetailPanel({ vault, metrics, selectedNodeId, onSelectNode }
           <ul className="flex flex-col gap-1">
             {outgoing.map((e, i) => (
               <li key={i}>
-                <button onClick={() => onSelectNode(e.targetId)} className="text-sm text-blue-600 hover:underline">
+                <button onClick={() => onSelectNode(e.targetId)} className="text-sm text-violet-600 hover:underline">
                   {e.targetId}
                 </button>
               </li>
@@ -75,7 +75,7 @@ export function NodeDetailPanel({ vault, metrics, selectedNodeId, onSelectNode }
           <ul className="flex flex-col gap-1">
             {incoming.map((e, i) => (
               <li key={i}>
-                <button onClick={() => onSelectNode(e.sourceId)} className="text-sm text-blue-600 hover:underline">
+                <button onClick={() => onSelectNode(e.sourceId)} className="text-sm text-violet-600 hover:underline">
                   {e.sourceId}
                 </button>
               </li>

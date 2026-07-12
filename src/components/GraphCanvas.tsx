@@ -47,7 +47,7 @@ export function GraphCanvas({ vault, metrics, selectedNodeId, onSelectNode }: Gr
           padding: 4,
           background: isUnresolved ? "#e5e5e5" : colorForCluster(m?.clusterId ?? 0),
           color: isUnresolved ? "#525252" : "white",
-          border: n.id === selectedNodeId ? "3px solid #111827" : "1px solid rgba(0,0,0,0.1)",
+          border: n.id === selectedNodeId ? "3px solid #4c1d95" : "1px solid rgba(0,0,0,0.1)",
         },
       };
     });

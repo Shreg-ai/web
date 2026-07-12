@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #faf9fd;
+  --foreground: #1e1b2e;
 }
 
 @theme inline {
@@ -12,12 +12,14 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+/*
+  Deliberately no @media (prefers-color-scheme: dark) override: this app has
+  a single, fixed light theme (white + violet accent). Without an actual
+  dark palette designed for every component, letting the OS preference flip
+  --background to near-black caused a broken half-dark UI, since most
+  components use hardcoded light Tailwind classes rather than these
+  variables.
+*/
 
 body {
   background: var(--background);

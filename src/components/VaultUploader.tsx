@@ -46,8 +46,8 @@ export function VaultUploader({ onParsed }: VaultUploaderProps) {
   );
 
   return (
-    <div className="flex flex-col items-center justify-center gap-4 rounded-xl border border-dashed border-neutral-300 p-16 text-center">
-      <h2 className="text-lg font-medium">Visualize your knowledge graph</h2>
+    <div className="flex flex-col items-center justify-center gap-4 rounded-2xl border border-dashed border-violet-200 bg-white p-16 text-center shadow-sm">
+      <h2 className="text-lg font-medium text-violet-950">Visualize your knowledge graph</h2>
       <p className="max-w-md text-sm text-neutral-500">
         Select an Obsidian vault folder. Parsing happens entirely in your browser — your notes are never uploaded
         anywhere.
@@ -55,7 +55,7 @@ export function VaultUploader({ onParsed }: VaultUploaderProps) {
       <button
         onClick={() => inputRef.current?.click()}
         disabled={status === "parsing"}
-        className="rounded-md bg-neutral-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
+        className="rounded-md bg-violet-600 px-4 py-2 text-sm font-medium text-white hover:bg-violet-700 disabled:opacity-50"
       >
         {status === "parsing" ? "Parsing…" : "Choose vault folder"}
       </button>

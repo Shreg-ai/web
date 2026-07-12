@@ -20,16 +20,16 @@ export default async function ProfilePage({ params }: { params: Promise<{ userna
   const publicGraphs = (graphs ?? []) as GraphRow[];
 
   return (
-    <div className="mx-auto w-full max-w-2xl flex-1 overflow-y-auto p-6">
-      <h1 className="mb-1 text-xl font-medium">@{(profile as ProfileRow).username}</h1>
+    <div className="mx-auto w-full max-w-2xl flex-1 overflow-y-auto bg-gradient-to-b from-violet-50 to-white p-6">
+      <h1 className="mb-1 text-xl font-medium text-violet-950">@{(profile as ProfileRow).username}</h1>
       <p className="mb-6 text-sm text-neutral-500">Public knowledge graphs</p>
       {publicGraphs.length === 0 ? (
         <p className="text-sm text-neutral-500">No public graphs yet.</p>
       ) : (
         <ul className="flex flex-col gap-3">
           {publicGraphs.map((g) => (
-            <li key={g.id} className="rounded-lg border border-neutral-200 p-4">
-              <Link href={`/g/${g.id}`} className="font-medium text-neutral-900 hover:underline">
+            <li key={g.id} className="rounded-lg border border-violet-100 bg-white p-4 shadow-sm">
+              <Link href={`/g/${g.id}`} className="font-medium text-violet-950 hover:underline">
                 {g.title}
               </Link>
               <p className="text-xs text-neutral-500">

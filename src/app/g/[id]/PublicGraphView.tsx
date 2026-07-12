@@ -12,17 +12,17 @@ export function PublicGraphView({ graph, isOwner }: { graph: GraphRow; isOwner: 
 
   return (
     <div className="flex flex-1 flex-col overflow-hidden">
-      <div className="border-b border-neutral-200 px-5 py-3">
-        <h1 className="text-base font-medium">{graph.title}</h1>
+      <div className="border-b border-violet-100 bg-white px-5 py-3">
+        <h1 className="text-base font-medium text-violet-950">{graph.title}</h1>
         <p className="text-xs text-neutral-500">
           {graph.node_count} nodes · {graph.edge_count} edges
         </p>
       </div>
       <div className="flex flex-1 overflow-hidden">
-        <div className="flex-1">
+        <div className="flex-1 bg-violet-50/30">
           <GraphCanvas vault={vault} metrics={metrics} selectedNodeId={selectedNodeId} onSelectNode={setSelectedNodeId} />
         </div>
-        <div className="flex w-96 shrink-0 flex-col overflow-y-auto border-l border-neutral-200 bg-white">
+        <div className="flex w-96 shrink-0 flex-col overflow-y-auto border-l border-violet-100 bg-white">
           <NodeDetailPanel vault={vault} metrics={metrics} selectedNodeId={selectedNodeId} onSelectNode={setSelectedNodeId} />
           {isOwner && (
             <GraphAnalysisPanel graphId={graph.id} initialDescription={graph.description} initialScenarios={graph.scenarios} />
