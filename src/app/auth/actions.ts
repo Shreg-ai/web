@@ -36,14 +36,25 @@ export async function signup(formData: FormData): Promise<void> {
     redirect(`/signup?error=${encodeURIComponent(error.message)}`);
   }
 
-  if (!data.user) {
-    // Email confirmation is required by the Supabase project's auth settings.
-    redirect(`/login?error=${encodeURIComponent("Check your email to confirm your account, then log in.")}`);
+  if (!data.user || !data.session) {
+    // No active session means "Confirm email" is still enabled in Supabase Auth
+    // settings, so there's nothing to authorize the profile insert with yet.
+    redirect(
+      `/login?error=${encodeURIComponent(
+        'Account created, but no session was returned. If you haven\'t disabled "Confirm email" in Supabase Auth settings, either do that or confirm your email via the link sent to you, then log in.'
+      )}`
+    );
   }
 
   const { error: profileError } = await supabase.from("profiles").insert({ id: data.user.id, username });
   if (profileError) {
-    redirect(`/signup?error=${encodeURIComponent("That username is taken — please choose another.")}`);
+    // 23505 = unique_violation; anything else (e.g. an RLS policy failure) is a
+    // real bug, and should say so instead of being misreported as a taken name.
+    const message =
+      profileError.code === "23505"
+        ? "That username is taken — please choose another."
+        : `Could not create your profile: ${profileError.message}`;
+    redirect(`/signup?error=${encodeURIComponent(message)}`);
   }
 
   revalidatePath("/", "layout");
