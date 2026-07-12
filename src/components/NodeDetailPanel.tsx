@@ -1,7 +1,14 @@
 "use client";
 
 import { splitBodyWithWikilinks } from "@/lib/graph/wikilinks";
+import { colorForType } from "@/lib/graph/colors";
 import type { NodeMetrics, ParsedVault } from "@/lib/graph/types";
+
+function formatFrontmatterValue(value: unknown): string {
+  if (Array.isArray(value)) return value.map(String).join(", ");
+  if (value && typeof value === "object") return JSON.stringify(value);
+  return String(value);
+}
 
 interface NodeDetailPanelProps {
   vault: ParsedVault;
@@ -26,6 +33,7 @@ export function NodeDetailPanel({ vault, metrics, selectedNodeId, onSelectNode }
   const outgoing = vault.edges.filter((e) => e.sourceId === selectedNodeId);
   const incoming = vault.edges.filter((e) => e.targetId === selectedNodeId);
   const isUnresolved = node.frontmatter.unresolved === true;
+  const frontmatterEntries = Object.entries(node.frontmatter).filter(([key]) => key !== "unresolved");
 
   return (
     <div className="flex h-full flex-col gap-4 overflow-y-auto p-5">
@@ -46,6 +54,28 @@ export function NodeDetailPanel({ vault, metrics, selectedNodeId, onSelectNode }
             <span>{nodeMetrics?.inDegree ?? 0} incoming</span>
             <span>{nodeMetrics?.outDegree ?? 0} outgoing</span>
           </div>
+
+          {frontmatterEntries.length > 0 && (
+            <div className="flex flex-wrap gap-1.5">
+              {frontmatterEntries.map(([key, value]) => {
+                const isType = key === "type" && typeof value === "string";
+                return (
+                  <span
+                    key={key}
+                    className="rounded-full px-2 py-0.5 text-xs"
+                    style={
+                      isType
+                        ? { background: colorForType(value as string), color: "white" }
+                        : { background: "#f5f3ff", color: "#6d28d9" }
+                    }
+                  >
+                    {!isType && <span className="opacity-60">{key}: </span>}
+                    {formatFrontmatterValue(value)}
+                  </span>
+                );
+              })}
+            </div>
+          )}
 
           {node.body && (
             <div className="whitespace-pre-wrap text-sm leading-relaxed text-neutral-700">

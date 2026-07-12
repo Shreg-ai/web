@@ -16,3 +16,22 @@ const CLUSTER_PALETTE = [
 export function colorForCluster(clusterId: number): string {
   return CLUSTER_PALETTE[clusterId % CLUSTER_PALETTE.length];
 }
+
+// Deterministic string hash so the same frontmatter `type` value always maps
+// to the same color across renders/reloads, without maintaining a registry.
+function hashString(str: string): number {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    hash = (hash * 31 + str.charCodeAt(i)) | 0;
+  }
+  return Math.abs(hash);
+}
+
+export function colorForType(type: string): string {
+  return CLUSTER_PALETTE[hashString(type) % CLUSTER_PALETTE.length];
+}
+
+// Neutral color for nodes with no `type` frontmatter when the graph is
+// otherwise being colored by type (so they don't silently collide with a
+// real type's color).
+export const UNTYPED_NODE_COLOR = "#a3a3a3";
