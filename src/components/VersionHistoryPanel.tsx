@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 import { readVaultFileList, buildVaultGraph } from "@/lib/graph/parseVault";
 import { computeStructuralMetrics } from "@/lib/graph/structural";
 import { saveGraphVersion } from "@/app/g/[id]/actions";
@@ -22,6 +23,8 @@ export function VersionHistoryPanel({
   initialVersions: GraphVersionRow[];
   isOwner: boolean;
 }) {
+  const t = useTranslations("versionHistory");
+  const tCommon = useTranslations("common");
   const [versions, setVersions] = useState(initialVersions);
   const [expanded, setExpanded] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -40,7 +43,7 @@ export function VersionHistoryPanel({
       try {
         const files = await readVaultFileList(fileList);
         if (files.length === 0) {
-          setError("No Markdown (.md) files found in that folder.");
+          setError(t("noMarkdownFiles"));
           setUploading(false);
           return;
         }
@@ -70,10 +73,10 @@ export function VersionHistoryPanel({
         }
       } catch (err) {
         setUploading(false);
-        setError(err instanceof Error ? err.message : "Failed to parse vault.");
+        setError(err instanceof Error ? err.message : t("failedToParse"));
       }
     },
-    [graphId]
+    [graphId, t]
   );
 
   function handleCopy(url: string, id: string) {
@@ -91,7 +94,7 @@ export function VersionHistoryPanel({
           onClick={() => setExpanded((v) => !v)}
           className="flex items-center gap-1.5 text-sm font-medium text-violet-950"
         >
-          Versions ({versions.length})
+          {t("versions", { count: versions.length })}
           <svg
             viewBox="0 0 20 20"
             className={`h-3.5 w-3.5 text-neutral-400 transition-transform ${expanded ? "rotate-180" : ""}`}
@@ -110,7 +113,7 @@ export function VersionHistoryPanel({
               className="flex items-center gap-1.5 text-sm text-violet-600 hover:underline disabled:opacity-50"
             >
               {uploading && <Spinner className="h-3.5 w-3.5" />}
-              {uploading ? "Uploading…" : "Upload new version"}
+              {uploading ? t("uploading") : t("uploadNew")}
             </button>
             <input
               ref={inputRef}
@@ -136,17 +139,17 @@ export function VersionHistoryPanel({
                 <div className="mb-1 flex items-center gap-2">
                   <span className="font-medium text-neutral-900">v{v.version_number}</span>
                   {isCurrent && (
-                    <span className="rounded-full bg-violet-100 px-2 py-0.5 text-[10px] font-medium text-violet-700">Current</span>
+                    <span className="rounded-full bg-violet-100 px-2 py-0.5 text-[10px] font-medium text-violet-700">{t("current")}</span>
                   )}
                   <span className="text-xs text-neutral-400">{new Date(v.created_at).toLocaleDateString()}</span>
                 </div>
                 <p className="mb-2 text-xs text-neutral-500">
-                  {v.node_count} nodes · {v.edge_count} edges
+                  {v.node_count} {tCommon("nodes")} · {v.edge_count} {tCommon("edges")}
                 </p>
                 <div className="flex items-center gap-2">
                   <code className="flex-1 truncate rounded bg-neutral-50 px-2 py-1 text-xs text-neutral-700">{url}</code>
                   <button onClick={() => handleCopy(url, v.id)} className="shrink-0 text-xs text-violet-600 hover:underline">
-                    {copiedId === v.id ? "Copied!" : "Copy"}
+                    {copiedId === v.id ? tCommon("copied") : tCommon("copy")}
                   </button>
                 </div>
               </li>

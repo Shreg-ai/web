@@ -1,3 +1,6 @@
+"use client";
+
+import { useTranslations } from "next-intl";
 import { FeedPostCard } from "@/components/FeedPostCard";
 import type { GraphEvaluationRow, GraphRow, PostRow, ProfileRow } from "@/lib/supabase/dbTypes";
 
@@ -15,6 +18,7 @@ export function GraphPostsList({
   evaluations: GraphEvaluationRow[];
   currentUserId?: string | null;
 }) {
+  const t = useTranslations("graphPostsList");
   if (posts.length === 0) return null;
 
   const authorById = new Map(authors.map((a) => [a.id, a]));
@@ -22,7 +26,7 @@ export function GraphPostsList({
   return (
     <div>
       <h2 className="mb-2 text-xs font-medium tracking-wide text-neutral-400 uppercase">
-        Posts about this graph ({posts.length})
+        {t("heading", { count: posts.length })}
       </h2>
       <ul className="flex flex-col gap-3">
         {posts.map((post) => {

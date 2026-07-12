@@ -1,0 +1,374 @@
+{
+  "common": {
+    "save": "保存",
+    "cancel": "キャンセル",
+    "copy": "コピー",
+    "copied": "コピーしました！",
+    "loading": "読み込み中…",
+    "show": "表示",
+    "hide": "非表示",
+    "showPassword": "パスワードを表示",
+    "hidePassword": "パスワードを隠す",
+    "nodes": "ノード",
+    "edges": "エッジ",
+    "clusters": "クラスター",
+    "public": "公開",
+    "private": "非公開",
+    "delete": "削除",
+    "edit": "編集",
+    "goBack": "戻る"
+  },
+  "categories": {
+    "Finance": "金融",
+    "Legal": "法律",
+    "Economics": "経済",
+    "Coding": "プログラミング",
+    "Defense": "防衛",
+    "Other": "その他"
+  },
+  "nav": {
+    "explore": "探索",
+    "categoryAll": "すべて",
+    "exploreButton": "探索する",
+    "categoryLimit": "一度に最大{max}個のカテゴリーまで",
+    "connect": "接続",
+    "myFollows": "フォロー中",
+    "myGraphs": "マイグラフ",
+    "playground": "プレイグラウンド",
+    "myPosts": "マイ投稿",
+    "friends": "フレンド",
+    "profile": "プロフィール",
+    "logOut": "ログアウト",
+    "logIn": "ログイン",
+    "signUp": "新規登録",
+    "expandSidebar": "サイドバーを展開",
+    "collapseSidebar": "サイドバーを折りたたむ"
+  },
+  "auth": {
+    "login": {
+      "title": "ログイン",
+      "email": "メールアドレス",
+      "password": "パスワード",
+      "submit": "ログイン",
+      "submitting": "ログイン中…",
+      "forgotPassword": "パスワードをお忘れですか？",
+      "noAccount": "アカウントをお持ちでないですか？",
+      "signUp": "新規登録"
+    },
+    "signup": {
+      "title": "新規登録",
+      "username": "ユーザー名",
+      "usernameHint": "3〜30文字:英字、数字、- または _",
+      "email": "メールアドレス",
+      "password": "パスワード",
+      "submit": "新規登録",
+      "submitting": "登録中…",
+      "haveAccount": "すでにアカウントをお持ちですか？",
+      "logIn": "ログイン"
+    },
+    "forgotPassword": {
+      "title": "パスワードをリセット",
+      "description": "メールアドレスを入力すると、リセット用リンクをお送りします。",
+      "email": "メールアドレス",
+      "submit": "リセットリンクを送信",
+      "submitting": "送信中…",
+      "sentTitle": "メールをご確認ください",
+      "sentDescription": "そのアドレスのアカウントが存在する場合、パスワードリセットリンクをお送りしています。"
+    },
+    "updatePassword": {
+      "title": "新しいパスワードを設定",
+      "description": "アカウントの新しいパスワードを選択してください。",
+      "newPassword": "新しいパスワード",
+      "submit": "パスワードを更新"
+    }
+  },
+  "profile": {
+    "title": "プロフィール",
+    "publicPage": "公開ページ：",
+    "pictureHeading": "プロフィール画像",
+    "pictureUploading": "アップロード中…",
+    "pictureHint": "PNGまたはJPG形式。",
+    "aboutHeading": "自己紹介",
+    "aboutHint": "あなたの公開プロフィールページに表示されます。",
+    "aboutPlaceholder": "あなたの取り組みやグラフの内容について教えてください。",
+    "saving": "保存中…",
+    "saved": "保存しました。",
+    "passwordHeading": "パスワードを変更",
+    "passwordPlaceholder": "新しいパスワード",
+    "updating": "更新中…",
+    "updatePassword": "パスワードを更新",
+    "passwordUpdated": "パスワードを更新しました。",
+    "languageHeading": "言語",
+    "languageHint": "サイト全体のボタンや説明文の言語を変更します。グラフや投稿自体の内容が翻訳されることはありません。"
+  },
+  "dashboard": {
+    "title": "マイグラフ",
+    "viewPublicProfile": "公開プロフィールを見る",
+    "uploadNew": "新しいVaultをアップロード",
+    "empty": "まだ保存されたグラフがありません。Vaultをアップロードして始めましょう。",
+    "confirmDelete": "このグラフを削除しますか？元に戻せません。",
+    "makePrivate": "非公開にする",
+    "makePublic": "公開する",
+    "copyLink": "リンクをコピー"
+  },
+  "home": {
+    "tagline": "ナレッジグラフをAIエージェントが問い合わせできるものに変えましょう。",
+    "browseExplore": "またはアカウントなしで探索ページを見る →",
+    "uploadDifferent": "別のVaultをアップロード"
+  },
+  "vaultUploader": {
+    "heading": "ナレッジグラフを可視化",
+    "description": "Obsidianのvaultフォルダーを選択してください。解析はすべてブラウザ内で行われるため、何もパソコンから送信されることなくグラフをプレビューできます —— 下で保存を選択するまで何も保存されません。",
+    "chooseFolder": "Vaultフォルダーを選択",
+    "parsing": "解析中…",
+    "noMarkdownFiles": "そのフォルダーにMarkdown（.md）ファイルが見つかりませんでした。",
+    "failedToParse": "Vaultの解析に失敗しました。"
+  },
+  "landing": {
+    "flow": {
+      "vault": "あなたのノート（vault）",
+      "graph": "ナレッジグラフ",
+      "analysis": "AI分析",
+      "mcp": "MCPで接続"
+    },
+    "sections": {
+      "vault": {
+        "heading": "あなたのノートをつなげる",
+        "body": "「vault」は、個人的なウィキのようにリンクされたノートのフォルダーにすぎません —— Obsidianのようなツールで簡単に書けます。アップロードすると、Shregがそれをグラフに変換します:中のアイデアと、それらがどうつながっているかを。"
+      },
+      "analysis": {
+        "heading": "AIが用途を見つけ出す",
+        "body": "AIがグラフ全体を読み込み、その使い道についての簡単な説明と、うまく答えられる質問例を書き出します —— 誰でも(あなた自身も含めて)それに頼る前に何を期待できるかがわかります。"
+      },
+      "mcp": {
+        "heading": "どんなAIエージェントもリアルタイムで問い合わせ可能",
+        "body": "MCP(Model Context Protocol)は、Claudeのようなaiアシスタントが外部データに直接接続できるようにする標準規格です。すべてのグラフには専用のMCPアドレスがあり —— それをエージェントの設定に貼り付けるだけで、あなたに答えながらノートを検索できるようになります。"
+      }
+    }
+  },
+  "graphPage": {
+    "expand": "展開 ▸",
+    "collapse": "折りたたむ ▾",
+    "graph": "グラフ",
+    "nodeContent": "ノードの内容",
+    "evaluationRunning": "評価を実行中です —— 約1分かかります。待っている間も閲覧や投稿を続けられます。"
+  },
+  "graphSummary": {
+    "noDescription": "作者はまだこのグラフの説明を書いていません。",
+    "connectViaMcp": "MCPで接続",
+    "mcpHint": "MCPクライアントをこのURLに接続すると、グラフ全体を直接検索できます。",
+    "doesItHelp": "実際に役立ちますか？（{count, plural, other {テスト質問#件}}）",
+    "noEvaluation": "作者はまだこのグラフの評価を実行していません。"
+  },
+  "evaluation": {
+    "heading": "MCPツールとしてテスト",
+    "endpointLabel": "MCPエンドポイント",
+    "mcpHint": "どのMCPクライアントでもこのURLに接続すると、このグラフを直接検索できます。",
+    "noScenarios": "まず上でテスト質問を生成または作成してから、評価を実行してください。",
+    "running": "実行中…(約1分かかります)",
+    "rerun": "評価を再実行",
+    "run": "評価を実行",
+    "clearResults": "結果をクリア"
+  },
+  "evaluationResults": {
+    "graphWins": "グラフ拡張の勝利",
+    "baselineWins": "ベースラインの勝利",
+    "ties": "引き分け",
+    "avgScores": "平均スコア(根拠性/フレームワーク一貫性/具体性) —— ベースライン {baseline}、グラフ {graph}",
+    "graphAugmentedWon": "グラフ拡張が勝利",
+    "baselineWon": "ベースラインが勝利",
+    "tie": "引き分け",
+    "hideAnswers": "回答を隠す",
+    "showAnswers": "回答を表示",
+    "baseline": "ベースライン",
+    "graphAugmented": "グラフ拡張",
+    "judgeReasoning": "審査員の理由"
+  },
+  "graphAnalysis": {
+    "heading": "AI分析",
+    "generating": "生成中…",
+    "regenerate": "AIで再生成",
+    "generate": "AIで生成",
+    "edit": "編集",
+    "writeManually": "手動で書く",
+    "empty": "まだ説明やテスト質問がありません。AIで生成するか、自分で書いてください。",
+    "testQuestions": "テスト質問",
+    "descriptionLabel": "説明",
+    "descriptionPlaceholder": "このナレッジグラフは何に役立ちますか？どのような質問に答えるのに役立ちますか？",
+    "addQuestion": "＋ 質問を追加",
+    "questionPlaceholder": "実際のユーザーが尋ねそうな質問",
+    "remove": "削除",
+    "whyRelevantPlaceholder": "このグラフがこの質問に答える上でなぜ有利なのですか？(任意)",
+    "noQuestions": "まだ質問がありません —— 上に追加してください。",
+    "saving": "保存中…"
+  },
+  "versionHistory": {
+    "versions": "バージョン({count})",
+    "uploading": "アップロード中…",
+    "uploadNew": "新しいバージョンをアップロード",
+    "current": "現在",
+    "noMarkdownFiles": "そのフォルダーにMarkdown（.md）ファイルが見つかりませんでした。",
+    "failedToParse": "Vaultの解析に失敗しました。"
+  },
+  "shareStructure": {
+    "heading": "ナレッジプレイグラウンドと完全な構造を共有",
+    "description": "他のユーザーがこのグラフの実際のノードと接続を自分のプレイグラウンドセッションにインポートできるようになります —— これはAI分析や評価結果とは別のもので、そちらはこのグラフが公開されると誰でも見られます。これをオンにすると、グラフも公開されます。"
+  },
+  "saveGraph": {
+    "loginPrompt": "このグラフを保存・共有するには。",
+    "saved": "保存しました。",
+    "viewSaved": "保存したグラフを見る →",
+    "storageNotice": "保存すると、このグラフ(ノートの内容を含む)がデータベースに保存されます。",
+    "titlePlaceholder": "このグラフにタイトルを付けてください",
+    "makePublicLabel": "このグラフを公開する(共有可能なリンク)",
+    "saving": "保存中…"
+  },
+  "nodeDetail": {
+    "emptyState": "ノードをクリックすると内容と接続が表示されます。",
+    "unresolvedNote": "このノードは[[wikilink]]で参照されていますが、vault内に対応するノートがありません。",
+    "incoming": "受信{count}件",
+    "outgoing": "発信{count}件",
+    "linksTo": "リンク先",
+    "linkedFrom": "リンク元"
+  },
+  "graphCanvas": {
+    "nodeType": "ノードの種類",
+    "untyped": "タイプなし",
+    "sourceGraph": "元のグラフ",
+    "dragHint": "あるノードの端から別のノードへドラッグしてリンクできます"
+  },
+  "playground": {
+    "heading": "ナレッジプレイグラウンド",
+    "description": "グラフをインポートし、異なるグラフのノード間にリンクを描き、それらすべてに対して分析を実行できます。ここでの内容は保存されません —— 再読み込みすると最初からになります。",
+    "importGraph": "グラフをインポート",
+    "noGraphsAvailable": "まだ利用できるグラフがありません —— 自分のものをアップロードするか、他の人が共有するのを待ってください。",
+    "you": "あなた",
+    "remove": "削除",
+    "import": "インポート",
+    "couldNotImport": "そのグラフをインポートできませんでした。",
+    "colorNodesBy": "ノードの色分け基準",
+    "modeType": "タイプ",
+    "modeSource": "ソース",
+    "modeCluster": "クラスター",
+    "colorHintType": "各ノード自身のタイプ(元のグラフのfrontmatterから)で色分けされています。",
+    "colorHintSource": "各ノードがどのインポートされたグラフから来たかで色分けされています。",
+    "colorHintClusterReady": "下の構造分析によるクラスターで色分けされています。",
+    "colorHintClusterNotReady": "クラスターで色分けするには、まず構造分析を実行してください。",
+    "analysis": "分析",
+    "runAnalysis": "構造分析を実行",
+    "findConnection": "接続を探す",
+    "fromNode": "開始ノード…",
+    "toNode": "終了ノード…",
+    "findPath": "経路を探す",
+    "noStartEnd": "まず開始ノードと終了ノードを選んでください。",
+    "noPathFound": "それらのノード間に接続が見つかりませんでした —— 手動リンクを追加してみてください。",
+    "hops": "{count, plural, other {#ホップ}}:",
+    "clear": "クリア",
+    "node": "ノード",
+    "emptyField": "左からグラフをインポートして始めましょう —— それまでこのフィールドは空です。"
+  },
+  "feed": {
+    "title": "探索",
+    "emptyFiltered": "これらのカテゴリーにはまだ投稿がありません。",
+    "emptyAll": "まだ投稿がありません。最初の一人になりましょう —— グラフを保存し、説明を生成して、フィードに共有してください。",
+    "ownGraphCta": "自分のナレッジグラフをお持ちですか？",
+    "uploadOne": "アップロードする",
+    "andShareIt": "そして共有しましょう。"
+  },
+  "follows": {
+    "title": "フォロー中",
+    "notFollowingYet": "まだ誰もフォローしていません。",
+    "toFindPeople": "フォローする人を見つけましょう。",
+    "noPostsYet": "フォローしている人からの投稿はまだありません。"
+  },
+  "friends": {
+    "title": "フレンド",
+    "friendRequests": "フレンドリクエスト",
+    "sentRequests": "送信済みリクエスト",
+    "yourFriends": "あなたのフレンド",
+    "noFriendsYet": "まだフレンドがいません。誰かのプロフィールを訪れてリクエストを送りましょう。"
+  },
+  "posts": {
+    "title": "マイ投稿",
+    "empty": "まだ何も投稿していません。グラフのページから共有して始めましょう。"
+  },
+  "feedPostCard": {
+    "justNow": "たった今",
+    "minutesAgo": "{count}分前",
+    "hoursAgo": "{count}時間前",
+    "daysAgo": "{count}日前",
+    "confirmDelete": "この投稿を削除しますか？",
+    "saving": "保存中…",
+    "evalWins": "評価{wins}/{total}勝"
+  },
+  "followButton": {
+    "follow": "フォロー",
+    "following": "フォロー中"
+  },
+  "friendActions": {
+    "removeConfirm": "フレンドを削除しますか？",
+    "yes": "はい",
+    "friendsCheck": "フレンド ✓",
+    "accept": "承認",
+    "decline": "拒否",
+    "requestSent": "リクエスト送信済み",
+    "addFriend": "フレンド追加"
+  },
+  "postComposer": {
+    "heading": "フィードに共有",
+    "writePrompt": "このグラフを紹介する投稿を書きましょう。",
+    "willBePublic": "投稿するとこのグラフも公開されます。",
+    "contentPlaceholder": "このグラフは何に役立ちますか？なぜエージェントを接続すべきなのでしょうか？",
+    "posting": "投稿中…",
+    "post": "投稿",
+    "posted": "フィードに投稿しました。"
+  },
+  "graphPostsList": {
+    "heading": "このグラフについての投稿（{count}）"
+  },
+  "completeProfile": {
+    "heading": "アカウント設定を完了してください",
+    "description": "アカウントはサインインされていますが、ユーザー名が設定されていません。続けるには1つ選んでください。",
+    "usernamePlaceholder": "ユーザー名",
+    "saving": "保存中…",
+    "continue": "続ける"
+  },
+  "publicProfile": {
+    "noBio": "まだ自己紹介がありません。",
+    "followers": "フォロワー",
+    "following": "フォロー中",
+    "friends": "フレンド",
+    "publicGraphs": "公開ナレッジグラフ",
+    "noPublicGraphs": "まだ公開グラフがありません。",
+    "posts": "投稿",
+    "noPosts": "まだ投稿がありません。"
+  },
+  "profileSubpages": {
+    "followersTitle": "フォロワー",
+    "followingTitle": "フォロー中",
+    "noFollowersYet": "まだフォロワーがいません。",
+    "noFollowingYet": "まだ誰もフォローしていません。"
+  },
+  "connect": {
+    "title": "あなたのグラフをAIエージェントに接続する",
+    "intro": "Shregのすべてのグラフは、ライブのMCP(Model Context Protocol)サーバーでもあります —— AIエージェントが呼び出せる小さなツール群で、学習データから推測するだけでなく、そのグラフを直接検索・読み取り・たどることができます。MCPに対応するどのクライアントも接続できます: Claude Code、Claude Desktop、ChatGPT、Cursor、Windsurf、VS Code、Gemini CLI、Clineなど。",
+    "knowingHeading": "知っておくとよいこと",
+    "knowing1": "各グラフには専用のエンドポイントURLがあります —— アカウント全体で1つではなく、グラフごとに1つのURLです。",
+    "knowing2Prefix": "公開グラフはどのクライアントでもそのまま使えます。非公開グラフは、",
+    "knowing2Your": "あなた",
+    "knowing2Suffix": "のログインセッションを伴うリクエストにのみ応答します —— リモートクライアント(Claude Desktop、ChatGPTなど、ほとんどのもの)はあなたのブラウザではなく自分自身のサーバーからこのURLを呼び出すため、通常あなたとして認証できません。エージェントにグラフへアクセスさせたい場合は、まず公開に設定してください。",
+    "knowing3": "エージェントを接続しても、Shreg上で誰がそのグラフを見られるかは変わりません —— これは別の、追加のアクセス経路です。",
+    "pickEndpoint": "下で使用するグラフのエンドポイントを選んでください",
+    "privateLabel": "(非公開)",
+    "noGraphsMessage": "ログインしてグラフをアップロードすると、自分専用のコピー可能なエンドポイントが手に入ります —— 今のところ、下の手順ではプレースホルダーのURLを使っています。実際のものに置き換えてください。",
+    "privateWarning": "このグラフは非公開です —— 下のほとんどのリモートクライアントはあなたとして認証できず、見つからないと表示されます。エージェントに実際にアクセスさせたい場合は、まずグラフページで公開に設定してください。",
+    "chooseWhere": "接続先を選んでください",
+    "setUp": "{name}を設定",
+    "kindCli": "CLI",
+    "kindDesktopApp": "デスクトップアプリ",
+    "kindChatApp": "チャットアプリ",
+    "kindIde": "IDE",
+    "kindIdeExtension": "IDE拡張機能",
+    "kindGeneric": "汎用"
+  }
+}

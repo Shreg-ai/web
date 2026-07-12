@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { toggleFollow } from "@/app/u/[username]/actions";
 
 export function FollowButton({
@@ -12,6 +13,7 @@ export function FollowButton({
   username: string;
   initialIsFollowing: boolean;
 }) {
+  const t = useTranslations("followButton");
   const [isFollowing, setIsFollowing] = useState(initialIsFollowing);
   const [busy, setBusy] = useState(false);
 
@@ -34,7 +36,7 @@ export function FollowButton({
           : "bg-violet-600 text-white hover:bg-violet-700"
       }`}
     >
-      {isFollowing ? "Following" : "Follow"}
+      {isFollowing ? t("following") : t("follow")}
     </button>
   );
 }

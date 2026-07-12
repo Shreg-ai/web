@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 import { buildVaultGraph, readVaultFileList } from "@/lib/graph/parseVault";
 import { computeStructuralMetrics } from "@/lib/graph/structural";
 import type { NodeMetrics, ParsedVault } from "@/lib/graph/types";
@@ -17,6 +18,7 @@ const folderInputProps = {
 } as unknown as React.InputHTMLAttributes<HTMLInputElement>;
 
 export function VaultUploader({ onParsed }: VaultUploaderProps) {
+  const t = useTranslations("vaultUploader");
   const inputRef = useRef<HTMLInputElement>(null);
   const [status, setStatus] = useState<"idle" | "parsing" | "error">("idle");
   const [error, setError] = useState<string | null>(null);
@@ -30,7 +32,7 @@ export function VaultUploader({ onParsed }: VaultUploaderProps) {
         const files = await readVaultFileList(fileList);
         if (files.length === 0) {
           setStatus("error");
-          setError("No Markdown (.md) files found in that folder.");
+          setError(t("noMarkdownFiles"));
           return;
         }
         const vault = buildVaultGraph(files);
@@ -39,25 +41,22 @@ export function VaultUploader({ onParsed }: VaultUploaderProps) {
         setStatus("idle");
       } catch (err) {
         setStatus("error");
-        setError(err instanceof Error ? err.message : "Failed to parse vault.");
+        setError(err instanceof Error ? err.message : t("failedToParse"));
       }
     },
-    [onParsed]
+    [onParsed, t]
   );
 
   return (
     <div className="flex flex-col items-center justify-center gap-4 rounded-2xl border border-dashed border-violet-200 bg-white p-16 text-center shadow-sm">
-      <h2 className="text-lg font-medium text-violet-950">Visualize your knowledge graph</h2>
-      <p className="max-w-md text-sm text-neutral-500">
-        Select an Obsidian vault folder. Parsing happens entirely in your browser, so you can preview the graph
-        without anything leaving your computer — nothing is saved until you choose to save it below.
-      </p>
+      <h2 className="text-lg font-medium text-violet-950">{t("heading")}</h2>
+      <p className="max-w-md text-sm text-neutral-500">{t("description")}</p>
       <button
         onClick={() => inputRef.current?.click()}
         disabled={status === "parsing"}
         className="rounded-md bg-violet-600 px-4 py-2 text-sm font-medium text-white hover:bg-violet-700 disabled:opacity-50"
       >
-        {status === "parsing" ? "Parsing…" : "Choose vault folder"}
+        {status === "parsing" ? t("parsing") : t("chooseFolder")}
       </button>
       <input
         ref={inputRef}

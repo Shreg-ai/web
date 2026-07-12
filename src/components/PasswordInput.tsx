@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 
 interface PasswordInputProps {
   name?: string;
@@ -12,7 +13,8 @@ interface PasswordInputProps {
 }
 
 /** A password input with a show/hide toggle, so users can verify what they actually typed before submitting. */
-export function PasswordInput({ name, value, onChange, placeholder = "Password", required, minLength }: PasswordInputProps) {
+export function PasswordInput({ name, value, onChange, placeholder, required, minLength }: PasswordInputProps) {
+  const t = useTranslations("common");
   const [visible, setVisible] = useState(false);
   const controlled = value !== undefined;
 
@@ -31,9 +33,9 @@ export function PasswordInput({ name, value, onChange, placeholder = "Password",
         type="button"
         onClick={() => setVisible((v) => !v)}
         className="absolute top-1/2 right-2 -translate-y-1/2 text-xs text-neutral-500 hover:text-violet-700"
-        aria-label={visible ? "Hide password" : "Show password"}
+        aria-label={visible ? t("hidePassword") : t("showPassword")}
       >
-        {visible ? "Hide" : "Show"}
+        {visible ? t("hide") : t("show")}
       </button>
     </div>
   );

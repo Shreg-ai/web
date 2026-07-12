@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { Avatar } from "@/components/Avatar";
 import { FollowButton } from "@/components/FollowButton";
@@ -14,6 +15,8 @@ export default async function ProfilePage({ params }: { params: Promise<{ userna
   const { data: profile } = await supabase.from("profiles").select("*").eq("username", username).single();
   if (!profile) notFound();
   const row = profile as ProfileRow;
+  const t = await getTranslations("publicProfile");
+  const tCommon = await getTranslations("common");
 
   const {
     data: { user: viewer },
@@ -86,7 +89,7 @@ export default async function ProfilePage({ params }: { params: Promise<{ userna
           {row.bio ? (
             <p className="mt-1 text-sm text-neutral-600">{row.bio}</p>
           ) : (
-            <p className="mt-1 text-sm text-neutral-400">No bio yet.</p>
+            <p className="mt-1 text-sm text-neutral-400">{t("noBio")}</p>
           )}
         </div>
         {viewer && !isOwnProfile && (
@@ -104,19 +107,19 @@ export default async function ProfilePage({ params }: { params: Promise<{ userna
 
       <div className="mb-6 flex gap-5 text-sm">
         <Link href={`/u/${row.username}/followers`} className="text-neutral-600 hover:text-violet-700">
-          <span className="font-medium text-violet-950">{followerCount ?? 0}</span> followers
+          <span className="font-medium text-violet-950">{followerCount ?? 0}</span> {t("followers")}
         </Link>
         <Link href={`/u/${row.username}/following`} className="text-neutral-600 hover:text-violet-700">
-          <span className="font-medium text-violet-950">{followingCount ?? 0}</span> following
+          <span className="font-medium text-violet-950">{followingCount ?? 0}</span> {t("following")}
         </Link>
         <Link href={`/u/${row.username}/friends`} className="text-neutral-600 hover:text-violet-700">
-          <span className="font-medium text-violet-950">{friendCount ?? 0}</span> friends
+          <span className="font-medium text-violet-950">{friendCount ?? 0}</span> {t("friends")}
         </Link>
       </div>
 
-      <h2 className="mb-3 text-sm font-medium tracking-wide text-neutral-400 uppercase">Public knowledge graphs</h2>
+      <h2 className="mb-3 text-sm font-medium tracking-wide text-neutral-400 uppercase">{t("publicGraphs")}</h2>
       {publicGraphs.length === 0 ? (
-        <p className="mb-8 text-sm text-neutral-500">No public graphs yet.</p>
+        <p className="mb-8 text-sm text-neutral-500">{t("noPublicGraphs")}</p>
       ) : (
         <ul className="mb-8 flex flex-col gap-3">
           {publicGraphs.map((g) => (
@@ -125,16 +128,16 @@ export default async function ProfilePage({ params }: { params: Promise<{ userna
                 {g.title}
               </Link>
               <p className="text-xs text-neutral-500">
-                {g.node_count} nodes · {g.edge_count} edges
+                {g.node_count} {tCommon("nodes")} · {g.edge_count} {tCommon("edges")}
               </p>
             </li>
           ))}
         </ul>
       )}
 
-      <h2 className="mb-3 text-sm font-medium tracking-wide text-neutral-400 uppercase">Posts</h2>
+      <h2 className="mb-3 text-sm font-medium tracking-wide text-neutral-400 uppercase">{t("posts")}</h2>
       {postRows.length === 0 ? (
-        <p className="text-sm text-neutral-500">No posts yet.</p>
+        <p className="text-sm text-neutral-500">{t("noPosts")}</p>
       ) : (
         <ul className="flex flex-col gap-4">
           {postRows.map((post) => {

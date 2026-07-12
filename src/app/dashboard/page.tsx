@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import type { GraphRow, ProfileRow } from "@/lib/supabase/dbTypes";
 import { GraphList } from "./GraphList";
@@ -18,20 +19,21 @@ export default async function DashboardPage() {
   ]);
 
   const username = (profile as ProfileRow | null)?.username;
+  const t = await getTranslations("dashboard");
 
   return (
     <div className="mx-auto w-full max-w-3xl flex-1 overflow-y-auto bg-gradient-to-b from-violet-50 to-white p-6">
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-medium text-violet-950">My graphs</h1>
+          <h1 className="text-xl font-medium text-violet-950">{t("title")}</h1>
           {username && (
             <Link href={`/u/${username}`} className="text-sm text-violet-600 hover:underline">
-              View my public profile
+              {t("viewPublicProfile")}
             </Link>
           )}
         </div>
         <Link href="/" className="rounded-md bg-violet-600 px-3 py-1.5 text-sm text-white hover:bg-violet-700">
-          Upload a new vault
+          {t("uploadNew")}
         </Link>
       </div>
       <GraphList graphs={(graphs ?? []) as GraphRow[]} />

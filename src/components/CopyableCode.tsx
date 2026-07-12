@@ -1,8 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 
 export function CopyableCode({ code }: { code: string }) {
+  const t = useTranslations("common");
   const [copied, setCopied] = useState(false);
 
   function handleCopy() {
@@ -17,7 +19,7 @@ export function CopyableCode({ code }: { code: string }) {
         onClick={handleCopy}
         className="absolute top-1.5 right-1.5 rounded bg-neutral-800 px-2 py-0.5 text-xs text-neutral-300 hover:bg-neutral-700"
       >
-        {copied ? "Copied!" : "Copy"}
+        {copied ? t("copied") : t("copy")}
       </button>
       <pre className="overflow-x-auto p-3 pr-14 text-xs text-neutral-100">
         <code>{code}</code>

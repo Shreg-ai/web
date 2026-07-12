@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { logout } from "@/app/auth/actions";
 import { POST_CATEGORIES } from "@/lib/categories";
 import { Avatar } from "@/components/Avatar";
@@ -112,6 +113,8 @@ export function SidebarNav({
   avatarUrl: string | null;
   pendingFriendRequests: number;
 }) {
+  const t = useTranslations("nav");
+  const tCategories = useTranslations("categories");
   const pathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -186,7 +189,7 @@ export function SidebarNav({
         )}
         <button
           onClick={toggleCollapsed}
-          aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+          aria-label={collapsed ? t("expandSidebar") : t("collapseSidebar")}
           className="rounded-md p-1 text-neutral-400 hover:bg-violet-50 hover:text-violet-700"
         >
           <ChevronIcon collapsed={collapsed} />
@@ -196,13 +199,13 @@ export function SidebarNav({
       <nav className="flex flex-1 flex-col gap-1 overflow-y-auto px-2 py-3 text-sm">
         <Link
           href="/feed"
-          title="Explore"
+          title={t("explore")}
           className={`flex items-center gap-2 rounded-md px-2 py-2 font-medium ${
             onFeeds ? "bg-violet-100 text-violet-800" : "text-neutral-600 hover:bg-violet-50 hover:text-violet-700"
           } ${collapsed ? "justify-center" : ""}`}
         >
           <FeedsIcon />
-          {!collapsed && "Explore"}
+          {!collapsed && t("explore")}
         </Link>
 
         {!collapsed && (
@@ -218,7 +221,7 @@ export function SidebarNav({
                 onChange={() => setPendingCategories(new Set())}
                 className="accent-violet-600"
               />
-              All
+              {t("categoryAll")}
             </label>
             {POST_CATEGORIES.map((cat) => {
               const active = pendingCategories.has(cat);
@@ -226,7 +229,7 @@ export function SidebarNav({
               return (
                 <label
                   key={cat}
-                  title={atLimit ? `Up to ${MAX_CATEGORIES} categories at a time` : undefined}
+                  title={atLimit ? t("categoryLimit", { max: MAX_CATEGORIES }) : undefined}
                   className={`flex items-center gap-2 rounded-md px-2 py-1 text-xs ${
                     active
                       ? "cursor-pointer bg-violet-100 font-medium text-violet-800"
@@ -242,7 +245,7 @@ export function SidebarNav({
                     onChange={() => togglePendingCategory(cat)}
                     className="accent-violet-600"
                   />
-                  {cat}
+                  {tCategories(cat)}
                 </label>
               );
             })}
@@ -250,78 +253,78 @@ export function SidebarNav({
               onClick={handleExplore}
               className="mt-1 rounded-md bg-violet-600 px-2 py-1.5 text-xs font-medium text-white hover:bg-violet-700"
             >
-              Explore
+              {t("exploreButton")}
             </button>
           </div>
         )}
 
         <Link
           href="/connect"
-          title="Connect"
+          title={t("connect")}
           className={`mt-2 flex items-center gap-2 rounded-md px-2 py-2 font-medium ${
             onConnect ? "bg-violet-100 text-violet-800" : "text-neutral-600 hover:bg-violet-50 hover:text-violet-700"
           } ${collapsed ? "justify-center" : ""}`}
         >
           <ConnectIcon />
-          {!collapsed && "Connect"}
+          {!collapsed && t("connect")}
         </Link>
 
         {isLoggedIn && (
           <Link
             href="/follows"
-            title="My Follows"
+            title={t("myFollows")}
             className={`mt-2 flex items-center gap-2 rounded-md px-2 py-2 font-medium ${
               onFollows ? "bg-violet-100 text-violet-800" : "text-neutral-600 hover:bg-violet-50 hover:text-violet-700"
             } ${collapsed ? "justify-center" : ""}`}
           >
             <FollowsIcon />
-            {!collapsed && "My Follows"}
+            {!collapsed && t("myFollows")}
           </Link>
         )}
 
         {isLoggedIn && (
           <Link
             href="/dashboard"
-            title="My graphs"
+            title={t("myGraphs")}
             className={`flex items-center gap-2 rounded-md px-2 py-2 font-medium ${
               onDashboard ? "bg-violet-100 text-violet-800" : "text-neutral-600 hover:bg-violet-50 hover:text-violet-700"
             } ${collapsed ? "justify-center" : ""}`}
           >
             <GraphsIcon />
-            {!collapsed && "My graphs"}
+            {!collapsed && t("myGraphs")}
           </Link>
         )}
 
         {isLoggedIn && (
           <Link
             href="/playground"
-            title="Knowledge Playground"
+            title={t("playground")}
             className={`flex items-center gap-2 rounded-md px-2 py-2 font-medium ${
               onPlayground ? "bg-violet-100 text-violet-800" : "text-neutral-600 hover:bg-violet-50 hover:text-violet-700"
             } ${collapsed ? "justify-center" : ""}`}
           >
             <PlaygroundIcon />
-            {!collapsed && "Playground"}
+            {!collapsed && t("playground")}
           </Link>
         )}
 
         {isLoggedIn && (
           <Link
             href="/posts"
-            title="My Posts"
+            title={t("myPosts")}
             className={`flex items-center gap-2 rounded-md px-2 py-2 font-medium ${
               onPosts ? "bg-violet-100 text-violet-800" : "text-neutral-600 hover:bg-violet-50 hover:text-violet-700"
             } ${collapsed ? "justify-center" : ""}`}
           >
             <PostsIcon />
-            {!collapsed && "My Posts"}
+            {!collapsed && t("myPosts")}
           </Link>
         )}
 
         {isLoggedIn && (
           <Link
             href="/friends"
-            title="Friends"
+            title={t("friends")}
             className={`relative flex items-center gap-2 rounded-md px-2 py-2 font-medium ${
               onFriends ? "bg-violet-100 text-violet-800" : "text-neutral-600 hover:bg-violet-50 hover:text-violet-700"
             } ${collapsed ? "justify-center" : ""}`}
@@ -329,7 +332,7 @@ export function SidebarNav({
             <FriendsIcon />
             {!collapsed && (
               <span className="flex flex-1 items-center justify-between">
-                Friends
+                {t("friends")}
                 {pendingFriendRequests > 0 && (
                   <span className="rounded-full bg-red-500 px-1.5 py-0.5 text-[10px] font-semibold text-white">
                     {pendingFriendRequests}
@@ -344,13 +347,13 @@ export function SidebarNav({
         {isLoggedIn && (
           <Link
             href="/profile"
-            title="Profile"
+            title={t("profile")}
             className={`flex items-center gap-2 rounded-md px-2 py-2 font-medium ${
               onProfile ? "bg-violet-100 text-violet-800" : "text-neutral-600 hover:bg-violet-50 hover:text-violet-700"
             } ${collapsed ? "justify-center" : ""}`}
           >
             <Avatar url={avatarUrl} username={username ?? "?"} size={18} />
-            {!collapsed && "Profile"}
+            {!collapsed && t("profile")}
           </Link>
         )}
       </nav>
@@ -360,26 +363,26 @@ export function SidebarNav({
           <form action={logout}>
             <button
               type="submit"
-              title="Log out"
+              title={t("logOut")}
               className={`flex w-full items-center gap-2 rounded-md px-2 py-2 text-neutral-500 hover:bg-violet-50 hover:text-violet-700 ${
                 collapsed ? "justify-center" : ""
               }`}
             >
               <LogoutIcon />
-              {!collapsed && "Log out"}
+              {!collapsed && t("logOut")}
             </button>
           </form>
         ) : collapsed ? (
-          <Link href="/login" title="Log in" className="flex justify-center rounded-md px-2 py-2 text-neutral-500 hover:bg-violet-50 hover:text-violet-700">
+          <Link href="/login" title={t("logIn")} className="flex justify-center rounded-md px-2 py-2 text-neutral-500 hover:bg-violet-50 hover:text-violet-700">
             <LogoutIcon />
           </Link>
         ) : (
           <div className="flex flex-col gap-2 px-1">
             <Link href="/login" className="text-neutral-600 hover:text-violet-700">
-              Log in
+              {t("logIn")}
             </Link>
             <Link href="/signup" className="rounded-md bg-violet-600 px-3 py-1.5 text-center text-white hover:bg-violet-700">
-              Sign up
+              {t("signUp")}
             </Link>
           </div>
         )}

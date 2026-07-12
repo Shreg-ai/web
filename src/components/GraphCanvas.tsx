@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
 import { Background, Controls, MiniMap, ReactFlow, type Edge, type Node } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { computeForceLayout } from "@/lib/graph/layout";
@@ -18,6 +19,7 @@ const CANVAS_WIDTH = 2400;
 const CANVAS_HEIGHT = 1800;
 
 export function GraphCanvas({ vault, metrics, selectedNodeId, onSelectNode }: GraphCanvasProps) {
+  const t = useTranslations("graphCanvas");
   // d3-force seeds initial node positions with Math.random() when a node has
   // no preset x/y, so the server-rendered layout necessarily differs from
   // the client's, causing a hydration mismatch. Skipping SSR for this
@@ -122,7 +124,7 @@ export function GraphCanvas({ vault, metrics, selectedNodeId, onSelectNode }: Gr
       </ReactFlow>
       {useTypeColoring && (
         <div className="pointer-events-none absolute top-3 right-3 z-10 flex max-w-[12rem] flex-col gap-1 rounded-lg border border-violet-100 bg-white/90 p-2.5 text-xs shadow-sm backdrop-blur-sm">
-          <span className="mb-0.5 font-medium text-neutral-500">Node type</span>
+          <span className="mb-0.5 font-medium text-neutral-500">{t("nodeType")}</span>
           {[...nodeTypes].sort().map((type) => (
             <div key={type} className="flex items-center gap-1.5">
               <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: colorForType(type) }} />
@@ -132,7 +134,7 @@ export function GraphCanvas({ vault, metrics, selectedNodeId, onSelectNode }: Gr
           {hasUntypedNodes && (
             <div className="flex items-center gap-1.5">
               <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: UNTYPED_NODE_COLOR }} />
-              <span className="truncate text-neutral-500">untyped</span>
+              <span className="truncate text-neutral-500">{t("untyped")}</span>
             </div>
           )}
         </div>

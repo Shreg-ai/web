@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import type { GraphEvaluationRow, GraphRow, PostRow, ProfileRow } from "@/lib/supabase/dbTypes";
 import { FeedPostCard } from "@/components/FeedPostCard";
@@ -11,6 +12,7 @@ export default async function FeedPage({
 }) {
   const { categories: categoriesParam } = await searchParams;
   const selectedCategories = (categoriesParam ?? "").split(",").filter(isPostCategory);
+  const t = await getTranslations("feed");
 
   const supabase = await createClient();
   const {
@@ -29,9 +31,7 @@ export default async function FeedPage({
     return (
       <div className="mx-auto w-full max-w-xl flex-1 overflow-y-auto bg-gradient-to-b from-violet-50 to-white p-6 text-center">
         <p className="mt-16 text-sm text-neutral-500">
-          {selectedCategories.length > 0
-            ? "No posts in these categories yet."
-            : "No posts yet. Be the first — save a graph, generate a description, and share it to the feed."}
+          {selectedCategories.length > 0 ? t("emptyFiltered") : t("emptyAll")}
         </p>
       </div>
     );
@@ -57,7 +57,7 @@ export default async function FeedPage({
 
   return (
     <div className="mx-auto w-full max-w-2xl flex-1 overflow-y-auto bg-gradient-to-b from-violet-50 to-white p-6">
-      <h1 className="mb-6 text-xl font-medium text-violet-950">Explore</h1>
+      <h1 className="mb-6 text-xl font-medium text-violet-950">{t("title")}</h1>
       <ul className="flex flex-col gap-4">
         {postRows.map((post) => {
           const graph = graphById.get(post.graph_id);
@@ -78,7 +78,7 @@ export default async function FeedPage({
         })}
       </ul>
       <p className="mt-8 text-center text-xs text-neutral-400">
-        Have your own knowledge graph? <Link href="/" className="text-violet-600 hover:underline">Upload one</Link> and share it.
+        {t("ownGraphCta")} <Link href="/" className="text-violet-600 hover:underline">{t("uploadOne")}</Link> {t("andShareIt")}
       </p>
     </div>
   );

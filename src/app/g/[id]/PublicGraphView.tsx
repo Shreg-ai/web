@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Group, Panel, Separator, usePanelRef } from "react-resizable-panels";
 import { GraphCanvas } from "@/components/GraphCanvas";
 import { NodeDetailPanel } from "@/components/NodeDetailPanel";
@@ -19,13 +20,14 @@ const HANDLE_H = "h-1 shrink-0 bg-violet-100 transition-colors hover:bg-violet-3
 const HANDLE_V = "w-1 shrink-0 bg-violet-100 transition-colors hover:bg-violet-300 active:bg-violet-400 data-[resize-handle-active]:bg-violet-400";
 
 function PanelHeader({ label, collapsed, onToggle }: { label: string; collapsed: boolean; onToggle: () => void }) {
+  const t = useTranslations("graphPage");
   return (
     <button
       onClick={onToggle}
       className="flex w-full shrink-0 items-center justify-between border-b border-violet-100 bg-white px-3 py-1.5 text-left"
     >
       <span className="text-xs font-medium text-neutral-500">{label}</span>
-      <span className="text-xs text-violet-600">{collapsed ? "Expand ▸" : "Collapse ▾"}</span>
+      <span className="text-xs text-violet-600">{collapsed ? t("expand") : t("collapse")}</span>
     </button>
   );
 }
@@ -45,6 +47,8 @@ export function PublicGraphView({
   posts: PostRow[];
   authors: ProfileRow[];
 }) {
+  const t = useTranslations("graphPage");
+  const tCommon = useTranslations("common");
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
   const { vault, metrics } = graph.graph_data;
 
@@ -84,7 +88,8 @@ export function PublicGraphView({
         <div>
           <h1 className="text-base font-medium text-violet-950">{graph.title}</h1>
           <p className="text-xs text-neutral-500">
-            {graph.node_count} nodes · {graph.edge_count} edges · {graph.visibility === "public" ? "Public" : "Private"}
+            {graph.node_count} {tCommon("nodes")} · {graph.edge_count} {tCommon("edges")} ·{" "}
+            {graph.visibility === "public" ? tCommon("public") : tCommon("private")}
           </p>
         </div>
       </div>
@@ -93,7 +98,7 @@ export function PublicGraphView({
           {evaluationRunning && (
             <div className="sticky top-0 z-10 flex items-center gap-2 bg-violet-600 px-4 py-2 text-sm font-medium text-white">
               <Spinner className="h-4 w-4" />
-              Evaluation running — this takes about a minute. You can keep browsing or post while you wait.
+              {t("evaluationRunning")}
             </div>
           )}
           <GraphAnalysisPanel graphId={graph.id} initialDescription={graph.description} initialScenarios={graph.scenarios} />
@@ -124,7 +129,7 @@ export function PublicGraphView({
               onResize={() => setCanvasCollapsed(Boolean(canvasPanelRef.current?.isCollapsed()))}
               className="flex flex-col bg-violet-50/30"
             >
-              <PanelHeader label="Graph" collapsed={canvasCollapsed} onToggle={toggleCanvas} />
+              <PanelHeader label={t("graph")} collapsed={canvasCollapsed} onToggle={toggleCanvas} />
               {!canvasCollapsed && (
                 <div className="flex-1 overflow-hidden">
                   <GraphCanvas vault={vault} metrics={metrics} selectedNodeId={selectedNodeId} onSelectNode={setSelectedNodeId} />
@@ -141,7 +146,7 @@ export function PublicGraphView({
               onResize={() => setNodeCollapsed(Boolean(nodePanelRef.current?.isCollapsed()))}
               className="flex flex-col overflow-hidden bg-white"
             >
-              <PanelHeader label="Node content" collapsed={nodeCollapsed} onToggle={toggleNode} />
+              <PanelHeader label={t("nodeContent")} collapsed={nodeCollapsed} onToggle={toggleNode} />
               {!nodeCollapsed && (
                 <div className="flex-1 overflow-y-auto">
                   <NodeDetailPanel vault={vault} metrics={metrics} selectedNodeId={selectedNodeId} onSelectNode={setSelectedNodeId} />

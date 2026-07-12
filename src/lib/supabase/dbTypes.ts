@@ -1,5 +1,6 @@
 import type { NodeMetrics, ParsedVault, Scenario } from "@/lib/graph/types";
 import type { PostCategory } from "@/lib/categories";
+import type { Locale } from "@/i18n/locales";
 
 export interface StoredGraphPayload {
   vault: ParsedVault;
@@ -40,6 +41,7 @@ export interface ProfileRow {
   username: string;
   avatar_url: string | null;
   bio: string | null;
+  preferred_language: Locale;
   created_at: string;
 }
 

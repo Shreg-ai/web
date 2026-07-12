@@ -2,8 +2,9 @@
 
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import { headers } from "next/headers";
+import { headers, cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
+import { isLocale, LOCALE_COOKIE } from "@/i18n/locales";
 
 /** The deployed origin (works across localhost, the .vercel.app URL, and the custom domain) from request headers. */
 async function getOrigin(): Promise<string> {
@@ -19,9 +20,21 @@ export async function login(formData: FormData): Promise<void> {
   const password = String(formData.get("password") ?? "");
   const redirectTo = String(formData.get("redirectTo") ?? "") || "/";
 
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
   if (error) {
     redirect(`/login?error=${encodeURIComponent(error.message)}`);
+  }
+
+  // The saved language preference is the account default, but the locale
+  // cookie (not the DB row) is what every request actually reads -- sync it
+  // here so a login on a new device/browser picks up the right language
+  // immediately, without waiting for a profile-page visit.
+  if (data.user) {
+    const { data: profile } = await supabase.from("profiles").select("preferred_language").eq("id", data.user.id).single();
+    if (isLocale(profile?.preferred_language)) {
+      const cookieStore = await cookies();
+      cookieStore.set(LOCALE_COOKIE, profile.preferred_language, { maxAge: 60 * 60 * 24 * 365, path: "/" });
+    }
   }
 
   revalidatePath("/", "layout");

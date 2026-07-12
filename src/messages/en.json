@@ -1,0 +1,374 @@
+{
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "copy": "Copy",
+    "copied": "Copied!",
+    "loading": "Loading…",
+    "show": "Show",
+    "hide": "Hide",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
+    "nodes": "nodes",
+    "edges": "edges",
+    "clusters": "clusters",
+    "public": "Public",
+    "private": "Private",
+    "delete": "Delete",
+    "edit": "Edit",
+    "goBack": "Go back"
+  },
+  "categories": {
+    "Finance": "Finance",
+    "Legal": "Legal",
+    "Economics": "Economics",
+    "Coding": "Coding",
+    "Defense": "Defense",
+    "Other": "Other"
+  },
+  "nav": {
+    "explore": "Explore",
+    "categoryAll": "All",
+    "exploreButton": "Explore",
+    "categoryLimit": "Up to {max} categories at a time",
+    "connect": "Connect",
+    "myFollows": "My Follows",
+    "myGraphs": "My graphs",
+    "playground": "Playground",
+    "myPosts": "My Posts",
+    "friends": "Friends",
+    "profile": "Profile",
+    "logOut": "Log out",
+    "logIn": "Log in",
+    "signUp": "Sign up",
+    "expandSidebar": "Expand sidebar",
+    "collapseSidebar": "Collapse sidebar"
+  },
+  "auth": {
+    "login": {
+      "title": "Log in",
+      "email": "Email",
+      "password": "Password",
+      "submit": "Log in",
+      "submitting": "Logging in…",
+      "forgotPassword": "Forgot password?",
+      "noAccount": "No account?",
+      "signUp": "Sign up"
+    },
+    "signup": {
+      "title": "Sign up",
+      "username": "Username",
+      "usernameHint": "3-30 characters: letters, numbers, - or _",
+      "email": "Email",
+      "password": "Password",
+      "submit": "Sign up",
+      "submitting": "Signing up…",
+      "haveAccount": "Already have an account?",
+      "logIn": "Log in"
+    },
+    "forgotPassword": {
+      "title": "Reset your password",
+      "description": "Enter your email and we'll send you a reset link.",
+      "email": "Email",
+      "submit": "Send reset link",
+      "submitting": "Sending…",
+      "sentTitle": "Check your email",
+      "sentDescription": "If an account exists for that address, a password reset link is on its way."
+    },
+    "updatePassword": {
+      "title": "Set a new password",
+      "description": "Choose a new password for your account.",
+      "newPassword": "New password",
+      "submit": "Update password"
+    }
+  },
+  "profile": {
+    "title": "Your profile",
+    "publicPage": "Public page:",
+    "pictureHeading": "Profile picture",
+    "pictureUploading": "Uploading…",
+    "pictureHint": "PNG or JPG.",
+    "aboutHeading": "About you",
+    "aboutHint": "Shown on your public profile page.",
+    "aboutPlaceholder": "Tell people what you work on and what your graphs are about.",
+    "saving": "Saving…",
+    "saved": "Saved.",
+    "passwordHeading": "Change password",
+    "passwordPlaceholder": "New password",
+    "updating": "Updating…",
+    "updatePassword": "Update password",
+    "passwordUpdated": "Password updated.",
+    "languageHeading": "Language",
+    "languageHint": "Changes buttons and descriptions across the site. Your graphs' and posts' own content is never translated."
+  },
+  "dashboard": {
+    "title": "My graphs",
+    "viewPublicProfile": "View my public profile",
+    "uploadNew": "Upload a new vault",
+    "empty": "No graphs saved yet. Upload a vault to get started.",
+    "confirmDelete": "Delete this graph? This can't be undone.",
+    "makePrivate": "Make private",
+    "makePublic": "Make public",
+    "copyLink": "Copy link"
+  },
+  "home": {
+    "tagline": "Turn a knowledge graph into something an AI agent can query.",
+    "browseExplore": "Or browse Explore without an account →",
+    "uploadDifferent": "Upload a different vault"
+  },
+  "vaultUploader": {
+    "heading": "Visualize your knowledge graph",
+    "description": "Select an Obsidian vault folder. Parsing happens entirely in your browser, so you can preview the graph without anything leaving your computer — nothing is saved until you choose to save it below.",
+    "chooseFolder": "Choose vault folder",
+    "parsing": "Parsing…",
+    "noMarkdownFiles": "No Markdown (.md) files found in that folder.",
+    "failedToParse": "Failed to parse vault."
+  },
+  "landing": {
+    "flow": {
+      "vault": "Your notes (a vault)",
+      "graph": "Knowledge graph",
+      "analysis": "AI analysis",
+      "mcp": "Connect via MCP"
+    },
+    "sections": {
+      "vault": {
+        "heading": "Your notes, connected",
+        "body": "A “vault” is just a folder of your notes, linked together like a personal wiki — tools like Obsidian make them easy to write. Upload one and Shreg turns it into a graph: the ideas inside, and how they connect."
+      },
+      "analysis": {
+        "heading": "AI figures out what it's good for",
+        "body": "An AI reads through the graph and writes a short description of what it's useful for, plus example questions it answers well — so anyone (including you) knows what to expect before relying on it."
+      },
+      "mcp": {
+        "heading": "Any AI agent can query it live",
+        "body": "MCP (Model Context Protocol) is a standard that lets AI assistants like Claude connect directly to outside data. Every graph gets its own MCP address — paste it into your agent's settings and it can search your notes while it answers you."
+      }
+    }
+  },
+  "graphPage": {
+    "expand": "Expand ▸",
+    "collapse": "Collapse ▾",
+    "graph": "Graph",
+    "nodeContent": "Node content",
+    "evaluationRunning": "Evaluation running — this takes about a minute. You can keep browsing or post while you wait."
+  },
+  "graphSummary": {
+    "noDescription": "The author hasn't written a description for this graph yet.",
+    "connectViaMcp": "Connect via MCP",
+    "mcpHint": "Point your MCP client at this URL to query the full graph directly.",
+    "doesItHelp": "Does it actually help? ({count, plural, one {# test question} other {# test questions}})",
+    "noEvaluation": "The author hasn't run an evaluation on this graph yet."
+  },
+  "evaluation": {
+    "heading": "Test as an MCP tool",
+    "endpointLabel": "MCP endpoint",
+    "mcpHint": "Point any MCP client at this URL to query this graph directly.",
+    "noScenarios": "Generate or write test questions above first, then run the evaluation.",
+    "running": "Running… (this takes a minute)",
+    "rerun": "Re-run evaluation",
+    "run": "Run evaluation",
+    "clearResults": "Clear results"
+  },
+  "evaluationResults": {
+    "graphWins": "Graph-augmented wins",
+    "baselineWins": "Baseline wins",
+    "ties": "Ties",
+    "avgScores": "Avg scores (groundedness/framework/specificity) — baseline {baseline}, graph {graph}",
+    "graphAugmentedWon": "Graph-augmented won",
+    "baselineWon": "Baseline won",
+    "tie": "Tie",
+    "hideAnswers": "Hide answers",
+    "showAnswers": "Show answers",
+    "baseline": "Baseline",
+    "graphAugmented": "Graph-augmented",
+    "judgeReasoning": "Judge's reasoning"
+  },
+  "graphAnalysis": {
+    "heading": "AI analysis",
+    "generating": "Generating…",
+    "regenerate": "Regenerate with AI",
+    "generate": "Generate with AI",
+    "edit": "Edit",
+    "writeManually": "Write manually",
+    "empty": "No description or test questions yet. Generate them with AI, or write your own.",
+    "testQuestions": "Test questions",
+    "descriptionLabel": "Description",
+    "descriptionPlaceholder": "What is this knowledge graph useful for? What kinds of questions does it help answer?",
+    "addQuestion": "+ Add question",
+    "questionPlaceholder": "Question a real user might ask",
+    "remove": "Remove",
+    "whyRelevantPlaceholder": "Why does this graph give an edge answering it? (optional)",
+    "noQuestions": "No questions yet — add one above.",
+    "saving": "Saving…"
+  },
+  "versionHistory": {
+    "versions": "Versions ({count})",
+    "uploading": "Uploading…",
+    "uploadNew": "Upload new version",
+    "current": "Current",
+    "noMarkdownFiles": "No Markdown (.md) files found in that folder.",
+    "failedToParse": "Failed to parse vault."
+  },
+  "shareStructure": {
+    "heading": "Share full structure with the Knowledge Playground",
+    "description": "Lets other users import this graph's actual nodes and connections into their own Playground sessions -- separate from the AI analysis and eval results, which are already visible to anyone once this graph is public. Turning this on also makes the graph public."
+  },
+  "saveGraph": {
+    "loginPrompt": "to save and share this graph.",
+    "saved": "Saved.",
+    "viewSaved": "View saved graph →",
+    "storageNotice": "Saving stores this graph (including note contents) in our database.",
+    "titlePlaceholder": "Give this graph a title",
+    "makePublicLabel": "Make this graph public (shareable link)",
+    "saving": "Saving…"
+  },
+  "nodeDetail": {
+    "emptyState": "Click a node to see its content and connections.",
+    "unresolvedNote": "This node is referenced by a [[wikilink]] but has no corresponding note in the vault.",
+    "incoming": "{count} incoming",
+    "outgoing": "{count} outgoing",
+    "linksTo": "Links to",
+    "linkedFrom": "Linked from"
+  },
+  "graphCanvas": {
+    "nodeType": "Node type",
+    "untyped": "untyped",
+    "sourceGraph": "Source graph",
+    "dragHint": "Drag from one node's edge to another to link them"
+  },
+  "playground": {
+    "heading": "Knowledge Playground",
+    "description": "Import graphs, draw links between nodes from different graphs, and run analysis across all of them together. Nothing here is saved -- reloading starts fresh.",
+    "importGraph": "Import a graph",
+    "noGraphsAvailable": "No graphs available yet -- upload your own, or wait for others to share theirs.",
+    "you": "You",
+    "remove": "Remove",
+    "import": "Import",
+    "couldNotImport": "Could not import that graph.",
+    "colorNodesBy": "Color nodes by",
+    "modeType": "Type",
+    "modeSource": "Source",
+    "modeCluster": "Cluster",
+    "colorHintType": "Colored by each node's own type (from its source graph's frontmatter).",
+    "colorHintSource": "Colored by which imported graph each node came from.",
+    "colorHintClusterReady": "Colored by cluster from the structural analysis below.",
+    "colorHintClusterNotReady": "Run structural analysis first to color by cluster.",
+    "analysis": "Analysis",
+    "runAnalysis": "Run structural analysis",
+    "findConnection": "Find a connection",
+    "fromNode": "From node…",
+    "toNode": "To node…",
+    "findPath": "Find path",
+    "noStartEnd": "Pick a start and end node first.",
+    "noPathFound": "No connection found between those nodes -- try adding a manual link.",
+    "hops": "{count, plural, one {# hop} other {# hops}}:",
+    "clear": "Clear",
+    "node": "Node",
+    "emptyField": "Import a graph from the left to get started -- this field is empty until then."
+  },
+  "feed": {
+    "title": "Explore",
+    "emptyFiltered": "No posts in these categories yet.",
+    "emptyAll": "No posts yet. Be the first — save a graph, generate a description, and share it to the feed.",
+    "ownGraphCta": "Have your own knowledge graph?",
+    "uploadOne": "Upload one",
+    "andShareIt": "and share it."
+  },
+  "follows": {
+    "title": "My Follows",
+    "notFollowingYet": "You're not following anyone yet.",
+    "toFindPeople": "to find people to follow.",
+    "noPostsYet": "No posts yet from people you follow."
+  },
+  "friends": {
+    "title": "Friends",
+    "friendRequests": "Friend requests",
+    "sentRequests": "Sent requests",
+    "yourFriends": "Your friends",
+    "noFriendsYet": "No friends yet. Visit someone's profile to send a request."
+  },
+  "posts": {
+    "title": "My Posts",
+    "empty": "You haven't posted anything yet. Share a graph from its page to get started."
+  },
+  "feedPostCard": {
+    "justNow": "just now",
+    "minutesAgo": "{count}m ago",
+    "hoursAgo": "{count}h ago",
+    "daysAgo": "{count}d ago",
+    "confirmDelete": "Delete this post?",
+    "saving": "Saving…",
+    "evalWins": "{wins}/{total} eval wins"
+  },
+  "followButton": {
+    "follow": "Follow",
+    "following": "Following"
+  },
+  "friendActions": {
+    "removeConfirm": "Remove friend?",
+    "yes": "Yes",
+    "friendsCheck": "Friends ✓",
+    "accept": "Accept",
+    "decline": "Decline",
+    "requestSent": "Request sent",
+    "addFriend": "Add friend"
+  },
+  "postComposer": {
+    "heading": "Share to feed",
+    "writePrompt": "Write a post promoting this graph.",
+    "willBePublic": "Posting will also make this graph public.",
+    "contentPlaceholder": "What's this graph good for? Why should someone connect their agent to it?",
+    "posting": "Posting…",
+    "post": "Post",
+    "posted": "Posted to the feed."
+  },
+  "graphPostsList": {
+    "heading": "Posts about this graph ({count})"
+  },
+  "completeProfile": {
+    "heading": "Finish setting up your account",
+    "description": "Your account is signed in, but it's missing a username. Choose one to continue.",
+    "usernamePlaceholder": "Username",
+    "saving": "Saving…",
+    "continue": "Continue"
+  },
+  "publicProfile": {
+    "noBio": "No bio yet.",
+    "followers": "followers",
+    "following": "following",
+    "friends": "friends",
+    "publicGraphs": "Public knowledge graphs",
+    "noPublicGraphs": "No public graphs yet.",
+    "posts": "Posts",
+    "noPosts": "No posts yet."
+  },
+  "profileSubpages": {
+    "followersTitle": "Followers",
+    "followingTitle": "Following",
+    "noFollowersYet": "No followers yet.",
+    "noFollowingYet": "Not following anyone yet."
+  },
+  "connect": {
+    "title": "Connect your graph to an AI agent",
+    "intro": "Every graph on Shreg is also a live MCP (Model Context Protocol) server -- a small set of tools an AI agent can call to search, read, and traverse that graph directly, instead of just guessing from its training data. Any client that speaks MCP can connect to it: Claude Code, Claude Desktop, ChatGPT, Cursor, Windsurf, VS Code, Gemini CLI, Cline, and more.",
+    "knowingHeading": "A few things worth knowing",
+    "knowing1": "Each graph has its own endpoint URL -- one URL per graph, not one for your whole account.",
+    "knowing2Prefix": "Public graphs work with any client out of the box. Private graphs only respond to requests carrying",
+    "knowing2Your": "your",
+    "knowing2Suffix": "logged-in session -- since remote clients (Claude Desktop, ChatGPT, and most others) call this URL from their own servers, not your browser, they generally can't authenticate as you. If you want an agent to reach a graph, make it public first.",
+    "knowing3": "Connecting an agent doesn't change who can see the graph on Shreg -- it's a separate, additional way in.",
+    "pickEndpoint": "Pick which graph's endpoint to use below",
+    "privateLabel": "(private)",
+    "noGraphsMessage": "Log in and upload a graph to get your own copy-pasteable endpoint -- for now, the instructions below use a placeholder URL you can swap your real one into.",
+    "privateWarning": "This graph is private -- most remote clients below won't be able to authenticate as you and will see it as not found. Make it public from the graph page if you want an agent to actually reach it.",
+    "chooseWhere": "Choose where you want to connect it",
+    "setUp": "Set up {name}",
+    "kindCli": "CLI",
+    "kindDesktopApp": "Desktop app",
+    "kindChatApp": "Chat app",
+    "kindIde": "IDE",
+    "kindIdeExtension": "IDE extension",
+    "kindGeneric": "Generic"
+  }
+}

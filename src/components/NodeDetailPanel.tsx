@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { splitBodyWithWikilinks } from "@/lib/graph/wikilinks";
 import { colorForType } from "@/lib/graph/colors";
 import type { NodeMetrics, ParsedVault } from "@/lib/graph/types";
@@ -18,10 +19,12 @@ interface NodeDetailPanelProps {
 }
 
 export function NodeDetailPanel({ vault, metrics, selectedNodeId, onSelectNode }: NodeDetailPanelProps) {
+  const t = useTranslations("nodeDetail");
+
   if (!selectedNodeId) {
     return (
       <div className="flex h-full items-center justify-center p-6 text-center text-sm text-neutral-400">
-        Click a node to see its content and connections.
+        {t("emptyState")}
       </div>
     );
   }
@@ -45,14 +48,12 @@ export function NodeDetailPanel({ vault, metrics, selectedNodeId, onSelectNode }
       </div>
 
       {isUnresolved ? (
-        <p className="text-sm text-neutral-500">
-          This node is referenced by a [[wikilink]] but has no corresponding note in the vault.
-        </p>
+        <p className="text-sm text-neutral-500">{t("unresolvedNote")}</p>
       ) : (
         <>
           <div className="flex gap-3 text-xs text-neutral-500">
-            <span>{nodeMetrics?.inDegree ?? 0} incoming</span>
-            <span>{nodeMetrics?.outDegree ?? 0} outgoing</span>
+            <span>{t("incoming", { count: nodeMetrics?.inDegree ?? 0 })}</span>
+            <span>{t("outgoing", { count: nodeMetrics?.outDegree ?? 0 })}</span>
           </div>
 
           {frontmatterEntries.length > 0 && (
@@ -99,7 +100,7 @@ export function NodeDetailPanel({ vault, metrics, selectedNodeId, onSelectNode }
 
       {outgoing.length > 0 && (
         <div>
-          <h4 className="mb-1 text-xs font-medium tracking-wide text-neutral-400 uppercase">Links to</h4>
+          <h4 className="mb-1 text-xs font-medium tracking-wide text-neutral-400 uppercase">{t("linksTo")}</h4>
           <ul className="flex flex-col gap-1">
             {outgoing.map((e, i) => (
               <li key={i}>
@@ -114,7 +115,7 @@ export function NodeDetailPanel({ vault, metrics, selectedNodeId, onSelectNode }
 
       {incoming.length > 0 && (
         <div>
-          <h4 className="mb-1 text-xs font-medium tracking-wide text-neutral-400 uppercase">Linked from</h4>
+          <h4 className="mb-1 text-xs font-medium tracking-wide text-neutral-400 uppercase">{t("linkedFrom")}</h4>
           <ul className="flex flex-col gap-1">
             {incoming.map((e, i) => (
               <li key={i}>

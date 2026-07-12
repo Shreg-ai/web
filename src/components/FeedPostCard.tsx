@@ -2,19 +2,20 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { Avatar } from "@/components/Avatar";
 import { deletePost, updatePost } from "@/app/g/[id]/actions";
 import { POST_CATEGORIES, type PostCategory } from "@/lib/categories";
 import type { GraphEvaluationRow, GraphRow, PostRow } from "@/lib/supabase/dbTypes";
 
-function timeAgo(iso: string): string {
+function timeAgo(iso: string, t: ReturnType<typeof useTranslations>): string {
   const seconds = Math.floor((Date.now() - new Date(iso).getTime()) / 1000);
-  if (seconds < 60) return "just now";
+  if (seconds < 60) return t("justNow");
   const minutes = Math.floor(seconds / 60);
-  if (minutes < 60) return `${minutes}m ago`;
+  if (minutes < 60) return t("minutesAgo", { count: minutes });
   const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours}h ago`;
-  return `${Math.floor(hours / 24)}d ago`;
+  if (hours < 24) return t("hoursAgo", { count: hours });
+  return t("daysAgo", { count: Math.floor(hours / 24) });
 }
 
 export function FeedPostCard({
@@ -38,6 +39,9 @@ export function FeedPostCard({
   /** Clamp content to a few lines -- for compact listings like "posts about this graph". */
   truncate?: boolean;
 }) {
+  const t = useTranslations("feedPostCard");
+  const tCommon = useTranslations("common");
+  const tCategories = useTranslations("categories");
   const graphWins = evaluations.filter((e) => e.winner === "graph").length;
 
   const [content, setContent] = useState(post.content);
@@ -60,7 +64,7 @@ export function FeedPostCard({
   }
 
   async function handleDelete() {
-    if (!window.confirm("Delete this post?")) return;
+    if (!window.confirm(t("confirmDelete"))) return;
     setBusy(true);
     setError(null);
     const result = await deletePost(post.id);
@@ -82,16 +86,16 @@ export function FeedPostCard({
           @{username}
         </Link>
         <span>·</span>
-        <span>{timeAgo(post.created_at)}</span>
+        <span>{timeAgo(post.created_at, t)}</span>
         <span>·</span>
-        {!editing && <span className="rounded-full bg-violet-100 px-2 py-0.5 font-medium text-violet-700">{post.category}</span>}
+        {!editing && <span className="rounded-full bg-violet-100 px-2 py-0.5 font-medium text-violet-700">{tCategories(post.category)}</span>}
         {isOwner && !editing && (
           <span className="ml-auto flex gap-2">
             <button onClick={() => setEditing(true)} className="text-neutral-500 hover:text-violet-700 hover:underline">
-              Edit
+              {tCommon("edit")}
             </button>
             <button onClick={handleDelete} disabled={busy} className="text-neutral-500 hover:text-red-600 hover:underline disabled:opacity-50">
-              Delete
+              {tCommon("delete")}
             </button>
           </span>
         )}
@@ -113,7 +117,7 @@ export function FeedPostCard({
             >
               {POST_CATEGORIES.map((cat) => (
                 <option key={cat} value={cat}>
-                  {cat}
+                  {tCategories(cat)}
                 </option>
               ))}
             </select>
@@ -122,7 +126,7 @@ export function FeedPostCard({
               disabled={busy || !content.trim()}
               className="rounded-md bg-violet-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-violet-700 disabled:opacity-50"
             >
-              {busy ? "Saving…" : "Save"}
+              {busy ? t("saving") : tCommon("save")}
             </button>
             <button
               onClick={() => {
@@ -133,7 +137,7 @@ export function FeedPostCard({
               }}
               className="text-sm text-neutral-500 hover:text-neutral-900"
             >
-              Cancel
+              {tCommon("cancel")}
             </button>
           </div>
         </div>
@@ -149,11 +153,11 @@ export function FeedPostCard({
           {graph.description && <p className="mt-1 line-clamp-2 text-xs text-neutral-600">{graph.description}</p>}
           <div className="mt-2 flex items-center gap-3 text-xs text-neutral-500">
             <span>
-              {graph.node_count} nodes · {graph.edge_count} edges
+              {graph.node_count} {tCommon("nodes")} · {graph.edge_count} {tCommon("edges")}
             </span>
             {evaluations.length > 0 && (
               <span className="font-medium text-violet-700">
-                {graphWins}/{evaluations.length} eval wins
+                {t("evalWins", { wins: graphWins, total: evaluations.length })}
               </span>
             )}
           </div>

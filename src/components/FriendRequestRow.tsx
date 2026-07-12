@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { Avatar } from "@/components/Avatar";
 import { acceptFriendRequest, removeFriendConnection } from "@/app/u/[username]/actions";
 import type { ProfileRow } from "@/lib/supabase/dbTypes";
@@ -15,6 +16,8 @@ export function FriendRequestRow({
   profile: ProfileRow;
   direction: "incoming" | "outgoing";
 }) {
+  const t = useTranslations("friendActions");
+  const tCommon = useTranslations("common");
   const [hidden, setHidden] = useState(false);
   const [busy, setBusy] = useState(false);
 
@@ -47,14 +50,14 @@ export function FriendRequestRow({
             disabled={busy}
             className="rounded-md bg-violet-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-violet-700 disabled:opacity-50"
           >
-            Accept
+            {t("accept")}
           </button>
           <button
             onClick={handleRemove}
             disabled={busy}
             className="rounded-md border border-violet-200 px-3 py-1.5 text-sm text-neutral-600 hover:bg-violet-50 disabled:opacity-50"
           >
-            Decline
+            {t("decline")}
           </button>
         </div>
       ) : (
@@ -63,7 +66,7 @@ export function FriendRequestRow({
           disabled={busy}
           className="rounded-md border border-violet-200 px-3 py-1.5 text-sm text-neutral-600 hover:bg-violet-50 disabled:opacity-50"
         >
-          Cancel
+          {tCommon("cancel")}
         </button>
       )}
     </li>

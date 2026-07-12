@@ -1,3 +1,7 @@
+"use client";
+
+import { useTranslations } from "next-intl";
+
 function VaultIcon() {
   return (
     <svg viewBox="0 0 120 120" className="h-16 w-16">
@@ -57,43 +61,33 @@ function McpIcon() {
 }
 
 const SECTIONS = [
-  {
-    icon: VaultIcon,
-    heading: "Your notes, connected",
-    body: "A “vault” is just a folder of your notes, linked together like a personal wiki — tools like Obsidian make them easy to write. Upload one and Shreg turns it into a graph: the ideas inside, and how they connect.",
-  },
-  {
-    icon: AnalysisIcon,
-    heading: "AI figures out what it's good for",
-    body: "An AI reads through the graph and writes a short description of what it's useful for, plus example questions it answers well — so anyone (including you) knows what to expect before relying on it.",
-  },
-  {
-    icon: McpIcon,
-    heading: "Any AI agent can query it live",
-    body: "MCP (Model Context Protocol) is a standard that lets AI assistants like Claude connect directly to outside data. Every graph gets its own MCP address — paste it into your agent's settings and it can search your notes while it answers you.",
-  },
-];
+  { key: "vault", icon: VaultIcon },
+  { key: "analysis", icon: AnalysisIcon },
+  { key: "mcp", icon: McpIcon },
+] as const;
 
-const FLOW_STEPS = ["Your notes (a vault)", "Knowledge graph", "AI analysis", "Connect via MCP"];
+const FLOW_KEYS = ["vault", "graph", "analysis", "mcp"] as const;
 
 export function LandingExplainer() {
+  const t = useTranslations("landing");
+
   return (
     <div className="mx-auto w-full max-w-4xl px-6 pb-16">
       <div className="mb-10 flex flex-wrap items-center justify-center gap-2 text-xs font-medium text-violet-700">
-        {FLOW_STEPS.map((step, i) => (
-          <div key={step} className="flex items-center gap-2">
-            <span className="rounded-full bg-violet-100 px-3 py-1.5">{step}</span>
-            {i < FLOW_STEPS.length - 1 && <span className="text-violet-300">&rarr;</span>}
+        {FLOW_KEYS.map((key, i) => (
+          <div key={key} className="flex items-center gap-2">
+            <span className="rounded-full bg-violet-100 px-3 py-1.5">{t(`flow.${key}`)}</span>
+            {i < FLOW_KEYS.length - 1 && <span className="text-violet-300">&rarr;</span>}
           </div>
         ))}
       </div>
 
       <div className="grid grid-cols-1 gap-8 sm:grid-cols-3">
-        {SECTIONS.map(({ icon: Icon, heading, body }) => (
-          <div key={heading} className="flex flex-col items-center text-center">
+        {SECTIONS.map(({ key, icon: Icon }) => (
+          <div key={key} className="flex flex-col items-center text-center">
             <Icon />
-            <h3 className="mt-4 text-sm font-medium text-violet-950">{heading}</h3>
-            <p className="mt-2 text-xs leading-relaxed text-neutral-600">{body}</p>
+            <h3 className="mt-4 text-sm font-medium text-violet-950">{t(`sections.${key}.heading`)}</h3>
+            <p className="mt-2 text-xs leading-relaxed text-neutral-600">{t(`sections.${key}.body`)}</p>
           </div>
         ))}
       </div>

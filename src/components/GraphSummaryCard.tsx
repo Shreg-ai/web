@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { BackButton } from "@/components/BackButton";
 import { EvaluationResultsList } from "@/components/EvaluationResultsList";
 import { VersionHistoryPanel } from "@/components/VersionHistoryPanel";
@@ -22,6 +23,8 @@ interface GraphSummaryCardProps {
  * deciding whether it's worth connecting to, not for exploring node-by-node.
  */
 export function GraphSummaryCard({ graph, evaluations, versions, posts, authors }: GraphSummaryCardProps) {
+  const t = useTranslations("graphSummary");
+  const tCommon = useTranslations("common");
   const [mcpUrl, setMcpUrl] = useState(`/api/mcp/${graph.id}`);
   useEffect(() => {
     setMcpUrl(`${window.location.origin}/api/mcp/${graph.id}`);
@@ -41,7 +44,7 @@ export function GraphSummaryCard({ graph, evaluations, versions, posts, authors 
         <div>
           <h1 className="text-xl font-medium text-violet-950">{graph.title}</h1>
           <p className="text-xs text-neutral-500">
-            {graph.node_count} nodes · {graph.edge_count} edges
+            {graph.node_count} {tCommon("nodes")} · {graph.edge_count} {tCommon("edges")}
           </p>
         </div>
       </div>
@@ -49,29 +52,29 @@ export function GraphSummaryCard({ graph, evaluations, versions, posts, authors 
       {graph.description ? (
         <p className="text-sm text-neutral-700">{graph.description}</p>
       ) : (
-        <p className="text-sm text-neutral-500">The author hasn&apos;t written a description for this graph yet.</p>
+        <p className="text-sm text-neutral-500">{t("noDescription")}</p>
       )}
 
       <div className="rounded-md bg-violet-50/60 p-3">
-        <p className="mb-1 text-xs font-medium tracking-wide text-neutral-400 uppercase">Connect via MCP</p>
+        <p className="mb-1 text-xs font-medium tracking-wide text-neutral-400 uppercase">{t("connectViaMcp")}</p>
         <div className="flex items-center gap-2">
           <code className="flex-1 truncate text-xs text-neutral-700">{mcpUrl}</code>
           <button onClick={handleCopy} className="shrink-0 text-xs text-violet-600 hover:underline">
-            {copied ? "Copied!" : "Copy"}
+            {copied ? tCommon("copied") : tCommon("copy")}
           </button>
         </div>
-        <p className="mt-1 text-xs text-neutral-500">Point your MCP client at this URL to query the full graph directly.</p>
+        <p className="mt-1 text-xs text-neutral-500">{t("mcpHint")}</p>
       </div>
 
       {evaluations.length > 0 ? (
         <div>
           <h2 className="mb-2 text-xs font-medium tracking-wide text-neutral-400 uppercase">
-            Does it actually help? ({evaluations.length} test question{evaluations.length === 1 ? "" : "s"})
+            {t("doesItHelp", { count: evaluations.length })}
           </h2>
           <EvaluationResultsList evaluations={evaluations} />
         </div>
       ) : (
-        <p className="text-sm text-neutral-500">The author hasn&apos;t run an evaluation on this graph yet.</p>
+        <p className="text-sm text-neutral-500">{t("noEvaluation")}</p>
       )}
 
       <GraphPostsList graph={graph} posts={posts} authors={authors} evaluations={evaluations} />

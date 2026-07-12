@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { VaultUploader } from "@/components/VaultUploader";
 import { GraphCanvas } from "@/components/GraphCanvas";
 import { NodeDetailPanel } from "@/components/NodeDetailPanel";
@@ -10,6 +11,8 @@ import { LandingExplainer } from "@/components/LandingExplainer";
 import type { NodeMetrics, ParsedVault } from "@/lib/graph/types";
 
 export function HomeClient({ isLoggedIn }: { isLoggedIn: boolean }) {
+  const t = useTranslations("home");
+  const tCommon = useTranslations("common");
   const [vault, setVault] = useState<ParsedVault | null>(null);
   const [metrics, setMetrics] = useState<NodeMetrics[]>([]);
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
@@ -22,7 +25,7 @@ export function HomeClient({ isLoggedIn }: { isLoggedIn: boolean }) {
         <div className="flex flex-col items-center px-6 pt-16 pb-10">
           <div className="mb-8 text-center">
             <h1 className="text-2xl font-semibold text-violet-950">Shreg</h1>
-            <p className="mt-1 text-sm text-neutral-500">Turn a knowledge graph into something an AI agent can query.</p>
+            <p className="mt-1 text-sm text-neutral-500">{t("tagline")}</p>
           </div>
           <div className="w-full max-w-lg">
             <VaultUploader
@@ -33,7 +36,7 @@ export function HomeClient({ isLoggedIn }: { isLoggedIn: boolean }) {
             />
           </div>
           <Link href="/feed" className="mt-6 text-sm text-neutral-500 hover:text-violet-700">
-            Or browse Explore without an account →
+            {t("browseExplore")}
           </Link>
         </div>
         <LandingExplainer />
@@ -45,9 +48,9 @@ export function HomeClient({ isLoggedIn }: { isLoggedIn: boolean }) {
     <div className="flex flex-1 flex-col overflow-hidden">
       <div className="flex items-center justify-between border-b border-violet-100 bg-white px-5 py-3">
         <div className="text-sm text-neutral-600">
-          <span className="font-medium text-violet-900">{vault.nodes.length}</span> nodes ·{" "}
-          <span className="font-medium text-violet-900">{vault.edges.length}</span> edges ·{" "}
-          <span className="font-medium text-violet-900">{clusterCount}</span> clusters
+          <span className="font-medium text-violet-900">{vault.nodes.length}</span> {tCommon("nodes")} ·{" "}
+          <span className="font-medium text-violet-900">{vault.edges.length}</span> {tCommon("edges")} ·{" "}
+          <span className="font-medium text-violet-900">{clusterCount}</span> {tCommon("clusters")}
         </div>
         <button
           onClick={() => {
@@ -57,7 +60,7 @@ export function HomeClient({ isLoggedIn }: { isLoggedIn: boolean }) {
           }}
           className="text-sm text-neutral-500 hover:text-violet-700"
         >
-          Upload a different vault
+          {t("uploadDifferent")}
         </button>
       </div>
       <div className="flex flex-1 overflow-hidden">

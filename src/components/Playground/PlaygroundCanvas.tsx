@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
 import { Background, Controls, MiniMap, ReactFlow, type Connection, type Edge, type Node } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { computeForceLayout } from "@/lib/graph/layout";
@@ -32,6 +33,7 @@ export function PlaygroundCanvas({
   onSelectNode,
   onConnect,
 }: PlaygroundCanvasProps) {
+  const t = useTranslations("graphCanvas");
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
 
@@ -154,7 +156,7 @@ export function PlaygroundCanvas({
       </ReactFlow>
       {colorMode === "source" && sourceGraphIds.length > 1 && (
         <div className="pointer-events-none absolute top-3 right-3 z-10 flex max-w-[12rem] flex-col gap-1 rounded-lg border border-violet-100 bg-white/90 p-2.5 text-xs shadow-sm backdrop-blur-sm">
-          <span className="mb-0.5 font-medium text-neutral-500">Source graph</span>
+          <span className="mb-0.5 font-medium text-neutral-500">{t("sourceGraph")}</span>
           {sourceGraphIds.map((id) => {
             const title = vault.nodes.find((n) => n.frontmatter[SOURCE_GRAPH_FIELD] === id)?.frontmatter[SOURCE_GRAPH_TITLE_FIELD];
             return (
@@ -168,7 +170,7 @@ export function PlaygroundCanvas({
       )}
       {colorMode === "type" && nodeTypes.length > 0 && (
         <div className="pointer-events-none absolute top-3 right-3 z-10 flex max-w-[12rem] flex-col gap-1 rounded-lg border border-violet-100 bg-white/90 p-2.5 text-xs shadow-sm backdrop-blur-sm">
-          <span className="mb-0.5 font-medium text-neutral-500">Node type</span>
+          <span className="mb-0.5 font-medium text-neutral-500">{t("nodeType")}</span>
           {nodeTypes.map((type) => (
             <div key={type} className="flex items-center gap-1.5">
               <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: colorForType(type) }} />
@@ -178,13 +180,13 @@ export function PlaygroundCanvas({
           {hasUntypedNodes && (
             <div className="flex items-center gap-1.5">
               <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: UNTYPED_NODE_COLOR }} />
-              <span className="truncate text-neutral-500">untyped</span>
+              <span className="truncate text-neutral-500">{t("untyped")}</span>
             </div>
           )}
         </div>
       )}
       <p className="pointer-events-none absolute bottom-3 left-3 z-10 rounded-md bg-white/90 px-2 py-1 text-xs text-neutral-500 shadow-sm backdrop-blur-sm">
-        Drag from one node&apos;s edge to another to link them
+        {t("dragHint")}
       </p>
     </div>
   );

@@ -1,0 +1,374 @@
+{
+  "common": {
+    "save": "儲存",
+    "cancel": "取消",
+    "copy": "複製",
+    "copied": "已複製！",
+    "loading": "載入中…",
+    "show": "顯示",
+    "hide": "隱藏",
+    "showPassword": "顯示密碼",
+    "hidePassword": "隱藏密碼",
+    "nodes": "節點",
+    "edges": "連結",
+    "clusters": "群集",
+    "public": "公開",
+    "private": "私人",
+    "delete": "刪除",
+    "edit": "編輯",
+    "goBack": "返回"
+  },
+  "categories": {
+    "Finance": "財經",
+    "Legal": "法律",
+    "Economics": "經濟",
+    "Coding": "程式",
+    "Defense": "國防",
+    "Other": "其他"
+  },
+  "nav": {
+    "explore": "探索",
+    "categoryAll": "全部",
+    "exploreButton": "探索",
+    "categoryLimit": "一次最多選擇 {max} 個分類",
+    "connect": "連接",
+    "myFollows": "我的追蹤",
+    "myGraphs": "我的圖譜",
+    "playground": "遊樂場",
+    "myPosts": "我的貼文",
+    "friends": "朋友",
+    "profile": "個人資料",
+    "logOut": "登出",
+    "logIn": "登入",
+    "signUp": "註冊",
+    "expandSidebar": "展開側邊欄",
+    "collapseSidebar": "收合側邊欄"
+  },
+  "auth": {
+    "login": {
+      "title": "登入",
+      "email": "電子郵件",
+      "password": "密碼",
+      "submit": "登入",
+      "submitting": "登入中…",
+      "forgotPassword": "忘記密碼？",
+      "noAccount": "還沒有帳號？",
+      "signUp": "註冊"
+    },
+    "signup": {
+      "title": "註冊",
+      "username": "使用者名稱",
+      "usernameHint": "3-30 個字元：英文字母、數字、- 或 _",
+      "email": "電子郵件",
+      "password": "密碼",
+      "submit": "註冊",
+      "submitting": "註冊中…",
+      "haveAccount": "已經有帳號了？",
+      "logIn": "登入"
+    },
+    "forgotPassword": {
+      "title": "重設密碼",
+      "description": "輸入您的電子郵件，我們將寄送重設密碼連結給您。",
+      "email": "電子郵件",
+      "submit": "傳送重設連結",
+      "submitting": "傳送中…",
+      "sentTitle": "請查看您的電子郵件",
+      "sentDescription": "如果該地址有對應的帳號，密碼重設連結即將寄出。"
+    },
+    "updatePassword": {
+      "title": "設定新密碼",
+      "description": "為您的帳號選擇一個新密碼。",
+      "newPassword": "新密碼",
+      "submit": "更新密碼"
+    }
+  },
+  "profile": {
+    "title": "您的個人資料",
+    "publicPage": "公開頁面：",
+    "pictureHeading": "個人頭像",
+    "pictureUploading": "上傳中…",
+    "pictureHint": "PNG 或 JPG 格式。",
+    "aboutHeading": "關於您",
+    "aboutHint": "顯示在您的公開個人頁面上。",
+    "aboutPlaceholder": "告訴大家您在做什麼，以及您的圖譜是關於什麼的。",
+    "saving": "儲存中…",
+    "saved": "已儲存。",
+    "passwordHeading": "變更密碼",
+    "passwordPlaceholder": "新密碼",
+    "updating": "更新中…",
+    "updatePassword": "更新密碼",
+    "passwordUpdated": "密碼已更新。",
+    "languageHeading": "語言",
+    "languageHint": "變更整個網站的按鈕與說明文字語言。您的圖譜與貼文內容本身不會被翻譯。"
+  },
+  "dashboard": {
+    "title": "我的圖譜",
+    "viewPublicProfile": "查看我的公開個人頁面",
+    "uploadNew": "上傳新的 vault",
+    "empty": "尚未儲存任何圖譜。上傳一個 vault 即可開始。",
+    "confirmDelete": "刪除這個圖譜嗎？此操作無法復原。",
+    "makePrivate": "設為私人",
+    "makePublic": "設為公開",
+    "copyLink": "複製連結"
+  },
+  "home": {
+    "tagline": "將知識圖譜變成 AI 代理可以查詢的東西。",
+    "browseExplore": "或不需帳號直接瀏覽探索頁 →",
+    "uploadDifferent": "上傳其他 vault"
+  },
+  "vaultUploader": {
+    "heading": "視覺化您的知識圖譜",
+    "description": "選擇一個 Obsidian vault 資料夾。解析過程完全在您的瀏覽器中進行，因此您可以預覽圖譜而不會有任何內容離開您的電腦 —— 在您選擇儲存之前，不會儲存任何東西。",
+    "chooseFolder": "選擇 vault 資料夾",
+    "parsing": "解析中…",
+    "noMarkdownFiles": "該資料夾中找不到 Markdown（.md）檔案。",
+    "failedToParse": "解析 vault 失敗。"
+  },
+  "landing": {
+    "flow": {
+      "vault": "您的筆記（一個 vault）",
+      "graph": "知識圖譜",
+      "analysis": "AI 分析",
+      "mcp": "透過 MCP 連接"
+    },
+    "sections": {
+      "vault": {
+        "heading": "連結您的筆記",
+        "body": "「vault」只是一個您筆記的資料夾，彼此連結就像個人維基一樣 —— 像 Obsidian 這樣的工具讓撰寫變得容易。上傳一個，Shreg 就會把它變成圖譜：裡面的想法，以及它們如何互相連結。"
+      },
+      "analysis": {
+        "heading": "AI 找出它的用途",
+        "body": "AI 會讀取整個圖譜，並寫出一段簡短說明它的用途，還有它擅長回答的範例問題 —— 讓任何人（包括您自己）在依賴它之前都知道能期待什麼。"
+      },
+      "mcp": {
+        "heading": "任何 AI 代理都能即時查詢",
+        "body": "MCP（模型情境協定）是一種標準，讓像 Claude 這樣的 AI 助理能直接連接外部資料。每個圖譜都有自己的 MCP 位址 —— 貼到您代理的設定中，它就能在回答您時搜尋您的筆記。"
+      }
+    }
+  },
+  "graphPage": {
+    "expand": "展開 ▸",
+    "collapse": "收合 ▾",
+    "graph": "圖譜",
+    "nodeContent": "節點內容",
+    "evaluationRunning": "評估執行中 —— 大約需要一分鐘。您可以繼續瀏覽或發文，不需要等待。"
+  },
+  "graphSummary": {
+    "noDescription": "作者尚未為此圖譜撰寫說明。",
+    "connectViaMcp": "透過 MCP 連接",
+    "mcpHint": "將您的 MCP 客戶端指向此網址，即可直接查詢完整圖譜。",
+    "doesItHelp": "真的有幫助嗎？（{count, plural, other {# 個測試問題}}）",
+    "noEvaluation": "作者尚未對此圖譜執行評估。"
+  },
+  "evaluation": {
+    "heading": "測試為 MCP 工具",
+    "endpointLabel": "MCP 端點",
+    "mcpHint": "將任何 MCP 客戶端指向此網址，即可直接查詢此圖譜。",
+    "noScenarios": "請先在上方產生或撰寫測試問題，然後再執行評估。",
+    "running": "執行中…（大約需要一分鐘）",
+    "rerun": "重新執行評估",
+    "run": "執行評估",
+    "clearResults": "清除結果"
+  },
+  "evaluationResults": {
+    "graphWins": "圖譜增強勝出",
+    "baselineWins": "基準勝出",
+    "ties": "平手",
+    "avgScores": "平均分數（紮根性/框架一致性/具體性）—— 基準 {baseline}，圖譜 {graph}",
+    "graphAugmentedWon": "圖譜增強獲勝",
+    "baselineWon": "基準獲勝",
+    "tie": "平手",
+    "hideAnswers": "隱藏答案",
+    "showAnswers": "顯示答案",
+    "baseline": "基準",
+    "graphAugmented": "圖譜增強",
+    "judgeReasoning": "評審的推理"
+  },
+  "graphAnalysis": {
+    "heading": "AI 分析",
+    "generating": "產生中…",
+    "regenerate": "用 AI 重新產生",
+    "generate": "用 AI 產生",
+    "edit": "編輯",
+    "writeManually": "手動撰寫",
+    "empty": "尚無說明或測試問題。用 AI 產生，或自行撰寫。",
+    "testQuestions": "測試問題",
+    "descriptionLabel": "說明",
+    "descriptionPlaceholder": "這個知識圖譜可以用來做什麼？它能幫助回答哪些類型的問題？",
+    "addQuestion": "＋ 新增問題",
+    "questionPlaceholder": "真實使用者可能會問的問題",
+    "remove": "移除",
+    "whyRelevantPlaceholder": "為什麼這個圖譜在回答這個問題時有優勢？（選填）",
+    "noQuestions": "尚無問題 —— 請在上方新增一個。",
+    "saving": "儲存中…"
+  },
+  "versionHistory": {
+    "versions": "版本（{count}）",
+    "uploading": "上傳中…",
+    "uploadNew": "上傳新版本",
+    "current": "目前版本",
+    "noMarkdownFiles": "該資料夾中找不到 Markdown（.md）檔案。",
+    "failedToParse": "解析 vault 失敗。"
+  },
+  "shareStructure": {
+    "heading": "與知識遊樂場分享完整結構",
+    "description": "讓其他使用者可以將此圖譜實際的節點與連結匯入他們自己的遊樂場工作階段 —— 這與 AI 分析和評估結果不同，後者一旦此圖譜公開，任何人都能看到。開啟此選項也會將圖譜設為公開。"
+  },
+  "saveGraph": {
+    "loginPrompt": "以儲存並分享此圖譜。",
+    "saved": "已儲存。",
+    "viewSaved": "檢視已儲存的圖譜 →",
+    "storageNotice": "儲存會將此圖譜（包含筆記內容）存入我們的資料庫。",
+    "titlePlaceholder": "為這個圖譜取個標題",
+    "makePublicLabel": "將此圖譜設為公開（可分享連結）",
+    "saving": "儲存中…"
+  },
+  "nodeDetail": {
+    "emptyState": "點選一個節點以查看其內容與連結。",
+    "unresolvedNote": "這個節點被 [[wikilink]] 引用，但 vault 中沒有對應的筆記。",
+    "incoming": "{count} 個傳入連結",
+    "outgoing": "{count} 個傳出連結",
+    "linksTo": "連結至",
+    "linkedFrom": "被連結自"
+  },
+  "graphCanvas": {
+    "nodeType": "節點類型",
+    "untyped": "無類型",
+    "sourceGraph": "來源圖譜",
+    "dragHint": "從一個節點的邊緣拖曳到另一個節點即可連結它們"
+  },
+  "playground": {
+    "heading": "知識遊樂場",
+    "description": "匯入圖譜、在不同圖譜的節點之間繪製連結，並對所有圖譜一起執行分析。這裡的內容不會被儲存 —— 重新載入即會重新開始。",
+    "importGraph": "匯入圖譜",
+    "noGraphsAvailable": "目前沒有可用的圖譜 —— 上傳您自己的，或等待其他人分享他們的。",
+    "you": "您",
+    "remove": "移除",
+    "import": "匯入",
+    "couldNotImport": "無法匯入該圖譜。",
+    "colorNodesBy": "節點著色依據",
+    "modeType": "類型",
+    "modeSource": "來源",
+    "modeCluster": "群集",
+    "colorHintType": "依每個節點自身的類型著色（來自其來源圖譜的 frontmatter）。",
+    "colorHintSource": "依每個節點來自哪個匯入的圖譜著色。",
+    "colorHintClusterReady": "依下方結構分析的群集著色。",
+    "colorHintClusterNotReady": "請先執行結構分析，才能依群集著色。",
+    "analysis": "分析",
+    "runAnalysis": "執行結構分析",
+    "findConnection": "尋找連結",
+    "fromNode": "起始節點…",
+    "toNode": "目標節點…",
+    "findPath": "尋找路徑",
+    "noStartEnd": "請先選擇起始與目標節點。",
+    "noPathFound": "找不到這些節點之間的連結 —— 試著新增手動連結。",
+    "hops": "{count, plural, other {# 步}}：",
+    "clear": "清除",
+    "node": "節點",
+    "emptyField": "從左側匯入圖譜即可開始 —— 在那之前這個欄位是空的。"
+  },
+  "feed": {
+    "title": "探索",
+    "emptyFiltered": "這些分類目前還沒有貼文。",
+    "emptyAll": "目前還沒有任何貼文。成為第一個 —— 儲存一個圖譜、產生說明，然後分享到探索頁。",
+    "ownGraphCta": "有自己的知識圖譜嗎？",
+    "uploadOne": "上傳一個",
+    "andShareIt": "並分享它。"
+  },
+  "follows": {
+    "title": "我的追蹤",
+    "notFollowingYet": "您尚未追蹤任何人。",
+    "toFindPeople": "尋找您想追蹤的人。",
+    "noPostsYet": "您追蹤的人目前還沒有任何貼文。"
+  },
+  "friends": {
+    "title": "朋友",
+    "friendRequests": "好友邀請",
+    "sentRequests": "已送出的邀請",
+    "yourFriends": "您的朋友",
+    "noFriendsYet": "尚無朋友。前往某人的個人頁面即可送出邀請。"
+  },
+  "posts": {
+    "title": "我的貼文",
+    "empty": "您尚未發表任何貼文。從圖譜頁面分享圖譜即可開始。"
+  },
+  "feedPostCard": {
+    "justNow": "剛剛",
+    "minutesAgo": "{count} 分鐘前",
+    "hoursAgo": "{count} 小時前",
+    "daysAgo": "{count} 天前",
+    "confirmDelete": "刪除這則貼文嗎？",
+    "saving": "儲存中…",
+    "evalWins": "{wins}/{total} 次評估勝出"
+  },
+  "followButton": {
+    "follow": "追蹤",
+    "following": "追蹤中"
+  },
+  "friendActions": {
+    "removeConfirm": "移除好友嗎？",
+    "yes": "是",
+    "friendsCheck": "朋友 ✓",
+    "accept": "接受",
+    "decline": "拒絕",
+    "requestSent": "已送出邀請",
+    "addFriend": "加朋友"
+  },
+  "postComposer": {
+    "heading": "分享到探索頁",
+    "writePrompt": "撰寫一則推廣此圖譜的貼文。",
+    "willBePublic": "發布貼文也會將此圖譜設為公開。",
+    "contentPlaceholder": "這個圖譜適合用來做什麼？為什麼有人應該將他們的代理連接到它？",
+    "posting": "發佈中…",
+    "post": "發佈",
+    "posted": "已發佈到探索頁。"
+  },
+  "graphPostsList": {
+    "heading": "關於此圖譜的貼文（{count}）"
+  },
+  "completeProfile": {
+    "heading": "完成您的帳號設定",
+    "description": "您的帳號已登入，但尚未設定使用者名稱。請選擇一個以繼續。",
+    "usernamePlaceholder": "使用者名稱",
+    "saving": "儲存中…",
+    "continue": "繼續"
+  },
+  "publicProfile": {
+    "noBio": "尚無自我介紹。",
+    "followers": "位追蹤者",
+    "following": "個追蹤中",
+    "friends": "位朋友",
+    "publicGraphs": "公開知識圖譜",
+    "noPublicGraphs": "尚無公開圖譜。",
+    "posts": "貼文",
+    "noPosts": "尚無貼文。"
+  },
+  "profileSubpages": {
+    "followersTitle": "追蹤者",
+    "followingTitle": "追蹤中",
+    "noFollowersYet": "尚無追蹤者。",
+    "noFollowingYet": "尚未追蹤任何人。"
+  },
+  "connect": {
+    "title": "將您的圖譜連接到 AI 代理",
+    "intro": "Shreg 上的每個圖譜同時也是一個即時的 MCP（模型情境協定）伺服器 —— 一組 AI 代理可以呼叫的工具，用來直接搜尋、讀取並瀏覽該圖譜，而不只是憑訓練資料猜測。任何支援 MCP 的客戶端都能連接：Claude Code、Claude Desktop、ChatGPT、Cursor、Windsurf、VS Code、Gemini CLI、Cline 等等。",
+    "knowingHeading": "幾個值得了解的重點",
+    "knowing1": "每個圖譜都有自己的端點網址 —— 每個圖譜一組網址，而不是整個帳號共用一組。",
+    "knowing2Prefix": "公開圖譜可搭配任何客戶端直接使用。私人圖譜只會回應帶有",
+    "knowing2Your": "您",
+    "knowing2Suffix": "登入工作階段的請求 —— 由於遠端客戶端（Claude Desktop、ChatGPT 及大多數其他工具）是從它們自己的伺服器而非您的瀏覽器呼叫此網址，它們通常無法以您的身分驗證。如果您想讓代理存取某個圖譜，請先將它設為公開。",
+    "knowing3": "連接代理不會改變誰能在 Shreg 上看到這個圖譜 —— 這是另一種、額外的存取方式。",
+    "pickEndpoint": "選擇下方要使用哪個圖譜的端點",
+    "privateLabel": "（私人）",
+    "noGraphsMessage": "登入並上傳一個圖譜即可取得您自己可複製貼上的端點 —— 目前下方的說明使用一個佔位網址，您可以換成您真實的網址。",
+    "privateWarning": "這個圖譜是私人的 —— 下方大多數的遠端客戶端將無法以您的身分驗證，並會顯示找不到。若您想讓代理真正存取它，請先在圖譜頁面將它設為公開。",
+    "chooseWhere": "選擇您想連接到哪裡",
+    "setUp": "設定 {name}",
+    "kindCli": "CLI",
+    "kindDesktopApp": "桌面應用程式",
+    "kindChatApp": "聊天應用程式",
+    "kindIde": "IDE",
+    "kindIdeExtension": "IDE 擴充功能",
+    "kindGeneric": "通用"
+  }
+}

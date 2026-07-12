@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { MarkdownAnswer } from "@/components/MarkdownAnswer";
 import type { GraphEvaluationRow } from "@/lib/supabase/dbTypes";
 
@@ -14,6 +15,7 @@ function average(nums: number[]): number {
  * see the post, even though the interactive graph itself is owner-only.
  */
 export function EvaluationResultsList({ evaluations }: { evaluations: GraphEvaluationRow[] }) {
+  const t = useTranslations("evaluationResults");
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
   if (evaluations.length === 0) return null;
@@ -28,30 +30,27 @@ export function EvaluationResultsList({ evaluations }: { evaluations: GraphEvalu
           <div className="text-lg font-medium text-violet-950">
             {winCounts.graph}/{evaluations.length}
           </div>
-          <div className="text-xs text-neutral-500">Graph-augmented wins</div>
+          <div className="text-xs text-neutral-500">{t("graphWins")}</div>
         </div>
         <div className="rounded-md bg-neutral-50 px-3 py-2">
           <div className="text-lg font-medium text-neutral-900">
             {winCounts.baseline}/{evaluations.length}
           </div>
-          <div className="text-xs text-neutral-500">Baseline wins</div>
+          <div className="text-xs text-neutral-500">{t("baselineWins")}</div>
         </div>
         <div className="rounded-md bg-neutral-50 px-3 py-2">
           <div className="text-lg font-medium text-neutral-900">
             {winCounts.tie}/{evaluations.length}
           </div>
-          <div className="text-xs text-neutral-500">Ties</div>
+          <div className="text-xs text-neutral-500">{t("ties")}</div>
         </div>
       </div>
 
       <p className="text-xs text-neutral-500">
-        Avg scores (groundedness/framework/specificity) — baseline{" "}
-        {average(evaluations.map((e) => e.baseline_groundedness)).toFixed(1)}/
-        {average(evaluations.map((e) => e.baseline_framework_consistency)).toFixed(1)}/
-        {average(evaluations.map((e) => e.baseline_specificity)).toFixed(1)}, graph{" "}
-        {average(evaluations.map((e) => e.graph_groundedness)).toFixed(1)}/
-        {average(evaluations.map((e) => e.graph_framework_consistency)).toFixed(1)}/
-        {average(evaluations.map((e) => e.graph_specificity)).toFixed(1)}
+        {t("avgScores", {
+          baseline: `${average(evaluations.map((e) => e.baseline_groundedness)).toFixed(1)}/${average(evaluations.map((e) => e.baseline_framework_consistency)).toFixed(1)}/${average(evaluations.map((e) => e.baseline_specificity)).toFixed(1)}`,
+          graph: `${average(evaluations.map((e) => e.graph_groundedness)).toFixed(1)}/${average(evaluations.map((e) => e.graph_framework_consistency)).toFixed(1)}/${average(evaluations.map((e) => e.graph_specificity)).toFixed(1)}`,
+        })}
       </p>
 
       <ul className="flex flex-col gap-2">
@@ -75,21 +74,21 @@ export function EvaluationResultsList({ evaluations }: { evaluations: GraphEvalu
                 </svg>
               </button>
               <p className="mt-1 text-xs text-neutral-500">
-                {e.winner === "graph" ? "Graph-augmented won" : e.winner === "baseline" ? "Baseline won" : "Tie"} ·{" "}
-                <span className="text-violet-600">{isExpanded ? "Hide answers" : "Show answers"}</span>
+                {e.winner === "graph" ? t("graphAugmentedWon") : e.winner === "baseline" ? t("baselineWon") : t("tie")} ·{" "}
+                <span className="text-violet-600">{isExpanded ? t("hideAnswers") : t("showAnswers")}</span>
               </p>
               {isExpanded && (
                 <div className="mt-3 flex flex-col gap-3">
                   <div className="rounded-md bg-neutral-50 p-3">
-                    <p className="mb-1 text-xs font-medium tracking-wide text-neutral-400 uppercase">Baseline</p>
+                    <p className="mb-1 text-xs font-medium tracking-wide text-neutral-400 uppercase">{t("baseline")}</p>
                     <MarkdownAnswer text={e.baseline_answer} className="text-neutral-700" />
                   </div>
                   <div className="rounded-md bg-violet-50/60 p-3">
-                    <p className="mb-1 text-xs font-medium tracking-wide text-neutral-400 uppercase">Graph-augmented</p>
+                    <p className="mb-1 text-xs font-medium tracking-wide text-neutral-400 uppercase">{t("graphAugmented")}</p>
                     <MarkdownAnswer text={e.graph_answer} className="text-neutral-700" />
                   </div>
                   <div className="rounded-md border border-violet-100 p-3">
-                    <p className="mb-1 text-xs font-medium tracking-wide text-neutral-400 uppercase">Judge&apos;s reasoning</p>
+                    <p className="mb-1 text-xs font-medium tracking-wide text-neutral-400 uppercase">{t("judgeReasoning")}</p>
                     <MarkdownAnswer text={e.judge_reasoning} className="text-neutral-600" />
                   </div>
                 </div>

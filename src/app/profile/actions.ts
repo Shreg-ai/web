@@ -1,7 +1,9 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
+import { isLocale, LOCALE_COOKIE, type Locale } from "@/i18n/locales";
 
 /**
  * Creates the missing profile row for an authenticated user who somehow
@@ -119,6 +121,35 @@ export async function changePassword(password: string): Promise<{ error?: string
 
     const { error } = await supabase.auth.updateUser({ password });
     if (error) return { error: error.message };
+    return {};
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    return { error: `Unexpected error: ${message}` };
+  }
+}
+
+/**
+ * Updates the account's saved language preference and, since that's what
+ * every request actually reads (see i18n/request.ts), the locale cookie too
+ * -- so the switch takes effect immediately, not just on the next login.
+ */
+export async function updatePreferredLanguage(locale: Locale): Promise<{ error?: string }> {
+  try {
+    if (!isLocale(locale)) return { error: "Unsupported language." };
+
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) return { error: "You must be logged in." };
+
+    const { error } = await supabase.from("profiles").update({ preferred_language: locale }).eq("id", user.id);
+    if (error) return { error: error.message };
+
+    const cookieStore = await cookies();
+    cookieStore.set(LOCALE_COOKIE, locale, { maxAge: 60 * 60 * 24 * 365, path: "/" });
+
+    revalidatePath("/", "layout");
     return {};
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);

@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { UserList } from "@/components/UserList";
 import { FriendRequestRow } from "@/components/FriendRequestRow";
@@ -10,6 +11,7 @@ export default async function FriendsPage() {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) redirect("/login?redirectTo=/friends");
+  const t = await getTranslations("friends");
 
   const { data: requests } = await supabase
     .from("friend_requests")
@@ -33,11 +35,11 @@ export default async function FriendsPage() {
 
   return (
     <div className="mx-auto w-full max-w-xl flex-1 overflow-y-auto bg-gradient-to-b from-violet-50 to-white p-6">
-      <h1 className="mb-6 text-xl font-medium text-violet-950">Friends</h1>
+      <h1 className="mb-6 text-xl font-medium text-violet-950">{t("title")}</h1>
 
       {incoming.length > 0 && (
         <div className="mb-8">
-          <h2 className="mb-3 text-sm font-medium tracking-wide text-neutral-400 uppercase">Friend requests</h2>
+          <h2 className="mb-3 text-sm font-medium tracking-wide text-neutral-400 uppercase">{t("friendRequests")}</h2>
           <ul className="flex flex-col gap-2">
             {incoming.map((r) => {
               const profile = profileById.get(r.requester_id);
@@ -50,7 +52,7 @@ export default async function FriendsPage() {
 
       {outgoing.length > 0 && (
         <div className="mb-8">
-          <h2 className="mb-3 text-sm font-medium tracking-wide text-neutral-400 uppercase">Sent requests</h2>
+          <h2 className="mb-3 text-sm font-medium tracking-wide text-neutral-400 uppercase">{t("sentRequests")}</h2>
           <ul className="flex flex-col gap-2">
             {outgoing.map((r) => {
               const profile = profileById.get(r.recipient_id);
@@ -62,12 +64,12 @@ export default async function FriendsPage() {
       )}
 
       <div>
-        <h2 className="mb-3 text-sm font-medium tracking-wide text-neutral-400 uppercase">Your friends</h2>
+        <h2 className="mb-3 text-sm font-medium tracking-wide text-neutral-400 uppercase">{t("yourFriends")}</h2>
         <UserList
           users={accepted
             .map((r) => profileById.get(r.requester_id === user.id ? r.recipient_id : r.requester_id))
             .filter((p): p is ProfileRow => Boolean(p))}
-          emptyMessage="No friends yet. Visit someone's profile to send a request."
+          emptyMessage={t("noFriendsYet")}
         />
       </div>
     </div>

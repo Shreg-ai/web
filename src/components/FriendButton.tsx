@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { acceptFriendRequest, removeFriendConnection, sendFriendRequest } from "@/app/u/[username]/actions";
 
 export type FriendStatus = "none" | "pending_sent" | "pending_received" | "friends";
@@ -16,6 +17,8 @@ export function FriendButton({
   initialStatus: FriendStatus;
   initialRequestId: string | null;
 }) {
+  const t = useTranslations("friendActions");
+  const tCommon = useTranslations("common");
   const [status, setStatus] = useState(initialStatus);
   const [requestId, setRequestId] = useState(initialRequestId);
   const [busy, setBusy] = useState(false);
@@ -53,12 +56,12 @@ export function FriendButton({
     if (confirmingRemove) {
       return (
         <div className="flex items-center gap-2 text-sm">
-          <span className="text-neutral-500">Remove friend?</span>
+          <span className="text-neutral-500">{t("removeConfirm")}</span>
           <button onClick={handleRemove} disabled={busy} className="font-medium text-red-600 hover:underline disabled:opacity-50">
-            Yes
+            {t("yes")}
           </button>
           <button onClick={() => setConfirmingRemove(false)} className="text-neutral-500 hover:underline">
-            Cancel
+            {tCommon("cancel")}
           </button>
         </div>
       );
@@ -68,7 +71,7 @@ export function FriendButton({
         onClick={() => setConfirmingRemove(true)}
         className="rounded-md border border-violet-200 px-4 py-1.5 text-sm font-medium text-violet-700 hover:bg-violet-50"
       >
-        Friends ✓
+        {t("friendsCheck")}
       </button>
     );
   }
@@ -81,14 +84,14 @@ export function FriendButton({
           disabled={busy}
           className="rounded-md bg-violet-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-violet-700 disabled:opacity-50"
         >
-          Accept
+          {t("accept")}
         </button>
         <button
           onClick={handleRemove}
           disabled={busy}
           className="rounded-md border border-violet-200 px-4 py-1.5 text-sm font-medium text-neutral-600 hover:bg-violet-50 disabled:opacity-50"
         >
-          Decline
+          {t("decline")}
         </button>
       </div>
     );
@@ -101,7 +104,7 @@ export function FriendButton({
         disabled={busy}
         className="rounded-md border border-violet-200 px-4 py-1.5 text-sm font-medium text-neutral-600 hover:bg-violet-50 disabled:opacity-50"
       >
-        Request sent
+        {t("requestSent")}
       </button>
     );
   }
@@ -112,7 +115,7 @@ export function FriendButton({
       disabled={busy}
       className="rounded-md border border-violet-200 px-4 py-1.5 text-sm font-medium text-violet-700 hover:bg-violet-50 disabled:opacity-50"
     >
-      Add friend
+      {t("addFriend")}
     </button>
   );
 }

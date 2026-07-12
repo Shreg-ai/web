@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { FeedPostCard } from "@/components/FeedPostCard";
 import type { GraphEvaluationRow, GraphRow, PostRow, ProfileRow } from "@/lib/supabase/dbTypes";
@@ -10,6 +11,8 @@ export default async function MyFollowsPage() {
     data: { user: viewer },
   } = await supabase.auth.getUser();
   if (!viewer) redirect("/login?redirectTo=/follows");
+  const t = await getTranslations("follows");
+  const tNav = await getTranslations("nav");
 
   const { data: follows } = await supabase.from("follows").select("followee_id").eq("follower_id", viewer.id);
   const followedIds = (follows ?? []).map((f) => f.followee_id);
@@ -17,13 +20,13 @@ export default async function MyFollowsPage() {
   if (followedIds.length === 0) {
     return (
       <div className="mx-auto w-full max-w-xl flex-1 overflow-y-auto bg-gradient-to-b from-violet-50 to-white p-6 text-center">
-        <h1 className="mb-6 text-left text-xl font-medium text-violet-950">My Follows</h1>
+        <h1 className="mb-6 text-left text-xl font-medium text-violet-950">{t("title")}</h1>
         <p className="mt-16 text-sm text-neutral-500">
-          You&apos;re not following anyone yet.{" "}
+          {t("notFollowingYet")}{" "}
           <Link href="/feed" className="text-violet-600 hover:underline">
-            Explore
+            {tNav("explore")}
           </Link>{" "}
-          to find people to follow.
+          {t("toFindPeople")}
         </p>
       </div>
     );
@@ -41,8 +44,8 @@ export default async function MyFollowsPage() {
   if (postRows.length === 0) {
     return (
       <div className="mx-auto w-full max-w-xl flex-1 overflow-y-auto bg-gradient-to-b from-violet-50 to-white p-6 text-center">
-        <h1 className="mb-6 text-left text-xl font-medium text-violet-950">My Follows</h1>
-        <p className="mt-16 text-sm text-neutral-500">No posts yet from people you follow.</p>
+        <h1 className="mb-6 text-left text-xl font-medium text-violet-950">{t("title")}</h1>
+        <p className="mt-16 text-sm text-neutral-500">{t("noPostsYet")}</p>
       </div>
     );
   }
@@ -65,7 +68,7 @@ export default async function MyFollowsPage() {
 
   return (
     <div className="mx-auto w-full max-w-2xl flex-1 overflow-y-auto bg-gradient-to-b from-violet-50 to-white p-6">
-      <h1 className="mb-6 text-xl font-medium text-violet-950">My Follows</h1>
+      <h1 className="mb-6 text-xl font-medium text-violet-950">{t("title")}</h1>
       <ul className="flex flex-col gap-4">
         {postRows.map((post) => {
           const graph = graphById.get(post.graph_id);

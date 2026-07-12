@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { generateProfile, saveProfile } from "@/app/g/[id]/actions";
 import { Spinner } from "@/components/Spinner";
 import type { Scenario } from "@/lib/graph/types";
@@ -16,6 +17,8 @@ function emptyScenario(): Scenario {
 }
 
 export function GraphAnalysisPanel({ graphId, initialDescription, initialScenarios }: GraphAnalysisPanelProps) {
+  const t = useTranslations("graphAnalysis");
+  const tCommon = useTranslations("common");
   const [description, setDescription] = useState(initialDescription ?? "");
   const [scenarios, setScenarios] = useState<Scenario[]>(initialScenarios.length > 0 ? initialScenarios : []);
   const [editing, setEditing] = useState(false);
@@ -64,7 +67,7 @@ export function GraphAnalysisPanel({ graphId, initialDescription, initialScenari
   return (
     <div className="border-t border-violet-100 p-5">
       <div className="mb-3 flex items-center justify-between">
-        <h2 className="text-sm font-medium text-violet-950">AI analysis</h2>
+        <h2 className="text-sm font-medium text-violet-950">{t("heading")}</h2>
         {!editing && (
           <div className="flex gap-3 text-sm">
             <button
@@ -73,10 +76,10 @@ export function GraphAnalysisPanel({ graphId, initialDescription, initialScenari
               className="flex items-center gap-1.5 text-violet-600 hover:underline disabled:opacity-50"
             >
               {generating && <Spinner className="h-3.5 w-3.5" />}
-              {generating ? "Generating…" : hasProfile ? "Regenerate with AI" : "Generate with AI"}
+              {generating ? t("generating") : hasProfile ? t("regenerate") : t("generate")}
             </button>
             <button onClick={() => setEditing(true)} className="text-neutral-600 hover:text-neutral-900">
-              {hasProfile ? "Edit" : "Write manually"}
+              {hasProfile ? t("edit") : t("writeManually")}
             </button>
           </div>
         )}
@@ -84,18 +87,14 @@ export function GraphAnalysisPanel({ graphId, initialDescription, initialScenari
 
       {error && <p className="mb-3 text-sm text-red-600">{error}</p>}
 
-      {!editing && !hasProfile && (
-        <p className="text-sm text-neutral-500">
-          No description or test questions yet. Generate them with AI, or write your own.
-        </p>
-      )}
+      {!editing && !hasProfile && <p className="text-sm text-neutral-500">{t("empty")}</p>}
 
       {!editing && hasProfile && (
         <div className="flex flex-col gap-4">
           <p className="text-sm text-neutral-700">{description}</p>
           {scenarios.length > 0 && (
             <div>
-              <h3 className="mb-2 text-xs font-medium tracking-wide text-neutral-400 uppercase">Test questions</h3>
+              <h3 className="mb-2 text-xs font-medium tracking-wide text-neutral-400 uppercase">{t("testQuestions")}</h3>
               <ul className="flex flex-col gap-2">
                 {scenarios.map((s, i) => (
                   <li key={i} className="rounded-md bg-violet-50/60 p-3 text-sm">
@@ -112,24 +111,24 @@ export function GraphAnalysisPanel({ graphId, initialDescription, initialScenari
       {editing && (
         <div className="flex flex-col gap-4">
           <div>
-            <label className="mb-1 block text-xs font-medium tracking-wide text-neutral-400 uppercase">Description</label>
+            <label className="mb-1 block text-xs font-medium tracking-wide text-neutral-400 uppercase">{t("descriptionLabel")}</label>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={3}
-              placeholder="What is this knowledge graph useful for? What kinds of questions does it help answer?"
+              placeholder={t("descriptionPlaceholder")}
               className="w-full rounded-md border border-violet-200 focus:border-violet-400 focus:ring-1 focus:ring-violet-400 focus:outline-none px-3 py-2 text-sm"
             />
           </div>
 
           <div>
             <div className="mb-2 flex items-center justify-between">
-              <label className="text-xs font-medium tracking-wide text-neutral-400 uppercase">Test questions</label>
+              <label className="text-xs font-medium tracking-wide text-neutral-400 uppercase">{t("testQuestions")}</label>
               <button
                 onClick={() => setScenarios((prev) => [...prev, emptyScenario()])}
                 className="text-sm text-violet-600 hover:underline"
               >
-                + Add question
+                {t("addQuestion")}
               </button>
             </div>
             <div className="flex flex-col gap-3">
@@ -139,22 +138,22 @@ export function GraphAnalysisPanel({ graphId, initialDescription, initialScenari
                     <input
                       value={s.question}
                       onChange={(e) => updateScenario(i, "question", e.target.value)}
-                      placeholder="Question a real user might ask"
+                      placeholder={t("questionPlaceholder")}
                       className="flex-1 rounded-md border border-violet-200 focus:border-violet-400 focus:ring-1 focus:ring-violet-400 focus:outline-none px-3 py-2 text-sm"
                     />
                     <button onClick={() => removeScenario(i)} className="px-1 text-sm text-red-600 hover:underline">
-                      Remove
+                      {t("remove")}
                     </button>
                   </div>
                   <input
                     value={s.whyRelevant}
                     onChange={(e) => updateScenario(i, "whyRelevant", e.target.value)}
-                    placeholder="Why does this graph give an edge answering it? (optional)"
+                    placeholder={t("whyRelevantPlaceholder")}
                     className="rounded-md border border-violet-200 focus:border-violet-400 focus:ring-1 focus:ring-violet-400 focus:outline-none px-3 py-2 text-sm"
                   />
                 </div>
               ))}
-              {scenarios.length === 0 && <p className="text-sm text-neutral-500">No questions yet — add one above.</p>}
+              {scenarios.length === 0 && <p className="text-sm text-neutral-500">{t("noQuestions")}</p>}
             </div>
           </div>
 
@@ -165,7 +164,7 @@ export function GraphAnalysisPanel({ graphId, initialDescription, initialScenari
               className="flex items-center gap-2 rounded-md bg-violet-600 px-4 py-2 text-sm font-medium text-white hover:bg-violet-700 disabled:opacity-50"
             >
               {saving && <Spinner className="h-4 w-4" />}
-              {saving ? "Saving…" : "Save"}
+              {saving ? t("saving") : tCommon("save")}
             </button>
             <button
               onClick={() => {
@@ -176,7 +175,7 @@ export function GraphAnalysisPanel({ graphId, initialDescription, initialScenari
               }}
               className="text-sm text-neutral-500 hover:text-neutral-900"
             >
-              Cancel
+              {tCommon("cancel")}
             </button>
           </div>
         </div>
