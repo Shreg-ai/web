@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { logout } from "@/app/auth/actions";
 import { POST_CATEGORIES } from "@/lib/categories";
+import { Avatar } from "@/components/Avatar";
 
 function ChevronIcon({ collapsed }: { collapsed: boolean }) {
   return (
@@ -47,7 +48,15 @@ function LogoutIcon() {
   );
 }
 
-export function SidebarNav({ isLoggedIn }: { isLoggedIn: boolean }) {
+export function SidebarNav({
+  isLoggedIn,
+  username,
+  avatarUrl,
+}: {
+  isLoggedIn: boolean;
+  username: string | null;
+  avatarUrl: string | null;
+}) {
   const pathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -79,6 +88,7 @@ export function SidebarNav({ isLoggedIn }: { isLoggedIn: boolean }) {
 
   const onFeeds = pathname === "/feed";
   const onDashboard = pathname === "/dashboard";
+  const onProfile = pathname === "/profile";
 
   return (
     <aside
@@ -142,6 +152,19 @@ export function SidebarNav({ isLoggedIn }: { isLoggedIn: boolean }) {
           >
             <GraphsIcon />
             {!collapsed && "My graphs"}
+          </Link>
+        )}
+
+        {isLoggedIn && (
+          <Link
+            href="/profile"
+            title="Profile"
+            className={`flex items-center gap-2 rounded-md px-2 py-2 font-medium ${
+              onProfile ? "bg-violet-100 text-violet-800" : "text-neutral-600 hover:bg-violet-50 hover:text-violet-700"
+            } ${collapsed ? "justify-center" : ""}`}
+          >
+            <Avatar url={avatarUrl} username={username ?? "?"} size={18} />
+            {!collapsed && "Profile"}
           </Link>
         )}
       </nav>

@@ -3,15 +3,18 @@
 import { useState } from "react";
 
 interface PasswordInputProps {
-  name: string;
+  name?: string;
+  value?: string;
+  onChange?: (value: string) => void;
   placeholder?: string;
   required?: boolean;
   minLength?: number;
 }
 
 /** A password input with a show/hide toggle, so users can verify what they actually typed before submitting. */
-export function PasswordInput({ name, placeholder = "Password", required, minLength }: PasswordInputProps) {
+export function PasswordInput({ name, value, onChange, placeholder = "Password", required, minLength }: PasswordInputProps) {
   const [visible, setVisible] = useState(false);
+  const controlled = value !== undefined;
 
   return (
     <div className="relative">
@@ -21,6 +24,7 @@ export function PasswordInput({ name, placeholder = "Password", required, minLen
         placeholder={placeholder}
         required={required}
         minLength={minLength}
+        {...(controlled ? { value, onChange: (e: React.ChangeEvent<HTMLInputElement>) => onChange?.(e.target.value) } : {})}
         className="w-full rounded-md border border-violet-200 px-3 py-2 pr-14 text-sm focus:border-violet-400 focus:ring-1 focus:ring-violet-400 focus:outline-none"
       />
       <button

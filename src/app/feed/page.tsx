@@ -44,7 +44,7 @@ export default async function FeedPage({
   ]);
 
   const graphById = new Map((graphs as GraphRow[] | null)?.map((g) => [g.id, g]) ?? []);
-  const usernameById = new Map((profiles as ProfileRow[] | null)?.map((p) => [p.id, p.username]) ?? []);
+  const profileById = new Map((profiles as ProfileRow[] | null)?.map((p) => [p.id, p]) ?? []);
   const evaluationsByGraphId = new Map<string, GraphEvaluationRow[]>();
   for (const evaluation of (evaluations as GraphEvaluationRow[] | null) ?? []) {
     const list = evaluationsByGraphId.get(evaluation.graph_id) ?? [];
@@ -59,12 +59,14 @@ export default async function FeedPage({
         {postRows.map((post) => {
           const graph = graphById.get(post.graph_id);
           if (!graph) return null; // graph went private/deleted since the post was made
+          const author = profileById.get(post.user_id);
           return (
             <li key={post.id}>
               <FeedPostCard
                 post={post}
                 graph={graph}
-                username={usernameById.get(post.user_id) ?? "unknown"}
+                username={author?.username ?? "unknown"}
+                avatarUrl={author?.avatar_url}
                 evaluations={evaluationsByGraphId.get(post.graph_id) ?? []}
               />
             </li>

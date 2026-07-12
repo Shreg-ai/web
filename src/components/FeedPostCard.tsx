@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Avatar } from "@/components/Avatar";
 import type { GraphEvaluationRow, GraphRow, PostRow } from "@/lib/supabase/dbTypes";
 
 function timeAgo(iso: string): string {
@@ -15,11 +16,13 @@ export function FeedPostCard({
   post,
   graph,
   username,
+  avatarUrl,
   evaluations,
 }: {
   post: PostRow;
   graph: GraphRow;
   username: string;
+  avatarUrl?: string | null;
   evaluations: GraphEvaluationRow[];
 }) {
   const graphWins = evaluations.filter((e) => e.winner === "graph").length;
@@ -27,7 +30,8 @@ export function FeedPostCard({
   return (
     <article className="rounded-lg border border-violet-100 bg-white p-4 shadow-sm">
       <div className="mb-2 flex items-center gap-2 text-xs text-neutral-500">
-        <Link href={`/u/${username}`} className="font-medium text-violet-700 hover:underline">
+        <Link href={`/u/${username}`} className="flex items-center gap-1.5 font-medium text-violet-700 hover:underline">
+          <Avatar url={avatarUrl} username={username} size={20} />
           @{username}
         </Link>
         <span>·</span>
