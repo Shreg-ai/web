@@ -29,3 +29,25 @@ export interface VaultFile {
   title: string;
   raw: string;
 }
+
+/** A compact, LLM-context-sized view of the graph used to generate the profile. */
+export interface GraphSummary {
+  totalNodes: number;
+  totalEdges: number;
+  clusterCount: number;
+  /** Highest-degree nodes, with a body snippet, used to seed the profile prompt. */
+  hubNodes: Array<{ id: string; title: string; snippet: string; inDegree: number; outDegree: number }>;
+  /** Every other node, title only, so the LLM sees full breadth without full bodies. */
+  otherTitles: string[];
+}
+
+export interface Scenario {
+  question: string;
+  whyRelevant: string;
+  relevantNodeIds: string[];
+}
+
+export interface GraphProfile {
+  description: string;
+  scenarios: Scenario[];
+}

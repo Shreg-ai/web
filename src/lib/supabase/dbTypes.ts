@@ -1,4 +1,4 @@
-import type { NodeMetrics, ParsedVault } from "@/lib/graph/types";
+import type { NodeMetrics, ParsedVault, Scenario } from "@/lib/graph/types";
 
 export interface StoredGraphPayload {
   vault: ParsedVault;
@@ -16,6 +16,7 @@ export interface GraphRow {
   node_count: number;
   edge_count: number;
   graph_data: StoredGraphPayload;
+  scenarios: Scenario[];
   created_at: string;
   updated_at: string;
 }

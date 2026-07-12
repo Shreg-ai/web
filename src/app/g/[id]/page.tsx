@@ -9,9 +9,15 @@ export default async function GraphPage({ params }: { params: Promise<{ id: stri
 
   // RLS scopes this to public graphs, or the caller's own graphs if logged in.
   // A private graph belonging to someone else simply returns no row here.
-  const { data: graph } = await supabase.from("graphs").select("*").eq("id", id).single();
+  const [{ data: graph }, { data: userData }] = await Promise.all([
+    supabase.from("graphs").select("*").eq("id", id).single(),
+    supabase.auth.getUser(),
+  ]);
 
   if (!graph) notFound();
 
-  return <PublicGraphView graph={graph as GraphRow} />;
+  const row = graph as GraphRow;
+  const isOwner = userData.user?.id === row.user_id;
+
+  return <PublicGraphView graph={row} isOwner={isOwner} />;
 }
