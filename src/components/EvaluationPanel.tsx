@@ -9,13 +9,14 @@ interface EvaluationPanelProps {
   graphId: string;
   hasScenarios: boolean;
   initialEvaluations: GraphEvaluationRow[];
+  onRunningChange?: (running: boolean) => void;
 }
 
 function average(nums: number[]): number {
   return nums.length ? nums.reduce((a, b) => a + b, 0) / nums.length : 0;
 }
 
-export function EvaluationPanel({ graphId, hasScenarios, initialEvaluations }: EvaluationPanelProps) {
+export function EvaluationPanel({ graphId, hasScenarios, initialEvaluations, onRunningChange }: EvaluationPanelProps) {
   const [evaluations, setEvaluations] = useState<GraphEvaluationRow[]>(initialEvaluations);
   const [running, setRunning] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -31,9 +32,11 @@ export function EvaluationPanel({ graphId, hasScenarios, initialEvaluations }: E
 
   async function handleRun() {
     setRunning(true);
+    onRunningChange?.(true);
     setError(null);
     const result = await runEvaluation(graphId);
     setRunning(false);
+    onRunningChange?.(false);
     if (result.error) {
       setError(result.error);
       return;

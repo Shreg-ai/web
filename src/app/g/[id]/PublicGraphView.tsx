@@ -9,6 +9,7 @@ import { EvaluationPanel } from "@/components/EvaluationPanel";
 import { PostComposer } from "@/components/PostComposer";
 import { GraphSummaryCard } from "@/components/GraphSummaryCard";
 import { BackButton } from "@/components/BackButton";
+import { Spinner } from "@/components/Spinner";
 import type { GraphEvaluationRow, GraphRow } from "@/lib/supabase/dbTypes";
 
 const HANDLE_H = "h-1 shrink-0 bg-violet-100 transition-colors hover:bg-violet-300 active:bg-violet-400 data-[resize-handle-active]:bg-violet-400";
@@ -42,6 +43,7 @@ export function PublicGraphView({
   const nodePanelRef = usePanelRef();
   const [canvasCollapsed, setCanvasCollapsed] = useState(false);
   const [nodeCollapsed, setNodeCollapsed] = useState(false);
+  const [evaluationRunning, setEvaluationRunning] = useState(false);
 
   // Non-owners never get the interactive canvas -- only description + eval
   // scores + the MCP endpoint. The full graph is only reachable by actually
@@ -79,8 +81,19 @@ export function PublicGraphView({
       </div>
       <Group orientation="horizontal" className="flex-1">
         <Panel defaultSize={60} minSize={30} className="overflow-y-auto bg-white">
+          {evaluationRunning && (
+            <div className="sticky top-0 z-10 flex items-center gap-2 bg-violet-600 px-4 py-2 text-sm font-medium text-white">
+              <Spinner className="h-4 w-4" />
+              Evaluation running — this takes about a minute. You can keep browsing or post while you wait.
+            </div>
+          )}
           <GraphAnalysisPanel graphId={graph.id} initialDescription={graph.description} initialScenarios={graph.scenarios} />
-          <EvaluationPanel graphId={graph.id} hasScenarios={graph.scenarios.length > 0} initialEvaluations={evaluations} />
+          <EvaluationPanel
+            graphId={graph.id}
+            hasScenarios={graph.scenarios.length > 0}
+            initialEvaluations={evaluations}
+            onRunningChange={setEvaluationRunning}
+          />
           <PostComposer graphId={graph.id} graphIsPublic={graph.visibility === "public"} />
         </Panel>
         <Separator className={HANDLE_V} />

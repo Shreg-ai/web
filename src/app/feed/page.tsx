@@ -13,6 +13,9 @@ export default async function FeedPage({
   const selectedCategories = (categoriesParam ?? "").split(",").filter(isPostCategory);
 
   const supabase = await createClient();
+  const {
+    data: { user: viewer },
+  } = await supabase.auth.getUser();
 
   let query = supabase.from("posts").select("*").order("created_at", { ascending: false }).limit(50);
   if (selectedCategories.length > 0) {
@@ -68,6 +71,7 @@ export default async function FeedPage({
                 username={author?.username ?? "unknown"}
                 avatarUrl={author?.avatar_url}
                 evaluations={evaluationsByGraphId.get(post.graph_id) ?? []}
+                isOwner={viewer?.id === post.user_id}
               />
             </li>
           );

@@ -205,3 +205,32 @@ export async function deletePost(postId: string): Promise<{ error?: string }> {
   revalidatePath("/feed");
   return {};
 }
+
+export async function updatePost(
+  postId: string,
+  content: string,
+  category: PostCategory
+): Promise<{ error?: string; post?: PostRow }> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { error: "You must be logged in." };
+
+  const trimmed = content.trim();
+  if (!trimmed) return { error: "Write something first." };
+  if (!isPostCategory(category)) return { error: "Choose a valid category." };
+
+  const { data: post, error } = await supabase
+    .from("posts")
+    .update({ content: trimmed, category })
+    .eq("id", postId)
+    .eq("user_id", user.id)
+    .select("*")
+    .single();
+
+  if (error) return { error: error.message };
+
+  revalidatePath("/feed");
+  return { post: post as PostRow };
+}
