@@ -90,21 +90,39 @@ export function SidebarNav({
 
   const MAX_CATEGORIES = 3;
 
-  const activeCategories = new Set(
-    pathname === "/feed" ? (searchParams.get("categories") ?? "").split(",").filter(Boolean) : []
-  );
+  function categoriesFromUrl() {
+    return new Set(pathname === "/feed" ? (searchParams.get("categories") ?? "").split(",").filter(Boolean) : []);
+  }
 
-  function toggleCategory(cat: string) {
-    const next = new Set(activeCategories);
-    if (next.has(cat)) {
-      next.delete(cat);
-    } else {
-      if (next.size >= MAX_CATEGORIES) return;
-      next.add(cat);
-    }
-    const qs = next.size > 0 ? `?categories=${Array.from(next).join(",")}` : "";
+  // Checkboxes only stage a pending selection -- navigation happens once,
+  // when the user clicks "Explore", instead of on every single click.
+  const [pendingCategories, setPendingCategories] = useState<Set<string>>(categoriesFromUrl);
+
+  useEffect(() => {
+    setPendingCategories(categoriesFromUrl());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname, searchParams]);
+
+  function togglePendingCategory(cat: string) {
+    setPendingCategories((prev) => {
+      const next = new Set(prev);
+      if (next.has(cat)) {
+        next.delete(cat);
+      } else {
+        if (next.size >= MAX_CATEGORIES) return prev;
+        next.add(cat);
+      }
+      return next;
+    });
+  }
+
+  function handleExplore() {
+    const qs = pendingCategories.size > 0 ? `?categories=${Array.from(pendingCategories).join(",")}` : "";
     router.push(`/feed${qs}`);
   }
+
+  const hasPendingChanges =
+    pendingCategories.size !== categoriesFromUrl().size || ![...pendingCategories].every((c) => categoriesFromUrl().has(c));
 
   const onFeeds = pathname === "/feed";
   const onDashboard = pathname === "/dashboard";
@@ -149,20 +167,20 @@ export function SidebarNav({
           <div className="ml-2 flex flex-col gap-0.5 border-l border-violet-100 pl-3">
             <label
               className={`flex cursor-pointer items-center gap-2 rounded-md px-2 py-1 text-xs ${
-                activeCategories.size === 0 ? "bg-violet-100 font-medium text-violet-800" : "text-neutral-500 hover:bg-violet-50 hover:text-violet-700"
+                pendingCategories.size === 0 ? "bg-violet-100 font-medium text-violet-800" : "text-neutral-500 hover:bg-violet-50 hover:text-violet-700"
               }`}
             >
               <input
                 type="checkbox"
-                checked={activeCategories.size === 0}
-                onChange={() => router.push("/feed")}
+                checked={pendingCategories.size === 0}
+                onChange={() => setPendingCategories(new Set())}
                 className="accent-violet-600"
               />
               All
             </label>
             {POST_CATEGORIES.map((cat) => {
-              const active = activeCategories.has(cat);
-              const atLimit = !active && activeCategories.size >= MAX_CATEGORIES;
+              const active = pendingCategories.has(cat);
+              const atLimit = !active && pendingCategories.size >= MAX_CATEGORIES;
               return (
                 <label
                   key={cat}
@@ -179,13 +197,21 @@ export function SidebarNav({
                     type="checkbox"
                     checked={active}
                     disabled={atLimit}
-                    onChange={() => toggleCategory(cat)}
+                    onChange={() => togglePendingCategory(cat)}
                     className="accent-violet-600"
                   />
                   {cat}
                 </label>
               );
             })}
+            <button
+              onClick={handleExplore}
+              className={`mt-1 rounded-md px-2 py-1.5 text-xs font-medium ${
+                hasPendingChanges ? "bg-violet-600 text-white hover:bg-violet-700" : "bg-violet-50 text-violet-400"
+              }`}
+            >
+              Explore
+            </button>
           </div>
         )}
 
