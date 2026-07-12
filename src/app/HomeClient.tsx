@@ -6,6 +6,7 @@ import { VaultUploader } from "@/components/VaultUploader";
 import { GraphCanvas } from "@/components/GraphCanvas";
 import { NodeDetailPanel } from "@/components/NodeDetailPanel";
 import { SaveGraphPanel } from "@/components/SaveGraphPanel";
+import { LandingExplainer } from "@/components/LandingExplainer";
 import type { NodeMetrics, ParsedVault } from "@/lib/graph/types";
 
 export function HomeClient({ isLoggedIn }: { isLoggedIn: boolean }) {
@@ -17,22 +18,25 @@ export function HomeClient({ isLoggedIn }: { isLoggedIn: boolean }) {
 
   if (!vault) {
     return (
-      <div className="flex flex-1 flex-col items-center justify-center bg-gradient-to-b from-violet-50 to-white p-6">
-        <div className="mb-8 text-center">
-          <h1 className="text-2xl font-semibold text-violet-950">Shreg</h1>
-          <p className="mt-1 text-sm text-neutral-500">Turn a knowledge graph into something an AI agent can query.</p>
+      <div className="flex flex-1 flex-col overflow-y-auto bg-gradient-to-b from-violet-50 to-white">
+        <div className="flex flex-col items-center px-6 pt-16 pb-10">
+          <div className="mb-8 text-center">
+            <h1 className="text-2xl font-semibold text-violet-950">Shreg</h1>
+            <p className="mt-1 text-sm text-neutral-500">Turn a knowledge graph into something an AI agent can query.</p>
+          </div>
+          <div className="w-full max-w-lg">
+            <VaultUploader
+              onParsed={(v, m) => {
+                setVault(v);
+                setMetrics(m);
+              }}
+            />
+          </div>
+          <Link href="/feed" className="mt-6 text-sm text-neutral-500 hover:text-violet-700">
+            Or browse the feed without an account →
+          </Link>
         </div>
-        <div className="w-full max-w-lg">
-          <VaultUploader
-            onParsed={(v, m) => {
-              setVault(v);
-              setMetrics(m);
-            }}
-          />
-        </div>
-        <Link href="/feed" className="mt-6 text-sm text-neutral-500 hover:text-violet-700">
-          Or browse the feed without an account →
-        </Link>
+        <LandingExplainer />
       </div>
     );
   }
