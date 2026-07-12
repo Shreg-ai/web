@@ -49,6 +49,16 @@ function LogoutIcon() {
   );
 }
 
+function FollowsIcon() {
+  return (
+    <svg viewBox="0 0 20 20" className="h-4 w-4 shrink-0" fill="none" stroke="currentColor" strokeWidth={1.8}>
+      <circle cx="8" cy="7" r="3" />
+      <path d="M2 17c0-3.3 2.7-6 6-6s6 2.7 6 6" strokeLinecap="round" />
+      <path d="M14 5l1.5 1.5L18 4" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
 function PostsIcon() {
   return (
     <svg viewBox="0 0 20 20" className="h-4 w-4 shrink-0" fill="none" stroke="currentColor" strokeWidth={1.8}>
@@ -131,6 +141,7 @@ export function SidebarNav({
   }
 
   const onFeeds = pathname === "/feed";
+  const onFollows = pathname === "/follows";
   const onDashboard = pathname === "/dashboard";
   const onPosts = pathname === "/posts";
   const onProfile = pathname === "/profile";
@@ -222,9 +233,22 @@ export function SidebarNav({
 
         {isLoggedIn && (
           <Link
+            href="/follows"
+            title="My Follows"
+            className={`mt-2 flex items-center gap-2 rounded-md px-2 py-2 font-medium ${
+              onFollows ? "bg-violet-100 text-violet-800" : "text-neutral-600 hover:bg-violet-50 hover:text-violet-700"
+            } ${collapsed ? "justify-center" : ""}`}
+          >
+            <FollowsIcon />
+            {!collapsed && "My Follows"}
+          </Link>
+        )}
+
+        {isLoggedIn && (
+          <Link
             href="/dashboard"
             title="My graphs"
-            className={`mt-2 flex items-center gap-2 rounded-md px-2 py-2 font-medium ${
+            className={`flex items-center gap-2 rounded-md px-2 py-2 font-medium ${
               onDashboard ? "bg-violet-100 text-violet-800" : "text-neutral-600 hover:bg-violet-50 hover:text-violet-700"
             } ${collapsed ? "justify-center" : ""}`}
           >
