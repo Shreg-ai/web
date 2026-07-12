@@ -8,6 +8,7 @@ import { GraphAnalysisPanel } from "@/components/GraphAnalysisPanel";
 import { EvaluationPanel } from "@/components/EvaluationPanel";
 import { PostComposer } from "@/components/PostComposer";
 import { GraphSummaryCard } from "@/components/GraphSummaryCard";
+import { BackButton } from "@/components/BackButton";
 import type { GraphEvaluationRow, GraphRow } from "@/lib/supabase/dbTypes";
 
 const HANDLE_H = "h-1 shrink-0 bg-violet-100 transition-colors hover:bg-violet-300 active:bg-violet-400 data-[resize-handle-active]:bg-violet-400";
@@ -67,11 +68,14 @@ export function PublicGraphView({
 
   return (
     <div className="flex flex-1 flex-col overflow-hidden">
-      <div className="border-b border-violet-100 bg-white px-5 py-3">
-        <h1 className="text-base font-medium text-violet-950">{graph.title}</h1>
-        <p className="text-xs text-neutral-500">
-          {graph.node_count} nodes · {graph.edge_count} edges · {graph.visibility === "public" ? "Public" : "Private"}
-        </p>
+      <div className="flex items-center gap-2 border-b border-violet-100 bg-white px-3 py-3">
+        <BackButton />
+        <div>
+          <h1 className="text-base font-medium text-violet-950">{graph.title}</h1>
+          <p className="text-xs text-neutral-500">
+            {graph.node_count} nodes · {graph.edge_count} edges · {graph.visibility === "public" ? "Public" : "Private"}
+          </p>
+        </div>
       </div>
       <Group orientation="horizontal" className="flex-1">
         <Panel defaultSize={60} minSize={30} className="overflow-y-auto bg-white">

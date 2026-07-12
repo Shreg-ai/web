@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { BackButton } from "@/components/BackButton";
 import type { GraphEvaluationRow, GraphRow } from "@/lib/supabase/dbTypes";
 
 interface GraphSummaryCardProps {
@@ -36,11 +37,14 @@ export function GraphSummaryCard({ graph, evaluations }: GraphSummaryCardProps) 
 
   return (
     <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-5 overflow-y-auto p-6">
-      <div>
-        <h1 className="text-xl font-medium text-violet-950">{graph.title}</h1>
-        <p className="text-xs text-neutral-500">
-          {graph.node_count} nodes · {graph.edge_count} edges
-        </p>
+      <div className="flex items-center gap-2">
+        <BackButton />
+        <div>
+          <h1 className="text-xl font-medium text-violet-950">{graph.title}</h1>
+          <p className="text-xs text-neutral-500">
+            {graph.node_count} nodes · {graph.edge_count} edges
+          </p>
+        </div>
       </div>
 
       {graph.description ? (

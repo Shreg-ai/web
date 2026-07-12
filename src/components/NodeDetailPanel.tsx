@@ -1,5 +1,6 @@
 "use client";
 
+import { splitBodyWithWikilinks } from "@/lib/graph/wikilinks";
 import type { NodeMetrics, ParsedVault } from "@/lib/graph/types";
 
 interface NodeDetailPanelProps {
@@ -47,9 +48,21 @@ export function NodeDetailPanel({ vault, metrics, selectedNodeId, onSelectNode }
           </div>
 
           {node.body && (
-            <p className="whitespace-pre-wrap text-sm leading-relaxed text-neutral-700">
-              {node.body.length > 1500 ? `${node.body.slice(0, 1500)}…` : node.body}
-            </p>
+            <div className="whitespace-pre-wrap text-sm leading-relaxed text-neutral-700">
+              {splitBodyWithWikilinks(node.body.length > 1500 ? `${node.body.slice(0, 1500)}…` : node.body).map((seg, i) =>
+                seg.type === "link" ? (
+                  <button
+                    key={i}
+                    onClick={() => onSelectNode(seg.target!)}
+                    className="text-violet-600 hover:underline"
+                  >
+                    {seg.text}
+                  </button>
+                ) : (
+                  <span key={i}>{seg.text}</span>
+                )
+              )}
+            </div>
           )}
         </>
       )}

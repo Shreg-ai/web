@@ -125,18 +125,30 @@ export function EvaluationPanel({ graphId, hasScenarios, initialEvaluations }: E
           </p>
 
           <ul className="flex flex-col gap-2">
-            {evaluations.map((e) => (
+            {evaluations.map((e) => {
+              const isExpanded = expandedId === e.id;
+              return (
               <li key={e.id} className="rounded-md border border-violet-100 p-3 text-sm">
                 <button
                   onClick={() => setExpandedId((cur) => (cur === e.id ? null : e.id))}
-                  className="w-full text-left font-medium text-neutral-900"
+                  className="flex w-full items-start justify-between gap-3 text-left"
                 >
-                  {e.question}
+                  <span className="font-medium text-neutral-900">{e.question}</span>
+                  <svg
+                    viewBox="0 0 20 20"
+                    className={`mt-0.5 h-4 w-4 shrink-0 text-neutral-400 transition-transform ${isExpanded ? "rotate-180" : ""}`}
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                  >
+                    <path d="M5 7.5 10 13l5-5.5" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
                 </button>
                 <p className="mt-1 text-xs text-neutral-500">
-                  {e.winner === "graph" ? "Graph-augmented won" : e.winner === "baseline" ? "Baseline won" : "Tie"}
+                  {e.winner === "graph" ? "Graph-augmented won" : e.winner === "baseline" ? "Baseline won" : "Tie"} ·{" "}
+                  <span className="text-violet-600">{isExpanded ? "Hide answers" : "Show answers"}</span>
                 </p>
-                {expandedId === e.id && (
+                {isExpanded && (
                   <div className="mt-3 flex flex-col gap-3">
                     <div className="rounded-md bg-neutral-50 p-3">
                       <p className="mb-1 text-xs font-medium tracking-wide text-neutral-400 uppercase">Baseline</p>
@@ -150,7 +162,8 @@ export function EvaluationPanel({ graphId, hasScenarios, initialEvaluations }: E
                   </div>
                 )}
               </li>
-            ))}
+              );
+            })}
           </ul>
         </div>
       )}
