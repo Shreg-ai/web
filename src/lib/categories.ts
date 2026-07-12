@@ -1,4 +1,4 @@
-export const POST_CATEGORIES = ["Finance", "Legal", "Economics", "Coding", "Other"] as const;
+export const POST_CATEGORIES = ["Finance", "Legal", "Economics", "Coding", "Defense", "Other"] as const;
 
 export type PostCategory = (typeof POST_CATEGORIES)[number];
 

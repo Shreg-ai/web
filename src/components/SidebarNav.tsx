@@ -49,14 +49,27 @@ function LogoutIcon() {
   );
 }
 
+function FriendsIcon() {
+  return (
+    <svg viewBox="0 0 20 20" className="h-4 w-4 shrink-0" fill="none" stroke="currentColor" strokeWidth={1.8}>
+      <circle cx="7" cy="7" r="3" />
+      <path d="M2 17c0-2.8 2.2-5 5-5s5 2.2 5 5" strokeLinecap="round" />
+      <circle cx="15" cy="6" r="2.2" />
+      <path d="M13 9.3c1.9.4 3.3 2 3.3 4" strokeLinecap="round" />
+    </svg>
+  );
+}
+
 export function SidebarNav({
   isLoggedIn,
   username,
   avatarUrl,
+  pendingFriendRequests,
 }: {
   isLoggedIn: boolean;
   username: string | null;
   avatarUrl: string | null;
+  pendingFriendRequests: number;
 }) {
   const pathname = usePathname();
   const router = useRouter();
@@ -96,6 +109,7 @@ export function SidebarNav({
   const onFeeds = pathname === "/feed";
   const onDashboard = pathname === "/dashboard";
   const onProfile = pathname === "/profile";
+  const onFriends = pathname === "/friends";
 
   return (
     <aside
@@ -122,13 +136,13 @@ export function SidebarNav({
       <nav className="flex flex-1 flex-col gap-1 overflow-y-auto px-2 py-3 text-sm">
         <Link
           href="/feed"
-          title="Feeds"
+          title="Explore"
           className={`flex items-center gap-2 rounded-md px-2 py-2 font-medium ${
             onFeeds ? "bg-violet-100 text-violet-800" : "text-neutral-600 hover:bg-violet-50 hover:text-violet-700"
           } ${collapsed ? "justify-center" : ""}`}
         >
           <FeedsIcon />
-          {!collapsed && "Feeds"}
+          {!collapsed && "Explore"}
         </Link>
 
         {!collapsed && (
@@ -167,6 +181,29 @@ export function SidebarNav({
           >
             <GraphsIcon />
             {!collapsed && "My graphs"}
+          </Link>
+        )}
+
+        {isLoggedIn && (
+          <Link
+            href="/friends"
+            title="Friends"
+            className={`relative flex items-center gap-2 rounded-md px-2 py-2 font-medium ${
+              onFriends ? "bg-violet-100 text-violet-800" : "text-neutral-600 hover:bg-violet-50 hover:text-violet-700"
+            } ${collapsed ? "justify-center" : ""}`}
+          >
+            <FriendsIcon />
+            {!collapsed && (
+              <span className="flex flex-1 items-center justify-between">
+                Friends
+                {pendingFriendRequests > 0 && (
+                  <span className="rounded-full bg-red-500 px-1.5 py-0.5 text-[10px] font-semibold text-white">
+                    {pendingFriendRequests}
+                  </span>
+                )}
+              </span>
+            )}
+            {collapsed && pendingFriendRequests > 0 && <span className="absolute top-1 right-2 h-2 w-2 rounded-full bg-red-500" />}
           </Link>
         )}
 

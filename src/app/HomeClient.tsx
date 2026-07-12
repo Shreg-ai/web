@@ -33,7 +33,7 @@ export function HomeClient({ isLoggedIn }: { isLoggedIn: boolean }) {
             />
           </div>
           <Link href="/feed" className="mt-6 text-sm text-neutral-500 hover:text-violet-700">
-            Or browse the feed without an account →
+            Or browse Explore without an account →
           </Link>
         </div>
         <LandingExplainer />

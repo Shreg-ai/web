@@ -57,3 +57,20 @@ export interface PostRow {
   category: PostCategory;
   created_at: string;
 }
+
+export interface FollowRow {
+  follower_id: string;
+  followee_id: string;
+  created_at: string;
+}
+
+export type FriendRequestStatus = "pending" | "accepted";
+
+export interface FriendRequestRow {
+  id: string;
+  requester_id: string;
+  recipient_id: string;
+  status: FriendRequestStatus;
+  created_at: string;
+  responded_at: string | null;
+}
