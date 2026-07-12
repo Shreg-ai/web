@@ -7,7 +7,7 @@ import { generateGraphProfile } from "@/lib/llm/profile";
 import { buildGraphSummary } from "@/lib/graph/summary";
 import { runBaselineAgent, runGraphAgent } from "@/lib/eval/agents";
 import { judgeComparison } from "@/lib/eval/judge";
-import type { GraphEvaluationRow, GraphRow, PostRow } from "@/lib/supabase/dbTypes";
+import type { GraphEvaluationRow, GraphRow, PostRow, StoredGraphPayload } from "@/lib/supabase/dbTypes";
 import type { Scenario } from "@/lib/graph/types";
 import { isPostCategory, type PostCategory } from "@/lib/categories";
 
@@ -154,6 +154,68 @@ export async function clearEvaluations(graphId: string): Promise<{ error?: strin
 
   revalidatePath(`/g/${graphId}`);
   return {};
+}
+
+/**
+ * Saves a re-uploaded vault as a new version of an existing graph, instead
+ * of a separate graph. The parent `graphs` row is updated to mirror the new
+ * snapshot (so every existing query against it keeps showing "current"
+ * data), and prior evaluations are cleared since they were measured against
+ * the old content.
+ */
+export async function saveGraphVersion(
+  graphId: string,
+  payload: StoredGraphPayload
+): Promise<{ error?: string; versionId?: string; versionNumber?: number }> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { error: "You must be logged in." };
+
+  const { data: graph, error: fetchError } = await supabase.from("graphs").select("*").eq("id", graphId).single();
+  if (fetchError || !graph) return { error: "Graph not found." };
+
+  const row = graph as GraphRow;
+  if (row.user_id !== user.id) return { error: "You can only add versions to your own graphs." };
+
+  const { data: latest } = await supabase
+    .from("graph_versions")
+    .select("version_number")
+    .eq("graph_id", graphId)
+    .order("version_number", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  const nextVersion = (latest?.version_number ?? 0) + 1;
+  const nodeCount = payload.vault.nodes.length;
+  const edgeCount = payload.vault.edges.length;
+
+  const { data: version, error: versionError } = await supabase
+    .from("graph_versions")
+    .insert({
+      graph_id: graphId,
+      version_number: nextVersion,
+      graph_data: payload,
+      scenarios: row.scenarios,
+      node_count: nodeCount,
+      edge_count: edgeCount,
+    })
+    .select("id")
+    .single();
+  if (versionError) return { error: versionError.message };
+
+  const { error: updateError } = await supabase
+    .from("graphs")
+    .update({ graph_data: payload, node_count: nodeCount, edge_count: edgeCount, updated_at: new Date().toISOString() })
+    .eq("id", graphId);
+  if (updateError) return { error: updateError.message };
+
+  await supabase.from("graph_evaluations").delete().eq("graph_id", graphId);
+
+  revalidatePath(`/g/${graphId}`);
+  revalidatePath("/dashboard");
+  return { versionId: version.id as string, versionNumber: nextVersion };
 }
 
 /**

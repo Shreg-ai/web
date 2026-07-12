@@ -10,7 +10,8 @@ import { PostComposer } from "@/components/PostComposer";
 import { GraphSummaryCard } from "@/components/GraphSummaryCard";
 import { BackButton } from "@/components/BackButton";
 import { Spinner } from "@/components/Spinner";
-import type { GraphEvaluationRow, GraphRow } from "@/lib/supabase/dbTypes";
+import { VersionHistoryPanel } from "@/components/VersionHistoryPanel";
+import type { GraphEvaluationRow, GraphRow, GraphVersionRow } from "@/lib/supabase/dbTypes";
 
 const HANDLE_H = "h-1 shrink-0 bg-violet-100 transition-colors hover:bg-violet-300 active:bg-violet-400 data-[resize-handle-active]:bg-violet-400";
 const HANDLE_V = "w-1 shrink-0 bg-violet-100 transition-colors hover:bg-violet-300 active:bg-violet-400 data-[resize-handle-active]:bg-violet-400";
@@ -31,10 +32,12 @@ export function PublicGraphView({
   graph,
   isOwner,
   evaluations,
+  versions,
 }: {
   graph: GraphRow;
   isOwner: boolean;
   evaluations: GraphEvaluationRow[];
+  versions: GraphVersionRow[];
 }) {
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
   const { vault, metrics } = graph.graph_data;
@@ -49,7 +52,7 @@ export function PublicGraphView({
   // scores + the MCP endpoint. The full graph is only reachable by actually
   // connecting an agent to it.
   if (!isOwner) {
-    return <GraphSummaryCard graph={graph} evaluations={evaluations} />;
+    return <GraphSummaryCard graph={graph} evaluations={evaluations} versions={versions} />;
   }
 
   function toggleCanvas() {
@@ -95,6 +98,7 @@ export function PublicGraphView({
             onRunningChange={setEvaluationRunning}
           />
           <PostComposer graphId={graph.id} graphIsPublic={graph.visibility === "public"} />
+          <VersionHistoryPanel graphId={graph.id} initialVersions={versions} isOwner />
         </Panel>
         <Separator className={HANDLE_V} />
         <Panel defaultSize={40} minSize={15}>

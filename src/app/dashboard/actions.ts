@@ -18,14 +18,17 @@ export async function saveGraph(input: {
   const title = input.title.trim();
   if (!title) return { error: "Title is required." };
 
+  const nodeCount = input.payload.vault.nodes.length;
+  const edgeCount = input.payload.vault.edges.length;
+
   const { data, error } = await supabase
     .from("graphs")
     .insert({
       user_id: user.id,
       title,
       visibility: input.visibility,
-      node_count: input.payload.vault.nodes.length,
-      edge_count: input.payload.vault.edges.length,
+      node_count: nodeCount,
+      edge_count: edgeCount,
       graph_data: input.payload,
     })
     .select("id")
@@ -33,8 +36,19 @@ export async function saveGraph(input: {
 
   if (error) return { error: error.message };
 
+  const graphId = data.id as string;
+
+  // Every graph starts life as version 1 of itself.
+  await supabase.from("graph_versions").insert({
+    graph_id: graphId,
+    version_number: 1,
+    graph_data: input.payload,
+    node_count: nodeCount,
+    edge_count: edgeCount,
+  });
+
   revalidatePath("/dashboard");
-  return { id: data.id as string };
+  return { id: graphId };
 }
 
 export async function deleteGraph(id: string): Promise<{ error?: string }> {

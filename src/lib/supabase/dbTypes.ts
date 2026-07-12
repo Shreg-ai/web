@@ -22,6 +22,17 @@ export interface GraphRow {
   updated_at: string;
 }
 
+export interface GraphVersionRow {
+  id: string;
+  graph_id: string;
+  version_number: number;
+  graph_data: StoredGraphPayload;
+  scenarios: Scenario[];
+  node_count: number;
+  edge_count: number;
+  created_at: string;
+}
+
 export interface ProfileRow {
   id: string;
   username: string;

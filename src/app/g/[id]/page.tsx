@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import type { GraphEvaluationRow, GraphRow } from "@/lib/supabase/dbTypes";
+import type { GraphEvaluationRow, GraphRow, GraphVersionRow } from "@/lib/supabase/dbTypes";
 import { PublicGraphView } from "./PublicGraphView";
 
 export default async function GraphPage({ params }: { params: Promise<{ id: string }> }) {
@@ -19,11 +19,17 @@ export default async function GraphPage({ params }: { params: Promise<{ id: stri
   const row = graph as GraphRow;
   const isOwner = userData.user?.id === row.user_id;
 
-  const { data: evaluations } = await supabase
-    .from("graph_evaluations")
-    .select("*")
-    .eq("graph_id", id)
-    .order("created_at", { ascending: true });
+  const [{ data: evaluations }, { data: versions }] = await Promise.all([
+    supabase.from("graph_evaluations").select("*").eq("graph_id", id).order("created_at", { ascending: true }),
+    supabase.from("graph_versions").select("*").eq("graph_id", id).order("version_number", { ascending: false }),
+  ]);
 
-  return <PublicGraphView graph={row} isOwner={isOwner} evaluations={(evaluations ?? []) as GraphEvaluationRow[]} />;
+  return (
+    <PublicGraphView
+      graph={row}
+      isOwner={isOwner}
+      evaluations={(evaluations ?? []) as GraphEvaluationRow[]}
+      versions={(versions ?? []) as GraphVersionRow[]}
+    />
+  );
 }
