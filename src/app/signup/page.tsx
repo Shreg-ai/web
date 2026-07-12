@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { signup } from "@/app/auth/actions";
+import { PasswordInput } from "@/components/PasswordInput";
 
 export default async function SignupPage({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
   const { error } = await searchParams;
@@ -25,14 +26,7 @@ export default async function SignupPage({ searchParams }: { searchParams: Promi
             required
             className="rounded-md border border-violet-200 px-3 py-2 text-sm focus:border-violet-400 focus:ring-1 focus:ring-violet-400 focus:outline-none"
           />
-          <input
-            name="password"
-            type="password"
-            placeholder="Password"
-            required
-            minLength={6}
-            className="rounded-md border border-violet-200 px-3 py-2 text-sm focus:border-violet-400 focus:ring-1 focus:ring-violet-400 focus:outline-none"
-          />
+          <PasswordInput name="password" placeholder="Password" required minLength={6} />
         </div>
         {error && <p className="mt-3 text-sm text-red-600">{error}</p>}
         <button type="submit" className="mt-4 w-full rounded-md bg-violet-600 px-4 py-2 text-sm font-medium text-white hover:bg-violet-700">
