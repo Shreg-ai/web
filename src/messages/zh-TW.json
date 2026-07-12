@@ -114,15 +114,15 @@
     "copyLink": "複製連結"
   },
   "home": {
-    "tagline": "將知識圖譜變成 AI 代理可以查詢的東西。",
+    "tagline": "最大化您知識圖譜的實用性 —— 同時運用其他人的圖譜。",
     "browseExplore": "或不需帳號直接瀏覽探索頁 →",
     "uploadDifferent": "上傳其他 vault",
     "betaBadge": "測試版",
     "betaNotice": "目前僅支援 Obsidian vault。我們正計畫支援其他以圖譜為基礎的筆記工具與知識工具 —— 例如 Logseq、Roam Research、Tana 和 RemNote。"
   },
   "vaultUploader": {
-    "heading": "視覺化您的知識圖譜",
-    "description": "選擇一個 Obsidian vault 資料夾。解析過程完全在您的瀏覽器中進行，因此您可以預覽圖譜而不會有任何內容離開您的電腦 —— 在您選擇儲存之前，不會儲存任何東西。",
+    "heading": "讓您的知識圖譜發揮作用",
+    "description": "上傳一次筆記，Shreg 就會把它變成一個您自己的 AI 代理可以直接查詢的知識圖譜 —— 接著您還能探索並運用其他人分享的圖譜。解析過程完全在您的瀏覽器中進行，因此在您選擇儲存之前，不會有任何內容離開您的電腦。一旦儲存，它就會成為一個獨立的 MCP 端點，供任何 AI 代理連接使用。",
     "chooseFolder": "選擇 vault 資料夾",
     "parsing": "解析中…",
     "noMarkdownFiles": "該資料夾中找不到 Markdown（.md）檔案。",
