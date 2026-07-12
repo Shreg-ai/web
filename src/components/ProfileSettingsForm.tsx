@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import { updateBio, uploadAvatar, changePassword } from "@/app/profile/actions";
 import { Avatar } from "@/components/Avatar";
 import { PasswordInput } from "@/components/PasswordInput";
+import { resizeImageFile } from "@/lib/image/resize";
 import type { ProfileRow } from "@/lib/supabase/dbTypes";
 
 export function ProfileSettingsForm({ profile }: { profile: ProfileRow }) {
@@ -28,15 +29,19 @@ export function ProfileSettingsForm({ profile }: { profile: ProfileRow }) {
     setAvatarBusy(true);
     setAvatarError(null);
     try {
-      const result = await uploadAvatar(file);
+      // Downscale before it ever leaves the browser -- a phone photo can be
+      // several megabytes, well past what an avatar needs and past size
+      // limits enforced ahead of our own code (proxies, the host platform).
+      const resized = await resizeImageFile(file);
+      const result = await uploadAvatar(resized);
       if (result.error) {
         setAvatarError(result.error);
         return;
       }
       if (result.avatarUrl) setAvatarUrl(result.avatarUrl);
       if (fileInputRef.current) fileInputRef.current.value = "";
-    } catch {
-      setAvatarError("Upload failed -- please try again.");
+    } catch (err) {
+      setAvatarError(err instanceof Error ? err.message : "Upload failed -- please try again.");
     } finally {
       setAvatarBusy(false);
     }
@@ -94,7 +99,9 @@ export function ProfileSettingsForm({ profile }: { profile: ProfileRow }) {
               disabled={avatarBusy}
               className="text-sm text-neutral-600 file:mr-3 file:rounded-md file:border-0 file:bg-violet-600 file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-white hover:file:bg-violet-700"
             />
-            <p className="mt-1 text-xs text-neutral-500">{avatarBusy ? "Uploading…" : "PNG or JPG, up to 2MB."}</p>
+            <p className="mt-1 text-xs text-neutral-500">
+              {avatarBusy ? "Uploading…" : "Any image, any size -- we'll resize it automatically."}
+            </p>
             {avatarError && <p className="mt-1 text-sm text-red-600">{avatarError}</p>}
           </div>
         </div>
