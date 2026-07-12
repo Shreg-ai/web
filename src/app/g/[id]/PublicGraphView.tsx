@@ -4,9 +4,18 @@ import { useState } from "react";
 import { GraphCanvas } from "@/components/GraphCanvas";
 import { NodeDetailPanel } from "@/components/NodeDetailPanel";
 import { GraphAnalysisPanel } from "@/components/GraphAnalysisPanel";
-import type { GraphRow } from "@/lib/supabase/dbTypes";
+import { EvaluationPanel } from "@/components/EvaluationPanel";
+import type { GraphEvaluationRow, GraphRow } from "@/lib/supabase/dbTypes";
 
-export function PublicGraphView({ graph, isOwner }: { graph: GraphRow; isOwner: boolean }) {
+export function PublicGraphView({
+  graph,
+  isOwner,
+  evaluations,
+}: {
+  graph: GraphRow;
+  isOwner: boolean;
+  evaluations: GraphEvaluationRow[];
+}) {
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
   const { vault, metrics } = graph.graph_data;
 
@@ -25,7 +34,10 @@ export function PublicGraphView({ graph, isOwner }: { graph: GraphRow; isOwner: 
         <div className="flex w-96 shrink-0 flex-col overflow-y-auto border-l border-violet-100 bg-white">
           <NodeDetailPanel vault={vault} metrics={metrics} selectedNodeId={selectedNodeId} onSelectNode={setSelectedNodeId} />
           {isOwner && (
-            <GraphAnalysisPanel graphId={graph.id} initialDescription={graph.description} initialScenarios={graph.scenarios} />
+            <>
+              <GraphAnalysisPanel graphId={graph.id} initialDescription={graph.description} initialScenarios={graph.scenarios} />
+              <EvaluationPanel graphId={graph.id} hasScenarios={graph.scenarios.length > 0} initialEvaluations={evaluations} />
+            </>
           )}
         </div>
       </div>

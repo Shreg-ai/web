@@ -26,3 +26,22 @@ export interface ProfileRow {
   username: string;
   created_at: string;
 }
+
+export interface GraphEvaluationRow {
+  id: string;
+  graph_id: string;
+  question: string;
+  why_relevant: string;
+  baseline_answer: string;
+  graph_answer: string;
+  graph_tool_calls: Array<{ tool: string; input: Record<string, unknown>; resultSummary: string }>;
+  baseline_groundedness: number;
+  baseline_framework_consistency: number;
+  baseline_specificity: number;
+  graph_groundedness: number;
+  graph_framework_consistency: number;
+  graph_specificity: number;
+  winner: "baseline" | "graph" | "tie";
+  judge_reasoning: string;
+  created_at: string;
+}
