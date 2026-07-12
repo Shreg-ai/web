@@ -147,25 +147,43 @@ export function SidebarNav({
 
         {!collapsed && (
           <div className="ml-2 flex flex-col gap-0.5 border-l border-violet-100 pl-3">
+            <label
+              className={`flex cursor-pointer items-center gap-2 rounded-md px-2 py-1 text-xs ${
+                activeCategories.size === 0 ? "bg-violet-100 font-medium text-violet-800" : "text-neutral-500 hover:bg-violet-50 hover:text-violet-700"
+              }`}
+            >
+              <input
+                type="checkbox"
+                checked={activeCategories.size === 0}
+                onChange={() => router.push("/feed")}
+                className="accent-violet-600"
+              />
+              All
+            </label>
             {POST_CATEGORIES.map((cat) => {
               const active = activeCategories.has(cat);
               const atLimit = !active && activeCategories.size >= MAX_CATEGORIES;
               return (
-                <button
+                <label
                   key={cat}
-                  onClick={() => toggleCategory(cat)}
-                  disabled={atLimit}
                   title={atLimit ? `Up to ${MAX_CATEGORIES} categories at a time` : undefined}
-                  className={`rounded-md px-2 py-1 text-left text-xs ${
+                  className={`flex items-center gap-2 rounded-md px-2 py-1 text-xs ${
                     active
-                      ? "bg-violet-100 font-medium text-violet-800"
+                      ? "cursor-pointer bg-violet-100 font-medium text-violet-800"
                       : atLimit
                         ? "cursor-not-allowed text-neutral-300"
-                        : "text-neutral-500 hover:bg-violet-50 hover:text-violet-700"
+                        : "cursor-pointer text-neutral-500 hover:bg-violet-50 hover:text-violet-700"
                   }`}
                 >
+                  <input
+                    type="checkbox"
+                    checked={active}
+                    disabled={atLimit}
+                    onChange={() => toggleCategory(cat)}
+                    className="accent-violet-600"
+                  />
                   {cat}
-                </button>
+                </label>
               );
             })}
           </div>
