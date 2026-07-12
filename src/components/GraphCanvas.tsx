@@ -67,6 +67,12 @@ export function GraphCanvas({ vault, metrics, selectedNodeId, onSelectNode }: Gr
       return {
         id: n.id,
         position: { x: pos.x, y: pos.y },
+        // Telling React Flow the dimensions upfront (not just via style) skips
+        // its ResizeObserver-based "measurement" pass -- without this, nodes
+        // never get marked measured in this environment, leaving them stuck
+        // invisible and undraggable.
+        width: size,
+        height: size,
         data: { label: n.title },
         selected: n.id === selectedNodeId,
         style: {

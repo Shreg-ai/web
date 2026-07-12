@@ -4,14 +4,16 @@ import { useEffect, useMemo, useState } from "react";
 import { Background, Controls, MiniMap, ReactFlow, type Connection, type Edge, type Node } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { computeForceLayout } from "@/lib/graph/layout";
-import { colorForCluster, colorForType } from "@/lib/graph/colors";
+import { colorForCluster, colorForType, UNTYPED_NODE_COLOR } from "@/lib/graph/colors";
 import { SOURCE_GRAPH_FIELD, SOURCE_GRAPH_TITLE_FIELD, type ManualLink } from "@/lib/graph/playground";
 import type { NodeMetrics, ParsedVault } from "@/lib/graph/types";
+
+export type PlaygroundColorMode = "source" | "type" | "cluster";
 
 interface PlaygroundCanvasProps {
   vault: ParsedVault;
   metrics: NodeMetrics[] | null;
-  colorBySource: boolean;
+  colorMode: PlaygroundColorMode;
   pathNodeIds: string[] | null;
   manualLinks: ManualLink[];
   onSelectNode: (nodeId: string | null) => void;
@@ -24,7 +26,7 @@ const CANVAS_HEIGHT = 1800;
 export function PlaygroundCanvas({
   vault,
   metrics,
-  colorBySource,
+  colorMode,
   pathNodeIds,
   manualLinks,
   onSelectNode,
@@ -51,6 +53,18 @@ export function PlaygroundCanvas({
     return [...ids];
   }, [vault]);
 
+  const nodeTypes = useMemo(() => {
+    const types = new Set<string>();
+    for (const n of vault.nodes) {
+      if (typeof n.frontmatter.type === "string") types.add(n.frontmatter.type);
+    }
+    return [...types].sort();
+  }, [vault]);
+  const hasUntypedNodes = useMemo(
+    () => vault.nodes.some((n) => n.frontmatter.unresolved !== true && typeof n.frontmatter.type !== "string"),
+    [vault]
+  );
+
   const { nodes, edges } = useMemo(() => {
     const positions = computeForceLayout(vault, metrics ?? [], CANVAS_WIDTH, CANVAS_HEIGHT);
 
@@ -60,13 +74,27 @@ export function PlaygroundCanvas({
       const size = Math.min(80, 32 + degree * 3);
       const pos = positions.get(n.id) ?? { x: 0, y: 0 };
       const sourceGraphId = n.frontmatter[SOURCE_GRAPH_FIELD];
+      const nodeType = typeof n.frontmatter.type === "string" ? n.frontmatter.type : undefined;
       const onPath = pathSet.has(n.id);
 
-      const background = colorBySource && typeof sourceGraphId === "string" ? colorForType(sourceGraphId) : colorForCluster(m?.clusterId ?? 0);
+      let background: string;
+      if (colorMode === "source" && typeof sourceGraphId === "string") {
+        background = colorForType(sourceGraphId);
+      } else if (colorMode === "type") {
+        background = nodeType ? colorForType(nodeType) : UNTYPED_NODE_COLOR;
+      } else {
+        background = colorForCluster(m?.clusterId ?? 0);
+      }
 
       return {
         id: n.id,
         position: { x: pos.x, y: pos.y },
+        // Telling React Flow the dimensions upfront (not just via style) skips
+        // its ResizeObserver-based "measurement" pass -- without this, nodes
+        // never get marked measured in this environment, leaving them stuck
+        // invisible and undraggable.
+        width: size,
+        height: size,
         data: { label: n.title },
         style: {
           width: size,
@@ -101,7 +129,7 @@ export function PlaygroundCanvas({
     });
 
     return { nodes: flowNodes, edges: flowEdges };
-  }, [vault, metrics, metricsById, colorBySource, pathSet, manualLinkKeys, pathNodeIds]);
+  }, [vault, metrics, metricsById, colorMode, pathSet, manualLinkKeys, pathNodeIds]);
 
   if (!mounted) {
     return <div className="h-full w-full" />;
@@ -124,7 +152,7 @@ export function PlaygroundCanvas({
         <Controls />
         <MiniMap pannable zoomable />
       </ReactFlow>
-      {colorBySource && sourceGraphIds.length > 1 && (
+      {colorMode === "source" && sourceGraphIds.length > 1 && (
         <div className="pointer-events-none absolute top-3 right-3 z-10 flex max-w-[12rem] flex-col gap-1 rounded-lg border border-violet-100 bg-white/90 p-2.5 text-xs shadow-sm backdrop-blur-sm">
           <span className="mb-0.5 font-medium text-neutral-500">Source graph</span>
           {sourceGraphIds.map((id) => {
@@ -136,6 +164,23 @@ export function PlaygroundCanvas({
               </div>
             );
           })}
+        </div>
+      )}
+      {colorMode === "type" && nodeTypes.length > 0 && (
+        <div className="pointer-events-none absolute top-3 right-3 z-10 flex max-w-[12rem] flex-col gap-1 rounded-lg border border-violet-100 bg-white/90 p-2.5 text-xs shadow-sm backdrop-blur-sm">
+          <span className="mb-0.5 font-medium text-neutral-500">Node type</span>
+          {nodeTypes.map((type) => (
+            <div key={type} className="flex items-center gap-1.5">
+              <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: colorForType(type) }} />
+              <span className="truncate text-neutral-700">{type}</span>
+            </div>
+          ))}
+          {hasUntypedNodes && (
+            <div className="flex items-center gap-1.5">
+              <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: UNTYPED_NODE_COLOR }} />
+              <span className="truncate text-neutral-500">untyped</span>
+            </div>
+          )}
         </div>
       )}
       <p className="pointer-events-none absolute bottom-3 left-3 z-10 rounded-md bg-white/90 px-2 py-1 text-xs text-neutral-500 shadow-sm backdrop-blur-sm">

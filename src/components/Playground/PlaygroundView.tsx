@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { getGraphStructureForImport } from "@/app/playground/actions";
 import { computeStructuralMetrics } from "@/lib/graph/structural";
 import { buildCombinedVault, findShortestPath, type ManualLink, type PlaygroundSource } from "@/lib/graph/playground";
-import { PlaygroundCanvas } from "./PlaygroundCanvas";
+import { PlaygroundCanvas, type PlaygroundColorMode } from "./PlaygroundCanvas";
 import type { ImportableGraph } from "@/app/playground/actions";
 import type { NodeMetrics, ParsedNode } from "@/lib/graph/types";
 
@@ -15,7 +15,7 @@ export function PlaygroundView({ importableGraphs }: { importableGraphs: Importa
   const [error, setError] = useState<string | null>(null);
 
   const [metrics, setMetrics] = useState<NodeMetrics[] | null>(null);
-  const [colorBySource, setColorBySource] = useState(true);
+  const [colorMode, setColorMode] = useState<PlaygroundColorMode>("type");
 
   const [pathStart, setPathStart] = useState<string | null>(null);
   const [pathEnd, setPathEnd] = useState<string | null>(null);
@@ -60,7 +60,7 @@ export function PlaygroundView({ importableGraphs }: { importableGraphs: Importa
 
   function handleRunAnalysis() {
     setMetrics(computeStructuralMetrics(combinedVault));
-    setColorBySource(false);
+    setColorMode("cluster");
   }
 
   function handleFindPath() {
@@ -127,6 +127,29 @@ export function PlaygroundView({ importableGraphs }: { importableGraphs: Importa
         {sources.length > 0 && (
           <>
             <div>
+              <h2 className="mb-2 text-xs font-medium tracking-wide text-neutral-400 uppercase">Color nodes by</h2>
+              <div className="flex gap-1 text-xs">
+                {(["type", "source", "cluster"] as const).map((mode) => (
+                  <button
+                    key={mode}
+                    onClick={() => setColorMode(mode)}
+                    disabled={mode === "cluster" && !metrics}
+                    className={`flex-1 rounded-md px-2 py-1.5 font-medium capitalize disabled:cursor-not-allowed disabled:opacity-40 ${
+                      colorMode === mode ? "bg-violet-600 text-white" : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200"
+                    }`}
+                  >
+                    {mode}
+                  </button>
+                ))}
+              </div>
+              <p className="mt-1.5 text-xs text-neutral-500">
+                {colorMode === "type" && "Colored by each node's own type (from its source graph's frontmatter)."}
+                {colorMode === "source" && "Colored by which imported graph each node came from."}
+                {colorMode === "cluster" && (metrics ? "Colored by cluster from the structural analysis below." : "Run structural analysis first to color by cluster.")}
+              </p>
+            </div>
+
+            <div>
               <h2 className="mb-2 text-xs font-medium tracking-wide text-neutral-400 uppercase">Analysis</h2>
               <button
                 onClick={handleRunAnalysis}
@@ -134,14 +157,6 @@ export function PlaygroundView({ importableGraphs }: { importableGraphs: Importa
               >
                 Run structural analysis
               </button>
-              {metrics && (
-                <p className="mt-1.5 text-xs text-neutral-500">
-                  Colored by cluster across all {sources.length} imported graph{sources.length === 1 ? "" : "s"}.{" "}
-                  <button onClick={() => setColorBySource(true)} className="text-violet-600 hover:underline">
-                    Color by source instead
-                  </button>
-                </p>
-              )}
             </div>
 
             <div>
@@ -215,7 +230,7 @@ export function PlaygroundView({ importableGraphs }: { importableGraphs: Importa
           <PlaygroundCanvas
             vault={combinedVault}
             metrics={metrics}
-            colorBySource={colorBySource}
+            colorMode={colorMode}
             pathNodeIds={pathResult}
             manualLinks={manualLinks}
             onSelectNode={(id) => setSelectedNode(combinedVault.nodes.find((n) => n.id === id) ?? null)}
