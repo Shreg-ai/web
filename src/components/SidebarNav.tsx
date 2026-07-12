@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useTransition } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -8,6 +8,7 @@ import { useTranslations } from "next-intl";
 import { logout } from "@/app/auth/actions";
 import { POST_CATEGORIES } from "@/lib/categories";
 import { Avatar } from "@/components/Avatar";
+import { Spinner } from "@/components/Spinner";
 
 function ChevronIcon({ collapsed }: { collapsed: boolean }) {
   return (
@@ -119,6 +120,7 @@ export function SidebarNav({
   const router = useRouter();
   const searchParams = useSearchParams();
   const [collapsed, setCollapsed] = useState(false);
+  const [isExploring, startExploreTransition] = useTransition();
 
   useEffect(() => {
     if (window.localStorage.getItem("sidebar-collapsed") === "true") setCollapsed(true);
@@ -162,7 +164,9 @@ export function SidebarNav({
 
   function handleExplore() {
     const qs = pendingCategories.size > 0 ? `?categories=${Array.from(pendingCategories).join(",")}` : "";
-    router.push(`/feed${qs}`);
+    startExploreTransition(() => {
+      router.push(`/feed${qs}`);
+    });
   }
 
   const onFeeds = pathname === "/feed";
@@ -251,8 +255,10 @@ export function SidebarNav({
             })}
             <button
               onClick={handleExplore}
-              className="mt-1 rounded-md bg-violet-600 px-2 py-1.5 text-xs font-medium text-white hover:bg-violet-700"
+              disabled={isExploring}
+              className="mt-1 flex items-center justify-center gap-1.5 rounded-md bg-violet-600 px-2 py-1.5 text-xs font-medium text-white hover:bg-violet-700 disabled:opacity-70"
             >
+              {isExploring && <Spinner className="h-3.5 w-3.5" />}
               {t("exploreButton")}
             </button>
           </div>

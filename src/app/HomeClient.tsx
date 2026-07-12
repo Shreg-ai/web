@@ -23,9 +23,15 @@ export function HomeClient({ isLoggedIn }: { isLoggedIn: boolean }) {
     return (
       <div className="flex flex-1 flex-col overflow-y-auto bg-gradient-to-b from-violet-50 to-white">
         <div className="flex flex-col items-center px-6 pt-16 pb-10">
-          <div className="mb-8 text-center">
+          <div className="mb-6 text-center">
             <h1 className="text-2xl font-semibold text-violet-950">Shreg</h1>
             <p className="mt-1 text-sm text-neutral-500">{t("tagline")}</p>
+          </div>
+          <div className="mb-6 flex max-w-lg items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-left text-xs text-amber-800">
+            <span className="mt-0.5 shrink-0 rounded-full bg-amber-200 px-1.5 py-0.5 text-[10px] font-semibold text-amber-900">
+              {t("betaBadge")}
+            </span>
+            <span>{t("betaNotice")}</span>
           </div>
           <div className="w-full max-w-lg">
             <VaultUploader

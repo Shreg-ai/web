@@ -114,7 +114,9 @@
   "home": {
     "tagline": "ナレッジグラフをAIエージェントが問い合わせできるものに変えましょう。",
     "browseExplore": "またはアカウントなしで探索ページを見る →",
-    "uploadDifferent": "別のVaultをアップロード"
+    "uploadDifferent": "別のVaultをアップロード",
+    "betaBadge": "ベータ版",
+    "betaNotice": "現在はObsidianのvaultのみに対応しています。Logseq、Roam Research、Tana、RemNoteなど、他のグラフベースのノートアプリやナレッジツールへの対応も計画しています。"
   },
   "vaultUploader": {
     "heading": "ナレッジグラフを可視化",

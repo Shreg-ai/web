@@ -114,7 +114,9 @@
   "home": {
     "tagline": "Turn a knowledge graph into something an AI agent can query.",
     "browseExplore": "Or browse Explore without an account →",
-    "uploadDifferent": "Upload a different vault"
+    "uploadDifferent": "Upload a different vault",
+    "betaBadge": "Beta",
+    "betaNotice": "Currently supports Obsidian vaults only. We're planning support for other graph-based note apps and knowledge tools too -- like Logseq, Roam Research, Tana, and RemNote."
   },
   "vaultUploader": {
     "heading": "Visualize your knowledge graph",

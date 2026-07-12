@@ -114,7 +114,9 @@
   "home": {
     "tagline": "將知識圖譜變成 AI 代理可以查詢的東西。",
     "browseExplore": "或不需帳號直接瀏覽探索頁 →",
-    "uploadDifferent": "上傳其他 vault"
+    "uploadDifferent": "上傳其他 vault",
+    "betaBadge": "測試版",
+    "betaNotice": "目前僅支援 Obsidian vault。我們正計畫支援其他以圖譜為基礎的筆記工具與知識工具 —— 例如 Logseq、Roam Research、Tana 和 RemNote。"
   },
   "vaultUploader": {
     "heading": "視覺化您的知識圖譜",
