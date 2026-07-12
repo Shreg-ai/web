@@ -4,10 +4,19 @@ import { extractText, type LlmClient, type LlmMessage } from "@/lib/llm/client";
 import { GRAPH_TOOLS, runGraphTool, type ToolCallLog } from "@/lib/llm/graphTools";
 import type { ParsedVault } from "@/lib/graph/types";
 
+// Answers are rendered as markdown and read side-by-side on a comparison page,
+// so favor scannable structure over an exhaustive report: short paragraphs,
+// bold for key terms, a bullet list only where it genuinely helps -- not a
+// wall of headers and sub-sections for a single question.
+const ANSWER_STYLE =
+  "Write a focused answer, not an exhaustive report: a few short paragraphs, using markdown " +
+  "(**bold** for key terms, bullet points only where they aid scanning) -- skip nested " +
+  "headers and sub-sections for what is ultimately one question.";
+
 /** The baseline: answers cold, no graph access, no tools. Ported from the compiler's eval/agents.ts. */
 export async function runBaselineAgent(llm: LlmClient, question: string): Promise<string> {
   const response = await llm.complete({
-    system: "Answer the user's question as well as you can from your own knowledge.",
+    system: `Answer the user's question as well as you can from your own knowledge. ${ANSWER_STYLE}`,
     messages: [{ role: "user", content: question }],
     maxTokens: 1024,
   });
@@ -29,7 +38,7 @@ export async function runGraphAgent(
     "Answer the user's question using the search_concepts, get_node, and get_related tools to look up " +
     "relevant information in the connected knowledge graph before answering. Ground your answer in what you " +
     "find there where relevant. Try multiple search terms, including the graph's own terminology below, before " +
-    "concluding nothing relevant exists.\n\n" +
+    `concluding nothing relevant exists. ${ANSWER_STYLE}\n\n` +
     (options?.graphDescription ? `What this graph covers:\n${options.graphDescription}` : "");
 
   for (let step = 0; step < maxSteps; step++) {
@@ -57,7 +66,7 @@ export async function runGraphAgent(
   }
 
   const finalResponse = await llm.complete({
-    system: "Give your best final answer now based on the information gathered so far.",
+    system: `Give your best final answer now based on the information gathered so far. ${ANSWER_STYLE}`,
     messages,
     maxTokens: 1024,
   });

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { MarkdownAnswer } from "@/components/MarkdownAnswer";
 import type { GraphEvaluationRow } from "@/lib/supabase/dbTypes";
 
 function average(nums: number[]): number {
@@ -81,13 +82,16 @@ export function EvaluationResultsList({ evaluations }: { evaluations: GraphEvalu
                 <div className="mt-3 flex flex-col gap-3">
                   <div className="rounded-md bg-neutral-50 p-3">
                     <p className="mb-1 text-xs font-medium tracking-wide text-neutral-400 uppercase">Baseline</p>
-                    <p className="text-xs text-neutral-700">{e.baseline_answer}</p>
+                    <MarkdownAnswer text={e.baseline_answer} className="text-neutral-700" />
                   </div>
                   <div className="rounded-md bg-violet-50/60 p-3">
                     <p className="mb-1 text-xs font-medium tracking-wide text-neutral-400 uppercase">Graph-augmented</p>
-                    <p className="text-xs text-neutral-700">{e.graph_answer}</p>
+                    <MarkdownAnswer text={e.graph_answer} className="text-neutral-700" />
                   </div>
-                  <p className="text-xs text-neutral-500">{e.judge_reasoning}</p>
+                  <div className="rounded-md border border-violet-100 p-3">
+                    <p className="mb-1 text-xs font-medium tracking-wide text-neutral-400 uppercase">Judge&apos;s reasoning</p>
+                    <MarkdownAnswer text={e.judge_reasoning} className="text-neutral-600" />
+                  </div>
                 </div>
               )}
             </li>
