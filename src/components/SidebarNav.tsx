@@ -130,9 +130,6 @@ export function SidebarNav({
     router.push(`/feed${qs}`);
   }
 
-  const hasPendingChanges =
-    pendingCategories.size !== categoriesFromUrl().size || ![...pendingCategories].every((c) => categoriesFromUrl().has(c));
-
   const onFeeds = pathname === "/feed";
   const onDashboard = pathname === "/dashboard";
   const onPosts = pathname === "/posts";
@@ -216,9 +213,7 @@ export function SidebarNav({
             })}
             <button
               onClick={handleExplore}
-              className={`mt-1 rounded-md px-2 py-1.5 text-xs font-medium ${
-                hasPendingChanges ? "bg-violet-600 text-white hover:bg-violet-700" : "bg-violet-50 text-violet-400"
-              }`}
+              className="mt-1 rounded-md bg-violet-600 px-2 py-1.5 text-xs font-medium text-white hover:bg-violet-700"
             >
               Explore
             </button>
