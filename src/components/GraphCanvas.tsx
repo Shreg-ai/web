@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Background, Controls, MiniMap, ReactFlow, type Edge, type Node } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { computeForceLayout } from "@/lib/graph/layout";
@@ -18,6 +18,14 @@ const CANVAS_WIDTH = 2400;
 const CANVAS_HEIGHT = 1800;
 
 export function GraphCanvas({ vault, metrics, selectedNodeId, onSelectNode }: GraphCanvasProps) {
+  // d3-force seeds initial node positions with Math.random() when a node has
+  // no preset x/y, so the server-rendered layout necessarily differs from
+  // the client's, causing a hydration mismatch. Skipping SSR for this
+  // component entirely (standard for physics/canvas libraries) avoids that
+  // instead of fighting it.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
   const metricsById = useMemo(() => new Map(metrics.map((m) => [m.nodeId, m])), [metrics]);
 
   const { nodes, edges } = useMemo(() => {
@@ -61,6 +69,10 @@ export function GraphCanvas({ vault, metrics, selectedNodeId, onSelectNode }: Gr
 
     return { nodes: flowNodes, edges: flowEdges };
   }, [vault, metrics, metricsById, selectedNodeId]);
+
+  if (!mounted) {
+    return <div className="h-full w-full" />;
+  }
 
   return (
     <div className="h-full w-full">
