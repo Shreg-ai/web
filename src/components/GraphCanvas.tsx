@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { Background, Controls, MiniMap, ReactFlow, useEdgesState, useNodesState, type Edge, type NodeTypes } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { useLiveForceSimulation } from "@/lib/graph/useLiveForceSimulation";
+import { nodeCollisionRadius } from "@/lib/graph/nodeFootprint";
 import { colorForCluster, colorForType, UNTYPED_NODE_COLOR } from "@/lib/graph/colors";
 import { CircleNodeLabel, type CircleNode } from "@/components/graph/CircleNodeLabel";
 import type { NodeMetrics, ParsedVault } from "@/lib/graph/types";
@@ -69,10 +70,11 @@ export function GraphCanvas({ vault, metrics, selectedNodeId, onSelectNode }: Gr
       const m = metricsById.get(n.id);
       const degree = (m?.inDegree ?? 0) + (m?.outDegree ?? 0);
       const size = enlarged ? BIG_SIZE(degree) : NORMAL_SIZE(degree);
-      // A bit more than half the circle's own diameter, leaving some room
-      // for the label rendered below it before the next node's collision
-      // radius starts.
-      map.set(n.id, size / 2 + 14);
+      const labelFontSize = enlarged ? 13 : 11;
+      // Covers the circle plus the label rendered below it, not just the
+      // circle -- otherwise the physics simulation only keeps circles from
+      // touching while letting labels overlap their neighbors.
+      map.set(n.id, nodeCollisionRadius(size, n.title, labelFontSize));
     }
     return map;
   }, [vault, metricsById, enlarged]);
@@ -164,7 +166,10 @@ export function GraphCanvas({ vault, metrics, selectedNodeId, onSelectNode }: Gr
 
   function handleTidyAndEnlarge() {
     setEnlarged(true);
-    reheat(0.7);
+    // Full reheat (not a partial nudge) -- the bigger radius can put many
+    // node pairs into collision at once, and that needs real energy/time to
+    // fully resolve rather than settling into a still-overlapping state.
+    reheat(1);
   }
 
   // Selection is overlaid separately from the effect above so that clicking

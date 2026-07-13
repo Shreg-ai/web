@@ -95,7 +95,11 @@ export function useLiveForceSimulation(params: LiveForceSimulationParams): LiveF
       .force("center", forceCenter(params.width / 2, params.height / 2).strength(0.05))
       .force(
         "collide",
-        forceCollide<SimNode>((d) => params.radiusById.get(d.id) ?? 20)
+        // Extra iterations resolve overlaps more thoroughly per tick --
+        // matters most right after a sudden radius jump (e.g. "Tidy &
+        // enlarge"), where the default of 1 can leave nodes settling into a
+        // still-slightly-overlapping equilibrium instead of fully resolving.
+        forceCollide<SimNode>((d) => params.radiusById.get(d.id) ?? 20).iterations(4)
       )
       .on("tick", () => {
         const positions = new Map<string, { x: number; y: number }>();
