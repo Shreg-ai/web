@@ -4,9 +4,9 @@ import { useEffect, useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Background, Controls, MiniMap, ReactFlow, useEdgesState, useNodesState, type Edge, type Node } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import { computeForceLayout, type LayoutNode } from "@/lib/graph/layout";
+import { useLiveForceSimulation } from "@/lib/graph/useLiveForceSimulation";
 import { colorForCluster, colorForType, UNTYPED_NODE_COLOR } from "@/lib/graph/colors";
-import type { NodeMetrics, ParsedNode, ParsedVault } from "@/lib/graph/types";
+import type { NodeMetrics, ParsedVault } from "@/lib/graph/types";
 
 interface GraphCanvasProps {
   vault: ParsedVault;
@@ -18,10 +18,10 @@ interface GraphCanvasProps {
 const CANVAS_WIDTH = 2400;
 const CANVAS_HEIGHT = 1800;
 
-// "Auto-arrange" tightens link/charge forces (pulling connected nodes closer
-// together instead of spreading across the whole canvas) while scaling up
-// the collision radius to match the bigger node size, so tighter never means
-// overlapping.
+// "Tidy & enlarge" tightens link/charge forces (pulling connected nodes
+// closer together instead of spreading across the whole canvas) while
+// scaling up the collision radius to match the bigger node size, so
+// tighter never means overlapping.
 const NORMAL_SIZE = (degree: number) => Math.min(80, 32 + degree * 3);
 const BIG_SIZE = (degree: number) => Math.min(112, 48 + degree * 4);
 
@@ -54,70 +54,95 @@ export function GraphCanvas({ vault, metrics, selectedNodeId, onSelectNode }: Gr
     [vault]
   );
 
-  // Nodes/edges live in React Flow's own controlled state (not a plain
-  // useMemo) specifically so dragging actually sticks: onNodesChange is what
-  // writes a drag's new position back in, and without it every unrelated
-  // re-render (e.g. clicking a different node to view its content, which
-  // changes selectedNodeId) would recompute positions from scratch and
-  // silently discard whatever the user just dragged.
   const [baseNodes, setNodes, onNodesChange] = useNodesState<Node>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
   const [enlarged, setEnlarged] = useState(false);
 
-  function buildNode(n: ParsedNode, position: { x: number; y: number }): Node {
-    const m = metricsById.get(n.id);
-    const degree = (m?.inDegree ?? 0) + (m?.outDegree ?? 0);
-    const size = enlarged ? BIG_SIZE(degree) : NORMAL_SIZE(degree);
-    const isUnresolved = n.frontmatter.unresolved === true;
-    const type = typeof n.frontmatter.type === "string" ? n.frontmatter.type : undefined;
+  const nodeIds = useMemo(() => vault.nodes.map((n) => n.id), [vault]);
+  const simLinks = useMemo(() => vault.edges.map((e) => ({ sourceId: e.sourceId, targetId: e.targetId })), [vault]);
+  const radiusById = useMemo(() => {
+    const map = new Map<string, number>();
+    for (const n of vault.nodes) {
+      const m = metricsById.get(n.id);
+      const degree = (m?.inDegree ?? 0) + (m?.outDegree ?? 0);
+      const size = enlarged ? BIG_SIZE(degree) : NORMAL_SIZE(degree);
+      map.set(n.id, size / 2 + 4);
+    }
+    return map;
+  }, [vault, metricsById, enlarged]);
 
-    const background = isUnresolved
-      ? "#e5e5e5"
-      : useTypeColoring
-        ? type
-          ? colorForType(type)
-          : UNTYPED_NODE_COLOR
-        : colorForCluster(m?.clusterId ?? 0);
+  // A continuously-running physics simulation (the same technique Obsidian's
+  // graph view uses) instead of a one-shot layout computed once and frozen
+  // -- nodes keep gently nudging toward a comfortable arrangement, new
+  // nodes fly into place, and dragging one visibly moves its neighbors.
+  const { pin, release, reheat } = useLiveForceSimulation({
+    nodeIds,
+    links: simLinks,
+    width: CANVAS_WIDTH,
+    height: CANVAS_HEIGHT,
+    linkDistance: enlarged ? 70 : 120,
+    chargeStrength: enlarged ? -130 : -250,
+    radiusById,
+    extraDep: enlarged,
+    onTick: (positions) => {
+      setNodes((current) =>
+        current.map((n) => {
+          const p = positions.get(n.id);
+          return p ? { ...n, position: p } : n;
+        })
+      );
+    },
+  });
 
-    return {
-      id: n.id,
-      position,
-      // Telling React Flow the dimensions upfront (not just via style) skips
-      // its ResizeObserver-based "measurement" pass -- without this, nodes
-      // never get marked measured in this environment, leaving them stuck
-      // invisible and undraggable.
-      width: size,
-      height: size,
-      data: { label: n.title },
-      style: {
-        width: size,
-        height: size,
-        borderRadius: "9999px",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        fontSize: enlarged ? 13 : 11,
-        textAlign: "center",
-        padding: 4,
-        background,
-        color: isUnresolved ? "#525252" : "white",
-        border: "1px solid rgba(0,0,0,0.1)",
-      },
-    };
-  }
-
+  // Size, color, and label are rebuilt here whenever the underlying data
+  // changes -- kept entirely separate from position, which the simulation's
+  // tick handler above owns, so neither ever clobbers the other.
   useEffect(() => {
-    const positions = computeForceLayout(vault, metrics, CANVAS_WIDTH, CANVAS_HEIGHT);
-
     setNodes((current) => {
       const currentById = new Map(current.map((n) => [n.id, n]));
       return vault.nodes.map((n) => {
-        // Keep the node's current position if it already exists (possibly
-        // dragged by the user) -- only brand-new nodes get a fresh layout
-        // position.
+        const m = metricsById.get(n.id);
+        const degree = (m?.inDegree ?? 0) + (m?.outDegree ?? 0);
+        const size = enlarged ? BIG_SIZE(degree) : NORMAL_SIZE(degree);
+        const isUnresolved = n.frontmatter.unresolved === true;
+        const type = typeof n.frontmatter.type === "string" ? n.frontmatter.type : undefined;
+
+        const background = isUnresolved
+          ? "#e5e5e5"
+          : useTypeColoring
+            ? type
+              ? colorForType(type)
+              : UNTYPED_NODE_COLOR
+            : colorForCluster(m?.clusterId ?? 0);
+
         const existing = currentById.get(n.id);
-        const pos = existing?.position ?? positions.get(n.id) ?? { x: 0, y: 0 };
-        return buildNode(n, pos);
+        const position = existing?.position ?? { x: CANVAS_WIDTH / 2, y: CANVAS_HEIGHT / 2 };
+
+        return {
+          id: n.id,
+          position,
+          // Telling React Flow the dimensions upfront (not just via style) skips
+          // its ResizeObserver-based "measurement" pass -- without this, nodes
+          // never get marked measured in this environment, leaving them stuck
+          // invisible and undraggable.
+          width: size,
+          height: size,
+          data: { label: n.title },
+          style: {
+            width: size,
+            height: size,
+            borderRadius: "9999px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            fontSize: enlarged ? 13 : 11,
+            textAlign: "center",
+            padding: 4,
+            background,
+            color: isUnresolved ? "#525252" : "white",
+            border: "1px solid rgba(0,0,0,0.1)",
+          },
+        };
       });
     });
     // setNodes is stable (from useNodesState) and intentionally omitted so
@@ -137,14 +162,9 @@ export function GraphCanvas({ vault, metrics, selectedNodeId, onSelectNode }: Gr
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [vault]);
 
-  function handleAutoArrange() {
-    const positions: Map<string, LayoutNode> = computeForceLayout(vault, metrics, CANVAS_WIDTH, CANVAS_HEIGHT, {
-      linkDistance: 70,
-      chargeStrength: -130,
-      collideRadius: (degree) => BIG_SIZE(degree) / 2 + 10,
-    });
+  function handleTidyAndEnlarge() {
     setEnlarged(true);
-    setNodes(vault.nodes.map((n) => buildNode(n, positions.get(n.id) ?? { x: 0, y: 0 })));
+    reheat(0.7);
   }
 
   // Selection is overlaid separately from the effect above so that clicking
@@ -176,6 +196,9 @@ export function GraphCanvas({ vault, metrics, selectedNodeId, onSelectNode }: Gr
         onEdgesChange={onEdgesChange}
         onNodeClick={(_, node) => onSelectNode(node.id)}
         onPaneClick={() => onSelectNode(null)}
+        onNodeDragStart={(_, node) => pin(node.id, node.position.x, node.position.y)}
+        onNodeDrag={(_, node) => pin(node.id, node.position.x, node.position.y)}
+        onNodeDragStop={() => release()}
         fitView
         minZoom={0.05}
       >
@@ -184,7 +207,7 @@ export function GraphCanvas({ vault, metrics, selectedNodeId, onSelectNode }: Gr
         <MiniMap pannable zoomable />
       </ReactFlow>
       <button
-        onClick={handleAutoArrange}
+        onClick={handleTidyAndEnlarge}
         title={t("autoArrangeHint")}
         className="absolute top-3 left-3 z-10 rounded-md border border-violet-100 bg-white/90 px-2.5 py-1.5 text-xs font-medium text-violet-700 shadow-sm backdrop-blur-sm hover:bg-violet-50"
       >
