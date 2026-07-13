@@ -12,12 +12,13 @@ import {
   type Connection,
   type Edge,
   type EdgeChange,
-  type Node,
+  type NodeTypes,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { useLiveForceSimulation } from "@/lib/graph/useLiveForceSimulation";
 import { colorForCluster, colorForType, UNTYPED_NODE_COLOR } from "@/lib/graph/colors";
 import { SOURCE_GRAPH_FIELD, SOURCE_GRAPH_TITLE_FIELD, type ManualLink } from "@/lib/graph/playground";
+import { CircleNodeLabel, type CircleNode } from "@/components/graph/CircleNodeLabel";
 import type { NodeMetrics, ParsedVault } from "@/lib/graph/types";
 
 export type PlaygroundColorMode = "source" | "type" | "cluster";
@@ -42,6 +43,8 @@ const CANVAS_HEIGHT = 1800;
 // tighter never means overlapping.
 const NORMAL_SIZE = (degree: number) => Math.min(80, 32 + degree * 3);
 const BIG_SIZE = (degree: number) => Math.min(112, 48 + degree * 4);
+
+const NODE_TYPES: NodeTypes = { circleLabel: CircleNodeLabel };
 
 export function PlaygroundCanvas({
   vault,
@@ -75,7 +78,7 @@ export function PlaygroundCanvas({
     return [...ids];
   }, [vault]);
 
-  const nodeTypes = useMemo(() => {
+  const frontmatterTypes = useMemo(() => {
     const types = new Set<string>();
     for (const n of vault.nodes) {
       if (typeof n.frontmatter.type === "string") types.add(n.frontmatter.type);
@@ -87,7 +90,7 @@ export function PlaygroundCanvas({
     [vault]
   );
 
-  const [baseNodes, setNodes, onNodesChange] = useNodesState<Node>([]);
+  const [baseNodes, setNodes, onNodesChange] = useNodesState<CircleNode>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
   const [enlarged, setEnlarged] = useState(false);
 
@@ -104,7 +107,10 @@ export function PlaygroundCanvas({
       const m = metricsById.get(n.id);
       const degree = (m?.inDegree ?? 0) + (m?.outDegree ?? 0);
       const size = enlarged ? BIG_SIZE(degree) : NORMAL_SIZE(degree);
-      map.set(n.id, size / 2 + 4);
+      // A bit more than half the circle's own diameter, leaving some room
+      // for the label rendered below it before the next node's collision
+      // radius starts.
+      map.set(n.id, size / 2 + 14);
     }
     return map;
   }, [vault, metricsById, enlarged]);
@@ -160,6 +166,7 @@ export function PlaygroundCanvas({
 
         return {
           id: n.id,
+          type: "circleLabel" as const,
           position,
           // Telling React Flow the dimensions upfront (not just via style) skips
           // its ResizeObserver-based "measurement" pass -- without this, nodes
@@ -167,19 +174,12 @@ export function PlaygroundCanvas({
           // invisible and undraggable.
           width: size,
           height: size,
-          data: { label: n.title },
+          data: { label: n.title, labelFontSize: enlarged ? 12 : 10 },
           style: {
             width: size,
             height: size,
             borderRadius: "9999px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            fontSize: enlarged ? 12 : 10,
-            textAlign: "center",
-            padding: 4,
             background,
-            color: "white",
           },
         };
       });
@@ -258,6 +258,7 @@ export function PlaygroundCanvas({
       <ReactFlow
         nodes={nodes}
         edges={displayedEdges}
+        nodeTypes={NODE_TYPES}
         onNodesChange={onNodesChange}
         onEdgesChange={(changes: EdgeChange<Edge>[]) => {
           for (const change of changes) {
@@ -305,10 +306,10 @@ export function PlaygroundCanvas({
           })}
         </div>
       )}
-      {colorMode === "type" && nodeTypes.length > 0 && (
+      {colorMode === "type" && frontmatterTypes.length > 0 && (
         <div className="pointer-events-none absolute top-3 right-3 z-10 flex max-w-[12rem] flex-col gap-1 rounded-lg border border-violet-100 bg-white/90 p-2.5 text-xs shadow-sm backdrop-blur-sm">
           <span className="mb-0.5 font-medium text-neutral-500">{t("nodeType")}</span>
-          {nodeTypes.map((type) => (
+          {frontmatterTypes.map((type) => (
             <div key={type} className="flex items-center gap-1.5">
               <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: colorForType(type) }} />
               <span className="truncate text-neutral-700">{type}</span>

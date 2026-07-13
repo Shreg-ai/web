@@ -2,10 +2,11 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
-import { Background, Controls, MiniMap, ReactFlow, useEdgesState, useNodesState, type Edge, type Node } from "@xyflow/react";
+import { Background, Controls, MiniMap, ReactFlow, useEdgesState, useNodesState, type Edge, type NodeTypes } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { useLiveForceSimulation } from "@/lib/graph/useLiveForceSimulation";
 import { colorForCluster, colorForType, UNTYPED_NODE_COLOR } from "@/lib/graph/colors";
+import { CircleNodeLabel, type CircleNode } from "@/components/graph/CircleNodeLabel";
 import type { NodeMetrics, ParsedVault } from "@/lib/graph/types";
 
 interface GraphCanvasProps {
@@ -25,6 +26,8 @@ const CANVAS_HEIGHT = 1800;
 const NORMAL_SIZE = (degree: number) => Math.min(80, 32 + degree * 3);
 const BIG_SIZE = (degree: number) => Math.min(112, 48 + degree * 4);
 
+const NODE_TYPES: NodeTypes = { circleLabel: CircleNodeLabel };
+
 export function GraphCanvas({ vault, metrics, selectedNodeId, onSelectNode }: GraphCanvasProps) {
   const t = useTranslations("graphCanvas");
   // d3-force seeds initial node positions with Math.random() when a node has
@@ -41,20 +44,20 @@ export function GraphCanvas({ vault, metrics, selectedNodeId, onSelectNode }: Gr
   // instead of by structural cluster -- type is a user-authored, meaningful
   // grouping (e.g. "framework" vs "case"), so it takes priority over the
   // purely structural clustering when both are available.
-  const nodeTypes = useMemo(() => {
+  const frontmatterTypes = useMemo(() => {
     const types = new Set<string>();
     for (const n of vault.nodes) {
       if (typeof n.frontmatter.type === "string") types.add(n.frontmatter.type);
     }
     return types;
   }, [vault]);
-  const useTypeColoring = nodeTypes.size > 0;
+  const useTypeColoring = frontmatterTypes.size > 0;
   const hasUntypedNodes = useMemo(
     () => vault.nodes.some((n) => n.frontmatter.unresolved !== true && typeof n.frontmatter.type !== "string"),
     [vault]
   );
 
-  const [baseNodes, setNodes, onNodesChange] = useNodesState<Node>([]);
+  const [baseNodes, setNodes, onNodesChange] = useNodesState<CircleNode>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
   const [enlarged, setEnlarged] = useState(false);
 
@@ -66,7 +69,10 @@ export function GraphCanvas({ vault, metrics, selectedNodeId, onSelectNode }: Gr
       const m = metricsById.get(n.id);
       const degree = (m?.inDegree ?? 0) + (m?.outDegree ?? 0);
       const size = enlarged ? BIG_SIZE(degree) : NORMAL_SIZE(degree);
-      map.set(n.id, size / 2 + 4);
+      // A bit more than half the circle's own diameter, leaving some room
+      // for the label rendered below it before the next node's collision
+      // radius starts.
+      map.set(n.id, size / 2 + 14);
     }
     return map;
   }, [vault, metricsById, enlarged]);
@@ -120,6 +126,7 @@ export function GraphCanvas({ vault, metrics, selectedNodeId, onSelectNode }: Gr
 
         return {
           id: n.id,
+          type: "circleLabel" as const,
           position,
           // Telling React Flow the dimensions upfront (not just via style) skips
           // its ResizeObserver-based "measurement" pass -- without this, nodes
@@ -127,19 +134,12 @@ export function GraphCanvas({ vault, metrics, selectedNodeId, onSelectNode }: Gr
           // invisible and undraggable.
           width: size,
           height: size,
-          data: { label: n.title },
+          data: { label: n.title, labelFontSize: enlarged ? 13 : 11 },
           style: {
             width: size,
             height: size,
             borderRadius: "9999px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            fontSize: enlarged ? 13 : 11,
-            textAlign: "center",
-            padding: 4,
             background,
-            color: isUnresolved ? "#525252" : "white",
             border: "1px solid rgba(0,0,0,0.1)",
           },
         };
@@ -192,6 +192,7 @@ export function GraphCanvas({ vault, metrics, selectedNodeId, onSelectNode }: Gr
       <ReactFlow
         nodes={nodes}
         edges={edges}
+        nodeTypes={NODE_TYPES}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onNodeClick={(_, node) => onSelectNode(node.id)}
@@ -216,7 +217,7 @@ export function GraphCanvas({ vault, metrics, selectedNodeId, onSelectNode }: Gr
       {useTypeColoring && (
         <div className="pointer-events-none absolute top-3 right-3 z-10 flex max-w-[12rem] flex-col gap-1 rounded-lg border border-violet-100 bg-white/90 p-2.5 text-xs shadow-sm backdrop-blur-sm">
           <span className="mb-0.5 font-medium text-neutral-500">{t("nodeType")}</span>
-          {[...nodeTypes].sort().map((type) => (
+          {[...frontmatterTypes].sort().map((type) => (
             <div key={type} className="flex items-center gap-1.5">
               <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: colorForType(type) }} />
               <span className="truncate text-neutral-700">{type}</span>
