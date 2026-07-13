@@ -16,7 +16,6 @@ import {
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { useLiveForceSimulation } from "@/lib/graph/useLiveForceSimulation";
-import { nodeCollisionRadius } from "@/lib/graph/nodeFootprint";
 import { colorForCluster, colorForType, UNTYPED_NODE_COLOR } from "@/lib/graph/colors";
 import { SOURCE_GRAPH_FIELD, SOURCE_GRAPH_TITLE_FIELD, type ManualLink } from "@/lib/graph/playground";
 import { CircleNodeLabel, type CircleNode } from "@/components/graph/CircleNodeLabel";
@@ -108,11 +107,12 @@ export function PlaygroundCanvas({
       const m = metricsById.get(n.id);
       const degree = (m?.inDegree ?? 0) + (m?.outDegree ?? 0);
       const size = enlarged ? BIG_SIZE(degree) : NORMAL_SIZE(degree);
-      const labelFontSize = enlarged ? 12 : 10;
-      // Covers the circle plus the label rendered below it, not just the
-      // circle -- otherwise the physics simulation only keeps circles from
-      // touching while letting labels overlap their neighbors.
-      map.set(n.id, nodeCollisionRadius(size, n.title, labelFontSize));
+      // Just the circle plus a little breathing room -- sizing this to
+      // fully clear each label's own footprint pushed nodes so far apart
+      // that fitting the whole graph in view shrank everything down to
+      // unreadable. Some label overlap in dense areas is an acceptable
+      // trade for a graph that isn't mostly empty space.
+      map.set(n.id, size / 2 + 8);
     }
     return map;
   }, [vault, metricsById, enlarged]);
