@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import {
   Background,
   Controls,
+  MarkerType,
   MiniMap,
   ReactFlow,
   useEdgesState,
@@ -12,6 +13,7 @@ import {
   type Connection,
   type Edge,
   type EdgeChange,
+  type NodeChange,
   type NodeTypes,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
@@ -32,6 +34,8 @@ interface PlaygroundCanvasProps {
   onSelectNode: (nodeId: string | null) => void;
   onConnect: (source: string, target: string) => void;
   onDisconnect: (source: string, target: string) => void;
+  onSelectEdge: (source: string, target: string) => void;
+  onDeleteNode: (id: string) => void;
 }
 
 const CANVAS_WIDTH = 2400;
@@ -46,6 +50,13 @@ const BIG_SIZE = (degree: number) => Math.min(112, 48 + degree * 4);
 
 const NODE_TYPES: NodeTypes = { circleLabel: CircleNodeLabel };
 
+interface EdgeData {
+  isManual: boolean;
+  sourceId: string;
+  targetId: string;
+  directed: boolean;
+}
+
 export function PlaygroundCanvas({
   vault,
   metrics,
@@ -55,16 +66,19 @@ export function PlaygroundCanvas({
   onSelectNode,
   onConnect,
   onDisconnect,
+  onSelectEdge,
+  onDeleteNode,
 }: PlaygroundCanvasProps) {
   const t = useTranslations("graphCanvas");
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
 
   const metricsById = useMemo(() => new Map((metrics ?? []).map((m) => [m.nodeId, m])), [metrics]);
-  const manualLinkKeys = useMemo(
-    () => new Set(manualLinks.map((l) => [l.sourceId, l.targetId].sort().join("::"))),
-    [manualLinks]
-  );
+  const manualLinkByKey = useMemo(() => {
+    const map = new Map<string, ManualLink>();
+    for (const l of manualLinks) map.set([l.sourceId, l.targetId].sort().join("::"), l);
+    return map;
+  }, [manualLinks]);
   const pathSet = useMemo(() => new Set(pathNodeIds ?? []), [pathNodeIds]);
 
   // Distinct color per source graph, keyed off the same deterministic hash
@@ -90,7 +104,7 @@ export function PlaygroundCanvas({
     [vault]
   );
 
-  const [baseNodes, setNodes, onNodesChange] = useNodesState<CircleNode>([]);
+  const [baseNodes, setNodes, onNodesChangeInternal] = useNodesState<CircleNode>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
   const [enlarged, setEnlarged] = useState(false);
 
@@ -120,8 +134,8 @@ export function PlaygroundCanvas({
   // A continuously-running physics simulation (the same technique Obsidian's
   // graph view uses) instead of a one-shot layout computed once and frozen
   // -- nodes keep gently nudging toward a comfortable arrangement, newly
-  // imported graphs fly into place, and dragging one node visibly moves its
-  // neighbors.
+  // imported graphs (and manually added nodes) fly into place, and dragging
+  // one node visibly moves its neighbors.
   const { pin, release, reheat } = useLiveForceSimulation({
     nodeIds,
     links: simLinks,
@@ -176,6 +190,10 @@ export function PlaygroundCanvas({
           // invisible and undraggable.
           width: size,
           height: size,
+          // Any node can be deleted here (not just manually-added ones) --
+          // this is a working session, not the source graphs themselves, so
+          // pruning freely and re-importing if you change your mind is fine.
+          deletable: true,
           data: { label: n.title, labelFontSize: enlarged ? 12 : 10 },
           style: {
             width: size,
@@ -194,7 +212,9 @@ export function PlaygroundCanvas({
   useEffect(() => {
     setEdges(
       vault.edges.map((e, i) => {
-        const isManual = manualLinkKeys.has([e.sourceId, e.targetId].sort().join("::"));
+        const manual = manualLinkByKey.get([e.sourceId, e.targetId].sort().join("::"));
+        const isManual = Boolean(manual);
+        const directed = manual?.directed ?? false;
         return {
           id: `${e.sourceId}--${e.targetId}--${i}`,
           source: e.sourceId,
@@ -203,7 +223,8 @@ export function PlaygroundCanvas({
           // reflect each note's real wikilinks, so removing those here
           // wouldn't mean anything (and there's no owning graph to update).
           deletable: isManual,
-          data: { isManual, sourceId: e.sourceId, targetId: e.targetId },
+          markerEnd: directed ? { type: MarkerType.ArrowClosed, width: 16, height: 16 } : undefined,
+          data: { isManual, sourceId: e.sourceId, targetId: e.targetId, directed } satisfies EdgeData,
           style: {
             stroke: isManual ? "#7c3aed" : "#d4d4d4",
             strokeWidth: isManual ? 2 : 1,
@@ -213,7 +234,7 @@ export function PlaygroundCanvas({
       })
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [vault, manualLinkKeys]);
+  }, [vault, manualLinkByKey]);
 
   function handleTidyAndEnlarge() {
     setEnlarged(true);
@@ -221,6 +242,23 @@ export function PlaygroundCanvas({
     // node pairs into collision at once, and that needs real energy/time to
     // fully resolve rather than settling into a still-overlapping state.
     reheat(1);
+  }
+
+  function handleNodesChange(changes: NodeChange<CircleNode>[]) {
+    for (const change of changes) {
+      if (change.type === "remove") onDeleteNode(change.id);
+    }
+    onNodesChangeInternal(changes);
+  }
+
+  function handleEdgesChange(changes: EdgeChange<Edge>[]) {
+    for (const change of changes) {
+      if (change.type !== "remove") continue;
+      const removed = edges.find((e) => e.id === change.id);
+      const data = removed?.data as EdgeData | undefined;
+      if (data?.isManual) onDisconnect(data.sourceId, data.targetId);
+    }
+    onEdgesChange(changes);
   }
 
   // Path highlighting is overlaid separately so that finding a path never
@@ -241,7 +279,7 @@ export function PlaygroundCanvas({
     () =>
       edges.map((e) => {
         const onPathEdge = pathSet.has(e.source) && pathSet.has(e.target) && (pathNodeIds ?? []).includes(e.source);
-        const isManual = Boolean((e.data as { isManual?: boolean } | undefined)?.isManual);
+        const isManual = Boolean((e.data as EdgeData | undefined)?.isManual);
         return {
           ...e,
           style: {
@@ -264,17 +302,13 @@ export function PlaygroundCanvas({
         nodes={nodes}
         edges={displayedEdges}
         nodeTypes={NODE_TYPES}
-        onNodesChange={onNodesChange}
-        onEdgesChange={(changes: EdgeChange<Edge>[]) => {
-          for (const change of changes) {
-            if (change.type !== "remove") continue;
-            const removed = edges.find((e) => e.id === change.id);
-            const data = removed?.data as { isManual?: boolean; sourceId?: string; targetId?: string } | undefined;
-            if (data?.isManual && data.sourceId && data.targetId) onDisconnect(data.sourceId, data.targetId);
-          }
-          onEdgesChange(changes);
-        }}
+        onNodesChange={handleNodesChange}
+        onEdgesChange={handleEdgesChange}
         onNodeClick={(_, node) => onSelectNode(node.id)}
+        onEdgeClick={(_, edge) => {
+          const data = edge.data as EdgeData | undefined;
+          if (data?.isManual) onSelectEdge(data.sourceId, data.targetId);
+        }}
         onPaneClick={() => onSelectNode(null)}
         onNodeDragStart={(_, node) => pin(node.id, node.position.x, node.position.y)}
         onNodeDrag={(_, node) => pin(node.id, node.position.x, node.position.y)}
